@@ -423,6 +423,7 @@ export default function AuthPage() {
                                 showPassword={showPassword.register}
                                 onTogglePassword={() => setShowPassword(prev => ({ ...prev, register: !prev.register }))}
                                 isLoading={registerMutation.isPending}
+                                placeholder={intl.formatMessage({ id: "auth.passwordPlaceholder" })}
                               />
                             </div>
                           </FormControl>
@@ -451,6 +452,7 @@ export default function AuthPage() {
                                   confirmPassword: !prev.confirmPassword 
                                 }))}
                                 isLoading={registerMutation.isPending}
+                                placeholder={intl.formatMessage({ id: "auth.passwordPlaceholder" })}
                               />
                             </div>
                           </FormControl>
