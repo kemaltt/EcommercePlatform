@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { 
-  Search, 
-  ShoppingCart, 
-  User, 
-  Menu, 
+import {
+  Search,
+  ShoppingCart,
+  User,
+  Menu,
   X
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -20,6 +20,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/cart-context";
+import { LanguageSwitcher } from "../ui/language-switcher";
 
 interface HeaderProps {
   onCartOpen: () => void;
@@ -80,38 +81,35 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
               </Link>
             </div>
             <nav className="hidden sm:ml-6 sm:flex sm:space-x-8" aria-label="Main Navigation">
-              <Link 
-                href="/" 
-                className={`px-3 py-2 text-sm font-medium ${
-                  isActive("/") 
-                    ? "text-primary border-b-2 border-primary" 
+              <Link
+                href="/"
+                className={`px-3 py-2 text-sm font-medium ${isActive("/")
+                    ? "text-primary border-b-2 border-primary"
                     : "text-muted-foreground hover:text-foreground"
-                }`}
+                  }`}
               >
                 Home
               </Link>
-              
+
               {user && (
-                <Link 
-                  href="/favorites" 
-                  className={`px-3 py-2 text-sm font-medium ${
-                    isActive("/favorites") 
-                      ? "text-primary border-b-2 border-primary" 
+                <Link
+                  href="/favorites"
+                  className={`px-3 py-2 text-sm font-medium ${isActive("/favorites")
+                      ? "text-primary border-b-2 border-primary"
                       : "text-muted-foreground hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   Favorites
                 </Link>
               )}
-              
+
               {user && user.isAdmin && (
-                <Link 
-                  href="/admin" 
-                  className={`px-3 py-2 text-sm font-medium ${
-                    isActive("/admin") 
-                      ? "text-primary border-b-2 border-primary" 
+                <Link
+                  href="/admin"
+                  className={`px-3 py-2 text-sm font-medium ${isActive("/admin")
+                      ? "text-primary border-b-2 border-primary"
                       : "text-muted-foreground hover:text-foreground"
-                  }`}
+                    }`}
                 >
                   Admin
                 </Link>
@@ -130,13 +128,15 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                 placeholder="Search products..."
               />
             </form>
-            
+
             {/* Tema değiştirici */}
             <ThemeToggle />
 
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            {/* Dil değiştirici - BURAYA EKLENDİ */}
+            <LanguageSwitcher />
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={onCartOpen}
               className="relative p-2 text-muted-foreground hover:text-foreground focus:outline-none"
             >
@@ -181,8 +181,8 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button 
-                variant="default" 
+              <Button
+                variant="default"
                 onClick={() => navigate("/auth")}
                 className="bg-primary text-white hover:bg-primary/90"
               >
@@ -211,46 +211,43 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
       {isMenuOpen && (
         <div className="sm:hidden" id="mobile-menu">
           <div className="pt-2 pb-3 space-y-1">
-            <Link 
+            <Link
               href="/"
-              className={`block pl-3 pr-4 py-2 text-base font-medium ${
-                isActive("/") 
-                  ? "bg-primary text-white" 
+              className={`block pl-3 pr-4 py-2 text-base font-medium ${isActive("/")
+                  ? "bg-primary text-white"
                   : "text-muted-foreground hover:bg-accent"
-              }`}
+                }`}
               onClick={() => setIsMenuOpen(false)}
             >
               Home
             </Link>
-            
+
             {user && (
-              <Link 
+              <Link
                 href="/favorites"
-                className={`block pl-3 pr-4 py-2 text-base font-medium ${
-                  isActive("/favorites") 
-                    ? "bg-primary text-white" 
+                className={`block pl-3 pr-4 py-2 text-base font-medium ${isActive("/favorites")
+                    ? "bg-primary text-white"
                     : "text-muted-foreground hover:bg-accent"
-                }`}
+                  }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Favorites
               </Link>
             )}
-            
+
             {user && user.isAdmin && (
-              <Link 
+              <Link
                 href="/admin"
-                className={`block pl-3 pr-4 py-2 text-base font-medium ${
-                  isActive("/admin") 
-                    ? "bg-primary text-white" 
+                className={`block pl-3 pr-4 py-2 text-base font-medium ${isActive("/admin")
+                    ? "bg-primary text-white"
                     : "text-muted-foreground hover:bg-accent"
-                }`}
+                  }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Admin
               </Link>
             )}
-            
+
             <div className="pt-2 pb-3 px-3">
               <form onSubmit={handleSearchSubmit} className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -264,7 +261,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
               </form>
             </div>
           </div>
-          
+
           <div className="pt-4 pb-3 border-t border-gray-200">
             {user ? (
               <div>
@@ -280,9 +277,9 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                   </div>
                   <div className="flex items-center space-x-2 ml-auto">
                     <ThemeToggle />
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       onClick={() => {
                         onCartOpen();
                         setIsMenuOpen(false);
@@ -299,7 +296,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                   </div>
                 </div>
                 <div className="mt-3 space-y-1">
-                  <Link 
+                  <Link
                     href="/profile"
                     className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                     onClick={() => setIsMenuOpen(false)}
@@ -320,7 +317,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
               </div>
             ) : (
               <div className="px-4 mt-2">
-                <Button 
+                <Button
                   onClick={() => {
                     navigate("/auth");
                     setIsMenuOpen(false);

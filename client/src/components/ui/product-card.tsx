@@ -9,6 +9,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import StarRating from "@/components/ui/star-rating";
 import { useCart } from "@/contexts/cart-context";
+import { FormattedMessage, useIntl } from "react-intl";
 
 interface ProductCardProps {
   product: Product;
@@ -19,6 +20,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   const { toast } = useToast();
   const { addToCart } = useCart();
   const queryClient = useQueryClient();
+  const intl = useIntl();
 
   // Check if product is in favorites
   const { data: favoriteStatus, isFetching: isFavoriteLoading } = useQuery({
@@ -36,7 +38,7 @@ export default function ProductCard({ product }: ProductCardProps) {
   // Toggle favorite status mutation
   const toggleFavoriteMutation = useMutation({
     mutationFn: async () => {
-      if (!user) throw new Error("You must be logged in to save favorites");
+      if (!user) throw new Error(intl.formatMessage({ id: "product.loginRequired" }));
       
       const isFavorite = favoriteStatus?.isFavorite;
       
@@ -53,15 +55,17 @@ export default function ProductCard({ product }: ProductCardProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/favorites/check", product.id] });
       
       toast({
-        title: newFavoriteStatus ? "Added to favorites" : "Removed from favorites",
-        description: newFavoriteStatus 
-          ? `${product.name} has been added to your favorites`
-          : `${product.name} has been removed from your favorites`,
+        title: intl.formatMessage({ 
+          id: newFavoriteStatus ? "product.addedToFavorites" : "product.removedFromFavorites" 
+        }),
+        description: intl.formatMessage({ 
+          id: newFavoriteStatus ? "product.addedToFavoritesDesc" : "product.removedFromFavoritesDesc" 
+        }, { name: product.name }),
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Failed to update favorites",
+        title: intl.formatMessage({ id: "product.failedToUpdateFavorites" }),
         description: error.message,
         variant: "destructive",
       });
@@ -72,8 +76,8 @@ export default function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = () => {
     if (!user) {
       toast({
-        title: "Login required",
-        description: "You must be logged in to add items to your cart",
+        title: intl.formatMessage({ id: "product.loginRequired" }),
+        description: intl.formatMessage({ id: "product.loginToAddCart" }),
         variant: "destructive",
       });
       return;
@@ -122,7 +126,10 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="mt-2 flex items-center">
           <StarRating rating={product.rating || 0} />
           <span className="ml-1 text-sm text-gray-500">
-            ({product.reviews || 0})
+            <FormattedMessage 
+              id="product.reviews" 
+              values={{ count: product.reviews || 0 }}
+            />
           </span>
         </div>
       </CardContent>
@@ -130,14 +137,17 @@ export default function ProductCard({ product }: ProductCardProps) {
       <CardFooter className="p-4 border-t border-gray-200 bg-gray-50">
         <div className="flex items-center justify-between w-full">
           <p className="text-lg font-medium text-gray-900">
-            ${product.price.toFixed(2)}
+            {intl.formatNumber(product.price, {
+              style: 'currency',
+              currency: 'EUR'
+            })}
           </p>
           <Button 
             onClick={handleAddToCart}
             size="sm"
             className="text-white bg-primary hover:bg-primary/90"
           >
-            Add to cart
+            <FormattedMessage id="product.addToCart" />
           </Button>
         </div>
       </CardFooter>

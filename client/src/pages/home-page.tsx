@@ -9,8 +9,13 @@ import { Button } from "@/components/ui/button";
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { FormattedMessage, useIntl } from "react-intl";
+
+
+
 
 export default function HomePage() {
+  const intl = useIntl();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,7 +34,7 @@ export default function HomePage() {
       if (searchQuery) {
         params.append("search", searchQuery);
       }
-      
+
       const response = await fetch(`/api/products?${params.toString()}`);
       if (!response.ok) {
         throw new Error("Failed to fetch products");
@@ -52,8 +57,8 @@ export default function HomePage() {
 
   // Calculate pagination
   const totalPages = products ? Math.ceil(products.length / productsPerPage) : 0;
-  const paginatedProducts = products ? 
-    products.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage) : 
+  const paginatedProducts = products ?
+    products.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage) :
     [];
 
   // Handle page change
@@ -65,47 +70,49 @@ export default function HomePage() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header onCartOpen={() => setIsCartOpen(true)} onSearch={handleSearch} />
-      
+
       <main className="flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Category Filters */}
           <div className="mb-8">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Categories</h2>
+            <h2 className="text-lg font-medium text-gray-900 mb-4">
+              <FormattedMessage id="home.categories.title" />
+            </h2>
             <div className="flex flex-wrap gap-2">
               <Button
                 variant={selectedCategory === "all" ? "default" : "outline"}
                 className={selectedCategory === "all" ? "bg-primary text-white" : ""}
                 onClick={() => handleCategoryChange("all")}
               >
-                All Products
+                <FormattedMessage id="home.categories.all" />
               </Button>
               <Button
                 variant={selectedCategory === "electronics" ? "default" : "outline"}
                 className={selectedCategory === "electronics" ? "bg-primary text-white" : ""}
                 onClick={() => handleCategoryChange("electronics")}
               >
-                Electronics
+                <FormattedMessage id="home.categories.electronics" />
               </Button>
               <Button
                 variant={selectedCategory === "clothing" ? "default" : "outline"}
                 className={selectedCategory === "clothing" ? "bg-primary text-white" : ""}
                 onClick={() => handleCategoryChange("clothing")}
               >
-                Clothing
+                <FormattedMessage id="home.categories.clothing" />
               </Button>
               <Button
                 variant={selectedCategory === "home" ? "default" : "outline"}
                 className={selectedCategory === "home" ? "bg-primary text-white" : ""}
                 onClick={() => handleCategoryChange("home")}
               >
-                Home & Kitchen
+                <FormattedMessage id="home.categories.home" />
               </Button>
               <Button
                 variant={selectedCategory === "books" ? "default" : "outline"}
                 className={selectedCategory === "books" ? "bg-primary text-white" : ""}
                 onClick={() => handleCategoryChange("books")}
               >
-                Books
+                <FormattedMessage id="home.categories.books" />
               </Button>
             </div>
           </div>
@@ -117,12 +124,16 @@ export default function HomePage() {
             </div>
           ) : error ? (
             <div className="text-center py-10">
-              <p className="text-red-500">Error loading products. Please try again later.</p>
+              <p className="text-red-500">
+                <FormattedMessage id="home.error" />
+              </p>
             </div>
           ) : products && products.length === 0 ? (
             <div className="text-center py-10">
-              <p className="text-lg text-gray-600">No products found. Try a different search or category.</p>
-            </div>
+              <p className="text-lg text-gray-600">
+                <FormattedMessage id="home.noProducts" />
+              </p>
+            </div>  
           ) : (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -137,12 +148,13 @@ export default function HomePage() {
                   <Pagination>
                     <PaginationContent>
                       <PaginationItem>
-                        <PaginationPrevious 
+                        <PaginationPrevious
                           onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                           className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                         />
+                        <FormattedMessage id="home.pagination.previous" />
                       </PaginationItem>
-                      
+
                       {[...Array(totalPages)].map((_, i) => (
                         <PaginationItem key={i + 1}>
                           <PaginationLink
@@ -150,16 +162,17 @@ export default function HomePage() {
                             isActive={currentPage === i + 1}
                             className="cursor-pointer"
                           >
-                            {i + 1}
+                            <FormattedMessage id="home.pagination.page" values={{ page: i + 1 }} />
                           </PaginationLink>
                         </PaginationItem>
                       ))}
-                      
+
                       <PaginationItem>
-                        <PaginationNext 
+                        <PaginationNext
                           onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                           className={currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                         />
+                        <FormattedMessage id="home.pagination.next" />
                       </PaginationItem>
                     </PaginationContent>
                   </Pagination>
@@ -171,7 +184,7 @@ export default function HomePage() {
       </main>
 
       <Footer />
-      
+
       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </div>
   );
