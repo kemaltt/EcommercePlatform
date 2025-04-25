@@ -111,4 +111,27 @@ export default {
   // Versand und Rückgabe
   'productDetail.shipping.free': 'Kostenloser Versand ab €100',
   'productDetail.shipping.return': '30 Tage Rückgaberecht',
+
+  // Auth-Seite
+  'auth.welcomeDescription': 'Ihre zentrale Anlaufstelle für alle Ihre Einkaufsbedürfnisse. Werden Sie Teil unserer Community und entdecken Sie tolle Produkte zu günstigen Preisen.',
+  'auth.feature1': 'Große Auswahl an Qualitätsprodukten',
+  'auth.feature2': 'Sicheres Einkaufserlebnis',
+  'auth.feature3': 'Schnelle Lieferoptionen',
+  'auth.feature4': '24/7 Kundenservice',
+  'auth.subtitle': 'Ihr One-Stop-Shopping-Ziel',
+  'auth.usernameOrEmail': 'Benutzername oder E-Mail',
+  'auth.emailPlaceholder': 'ihre@email.com',
+  'auth.passwordPlaceholder': '********',
+  'auth.rememberMe': 'Angemeldet bleiben',
+  'auth.forgotPassword': 'Passwort vergessen?',
+  'auth.signingIn': 'Anmeldung läuft...',
+  'auth.signIn': 'Anmelden',
+  'auth.noAccount': 'Noch kein Konto?',
+  'auth.registerNow': 'Jetzt registrieren',
+  'auth.fullNamePlaceholder': 'Max Mustermann',
+  'auth.creatingAccount': 'Konto wird erstellt...',
+  'auth.createAccount': 'Konto erstellen',
+  'auth.haveAccount': 'Bereits ein Konto?',
+  'auth.signInNow': 'Jetzt anmelden',
+  'language.select': 'Sprache wählen:',
 };

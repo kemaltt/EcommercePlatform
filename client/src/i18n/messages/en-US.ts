@@ -110,4 +110,27 @@ export default {
   // Shipping and Returns
   'productDetail.shipping.free': 'Free shipping for orders over €100',
   'productDetail.shipping.return': '30-day return policy',
+
+  // Auth page
+  'auth.welcomeDescription': 'Your one-stop destination for all your shopping needs. Join our community and discover amazing products at great prices.',
+  'auth.feature1': 'Wide range of quality products',
+  'auth.feature2': 'Secure shopping experience',
+  'auth.feature3': 'Fast delivery options',
+  'auth.feature4': '24/7 customer support',
+  'auth.subtitle': 'Your one-stop shopping destination',
+  'auth.usernameOrEmail': 'Username or Email',
+  'auth.emailPlaceholder': 'your@email.com',
+  'auth.passwordPlaceholder': '********',
+  'auth.rememberMe': 'Remember me',
+  'auth.forgotPassword': 'Forgot password?',
+  'auth.signingIn': 'Signing in...',
+  'auth.signIn': 'Sign in',
+  'auth.noAccount': "Don't have an account?",
+  'auth.registerNow': 'Register now',
+  'auth.fullNamePlaceholder': 'John Doe',
+  'auth.creatingAccount': 'Creating account...',
+  'auth.createAccount': 'Create account',
+  'auth.haveAccount': 'Already have an account?',
+  'auth.signInNow': 'Sign in',
+  'language.select': 'Select language:',
 };

@@ -1,13 +1,13 @@
 export type LocaleType = 'tr-TR' | 'en-US' | 'de-DE';
 
 export const LOCALES = {
-  TURKISH: 'tr-TR' as const,
-  ENGLISH: 'en-US' as const,
   GERMAN: 'de-DE' as const,
+  ENGLISH: 'en-US' as const,
+  TURKISH: 'tr-TR' as const,
 };
 
 export const LOCALE_NAMES = {
-  [LOCALES.TURKISH]: 'Türkçe',
-  [LOCALES.ENGLISH]: 'English',
   [LOCALES.GERMAN]: 'Deutsch',
+  [LOCALES.ENGLISH]: 'English',
+  [LOCALES.TURKISH]: 'Türkçe',
 };

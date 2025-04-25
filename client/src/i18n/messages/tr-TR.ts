@@ -110,6 +110,29 @@ export default {
  // Kargo ve İade
  'productDetail.shipping.free': '100₺ üzeri siparişlerde ücretsiz kargo',
  'productDetail.shipping.return': '30 gün iade garantisi',
+
+  // Auth sayfası
+  'auth.welcomeDescription': 'Tüm alışveriş ihtiyaçlarınız için tek adres. Topluluğumuza katılın ve harika ürünleri uygun fiyatlarla keşfedin.',
+  'auth.feature1': 'Geniş ürün yelpazesi',
+  'auth.feature2': 'Güvenli alışveriş deneyimi',
+  'auth.feature3': 'Hızlı teslimat seçenekleri',
+  'auth.feature4': '7/24 müşteri desteği',
+  'auth.subtitle': 'Tek durak alışveriş noktanız',
+  'auth.usernameOrEmail': 'Kullanıcı Adı veya E-posta',
+  'auth.emailPlaceholder': 'ornek@email.com',
+  'auth.passwordPlaceholder': '********',
+  'auth.rememberMe': 'Beni hatırla',
+  'auth.forgotPassword': 'Şifremi unuttum',
+  'auth.signingIn': 'Giriş yapılıyor...',
+  'auth.signIn': 'Giriş Yap',
+  'auth.noAccount': 'Hesabınız yok mu?',
+  'auth.registerNow': 'Hemen kayıt olun',
+  'auth.fullNamePlaceholder': 'Adınız Soyadınız',
+  'auth.creatingAccount': 'Hesap oluşturuluyor...',
+  'auth.createAccount': 'Hesap Oluştur',
+  'auth.haveAccount': 'Zaten hesabınız var mı?',
+  'auth.signInNow': 'Giriş yapın',
+  'language.select': 'Dil seçin:',
 };
 
 

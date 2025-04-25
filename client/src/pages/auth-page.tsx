@@ -14,6 +14,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { insertUserSchema } from "@shared/schema";
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 
 // Form şemalarını ayrı tanımlayalım
 const loginSchema = z.object({
@@ -49,6 +51,7 @@ export default function AuthPage() {
     register: false,
     confirmPassword: false
   });
+  const intl = useIntl();
 
   // Kullanıcı zaten giriş yapmışsa ana sayfaya yönlendir
   useEffect(() => {
@@ -132,13 +135,13 @@ export default function AuthPage() {
     field, 
     showPassword, 
     onTogglePassword, 
-    placeholder = "********",
+    placeholder,
     isLoading = false 
   }: {
     field: any;
     showPassword: boolean;
     onTogglePassword: () => void;
-    placeholder?: string;
+    placeholder: string;
     isLoading?: boolean;
   }) => (
     <div className="relative">
@@ -166,49 +169,69 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex flex-col sm:flex-row bg-gray-50">
-      {/* Left column with description */}
-      <div className="w-full sm:w-1/2 bg-primary text-white p-12 flex flex-col justify-center">
-        <div className="max-w-md mx-auto">
-          <h1 className="text-4xl font-bold mb-6">Welcome to DeinShop</h1>
-          <p className="text-lg mb-8">
-            Your one-stop destination for all your shopping needs. Join our community
-            and discover amazing products at great prices.
-          </p>
-          <ul className="space-y-4">
-            <li className="flex items-center space-x-3">
-              <span className="text-primary-foreground">✓</span>
-              <span>Wide range of quality products</span>
-            </li>
-            <li className="flex items-center space-x-3">
-              <span className="text-primary-foreground">✓</span>
-              <span>Secure shopping experience</span>
-            </li>
-            <li className="flex items-center space-x-3">
-              <span className="text-primary-foreground">✓</span>
-              <span>Fast delivery options</span>
-            </li>
-            <li className="flex items-center space-x-3">
-              <span className="text-primary-foreground">✓</span>
-              <span>24/7 customer support</span>
-            </li>
-          </ul>
+      {/* Sol kolon */}
+      <div className="w-full sm:w-1/2 bg-primary text-white p-12 flex flex-col">
+        {/* Orta kısım - Ana içerik */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="max-w-md">
+            <h1 className="text-4xl font-bold mb-6">
+              <FormattedMessage id="app.welcome" />
+            </h1>
+            <p className="text-lg mb-8">
+              <FormattedMessage id="auth.welcomeDescription" />
+            </p>
+            <ul className="space-y-4">
+              <li className="flex items-center space-x-3">
+                <span className="text-primary-foreground">✓</span>
+                <span><FormattedMessage id="auth.feature1" /></span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <span className="text-primary-foreground">✓</span>
+                <span><FormattedMessage id="auth.feature2" /></span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <span className="text-primary-foreground">✓</span>
+                <span><FormattedMessage id="auth.feature3" /></span>
+              </li>
+              <li className="flex items-center space-x-3">
+                <span className="text-primary-foreground">✓</span>
+                <span><FormattedMessage id="auth.feature4" /></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Alt kısım - Dil değiştirici */}
+        <div className="mt-8">
+          <div className="flex items-center justify-start space-x-2 text-sm">
+            <span className="opacity-75">
+              <FormattedMessage id="language.select" defaultMessage="Dil seçin:" />
+            </span>
+            <LanguageSwitcher />
+          </div>
         </div>
       </div>
 
-      {/* Right column with forms */}
+      {/* Sağ kolon */}
       <div className="w-full sm:w-1/2 flex items-center justify-center p-6">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">DeinShop</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center">
+              <FormattedMessage id="app.title" />
+            </CardTitle>
             <CardDescription className="text-center">
-              Your one-stop shopping destination
+              <FormattedMessage id="auth.subtitle" />
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as "login" | "register")}>
               <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
+                <TabsTrigger value="login">
+                  <FormattedMessage id="auth.login" />
+                </TabsTrigger>
+                <TabsTrigger value="register">
+                  <FormattedMessage id="auth.register" />
+                </TabsTrigger>
               </TabsList>
 
               {/* Login Form */}
@@ -220,12 +243,14 @@ export default function AuthPage() {
                       name="username"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Username or Email</FormLabel>
+                          <FormLabel>
+                            <FormattedMessage id="auth.usernameOrEmail" />
+                          </FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="your@email.com" 
                               {...field} 
                               disabled={loginMutation.isPending}
+                              placeholder={intl.formatMessage({ id: "auth.emailPlaceholder" })}
                             />
                           </FormControl>
                           <FormMessage />
@@ -238,13 +263,16 @@ export default function AuthPage() {
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Password</FormLabel>
+                          <FormLabel>
+                            <FormattedMessage id="auth.password" />
+                          </FormLabel>
                           <FormControl>
                             <PasswordInput
                               field={field}
                               showPassword={showPassword.login}
                               onTogglePassword={() => setShowPassword(prev => ({ ...prev, login: !prev.login }))}
                               isLoading={loginMutation.isPending}
+                              placeholder={intl.formatMessage({ id: "auth.passwordPlaceholder" })}
                             />
                           </FormControl>
                           <FormMessage />
@@ -265,13 +293,17 @@ export default function AuthPage() {
                                 disabled={loginMutation.isPending}
                               />
                             </FormControl>
-                            <Label className="text-sm">Remember me</Label>
+                            <Label className="text-sm">
+                              <FormattedMessage id="auth.rememberMe" />
+                            </Label>
                           </FormItem>
                         )}
                       />
 
                       <Button variant="link" className="px-0" asChild>
-                        <a href="#" className="text-sm">Forgot password?</a>
+                        <a href="#" className="text-sm">
+                          <FormattedMessage id="auth.forgotPassword" />
+                        </a>
                       </Button>
                     </div>
 
@@ -283,21 +315,21 @@ export default function AuthPage() {
                       {loginMutation.isPending ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Signing in...
+                          <FormattedMessage id="auth.signingIn" />
                         </>
                       ) : (
-                        "Sign in"
+                        <FormattedMessage id="auth.signIn" />
                       )}
                     </Button>
 
                     <p className="text-center text-sm text-muted-foreground">
-                      Don't have an account?{' '}
+                      <FormattedMessage id="auth.noAccount" />{' '}
                       <Button 
                         variant="link" 
                         className="px-0"
                         onClick={() => setActiveTab("register")}
                       >
-                        Register now
+                        <FormattedMessage id="auth.registerNow" />
                       </Button>
                     </p>
                   </form>
@@ -307,39 +339,24 @@ export default function AuthPage() {
               {/* Register Form */}
               <TabsContent value="register">
                 <Form {...registerForm}>
-                  <form 
-                    onSubmit={registerForm.handleSubmit(
-                      onRegisterSubmit,
-                      (errors) => {
-                        console.log('Validation errors:', errors);
-                        toast({
-                          title: "Required Fields Missing",
-                          description: "Please fill in all required fields correctly.",
-                          variant: "destructive",
-                        });
-                      }
-                    )} 
-                    className="space-y-4"
-                  >
+                  <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
                     <FormField
                       control={registerForm.control}
                       name="fullName"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            Full Name <span className="text-red-500">*</span>
+                            <FormattedMessage id="auth.fullName" />
+                            <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input 
-                              placeholder="John Doe" 
                               {...field} 
                               disabled={registerMutation.isPending}
-                              className={`${
-                                registerForm.formState.errors.fullName ? "border-red-500 focus-visible:ring-red-500" : ""
-                              }`}
+                              placeholder={intl.formatMessage({ id: "auth.fullNamePlaceholder" })}
                             />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -373,20 +390,18 @@ export default function AuthPage() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            Email <span className="text-red-500">*</span>
+                            <FormattedMessage id="auth.email" />
+                            <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input 
-                              type="email" 
-                              placeholder="your@email.com" 
                               {...field} 
+                              type="email"
                               disabled={registerMutation.isPending}
-                              className={`${
-                                registerForm.formState.errors.email ? "border-red-500 focus-visible:ring-red-500" : ""
-                              }`}
+                              placeholder={intl.formatMessage({ id: "auth.emailPlaceholder" })}
                             />
                           </FormControl>
-                          <FormMessage className="text-red-500" />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -470,21 +485,21 @@ export default function AuthPage() {
                       {registerMutation.isPending ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Creating account...
+                          <FormattedMessage id="auth.creatingAccount" />
                         </>
                       ) : (
-                        "Create account"
+                        <FormattedMessage id="auth.createAccount" />
                       )}
                     </Button>
 
                     <p className="text-center text-sm text-muted-foreground">
-                      Already have an account?{' '}
+                      <FormattedMessage id="auth.haveAccount" />{' '}
                       <Button 
                         variant="link" 
                         className="px-0"
                         onClick={() => setActiveTab("login")}
                       >
-                        Sign in
+                        <FormattedMessage id="auth.signInNow" />
                       </Button>
                     </p>
                   </form>
