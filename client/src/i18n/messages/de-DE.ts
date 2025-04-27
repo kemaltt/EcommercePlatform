@@ -161,6 +161,8 @@ export default {
   'cart.clear.success': 'Alle Artikel wurden aus Ihrem Warenkorb entfernt',
   'cart.clear.error': 'Fehler beim Leeren des Warenkorbs',
   "cart.quantity.value": "Menge: {quantity}",
+  "cart.quantity.increase": "Menge erhöhen",
+  "cart.quantity.decrease": "Menge verringern",
 
 
   "profile.title": "Ihr Profil",
