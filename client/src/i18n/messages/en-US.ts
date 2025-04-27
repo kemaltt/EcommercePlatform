@@ -95,7 +95,7 @@ export default {
   'product.addedToCart': 'Added to Cart',
   'product.addedToCartDesc': '{name} has been added to your cart',
   'product.viewDetails': 'View Details',
-  'product.price': 'Price',
+  'product.price': 'Price $ {price}',
   'product.currency': '${price}',
 
   // Product Detail Page
@@ -181,5 +181,29 @@ export default {
   "footer.instagram": "Instagram",
   "footer.twitter": "Twitter",
   "footer.github": "GitHub",
-  "footer.youtube": "YouTube"
+  "footer.youtube": "YouTube",
+
+  // Checkout
+  "checkout.title": "Checkout",
+  "checkout.cartEmpty": "Your cart is empty. Add items before proceeding to checkout.",
+  "checkout.shippingInfo": "Shipping Information",
+  "checkout.firstName": "First Name",
+  "checkout.lastName": "Last Name",
+  "checkout.address": "Address",
+  "checkout.city": "City",
+  "checkout.state": "State / Province",
+  "checkout.zip": "ZIP / Postal Code",
+  "checkout.country": "Country",
+  "checkout.orderSummary": "Order Summary",
+  "checkout.shipping": "Shipping",
+  "checkout.taxes": "Taxes",
+  "checkout.total": "Total",
+  "checkout.paymentInfo": "Payment Information",
+  "checkout.paymentPlaceholder": "Payment gateway integration will go here.",
+  "checkout.placeOrder": "Place Order",
+  "checkout.cardDetails": "Card Details",
+  "checkout.paymentMethods": "Payment Methods",
+  "checkout.payWithCard": "Pay with Card",
+  "checkout.payWithPayPal": "Pay with PayPal",
+  "checkout.payWithKlarna": "Pay with Klarna",
 };

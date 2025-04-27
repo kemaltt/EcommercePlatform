@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
 import { FormattedMessage, useIntl } from "react-intl";
+import { useLocation } from "wouter";
 
 interface CartSidebarProps {
   isOpen: boolean;
@@ -16,12 +17,11 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const { cartItems, subtotal, updateCartItemQuantity, removeCartItem } = useCart();
   const { toast } = useToast();
   const intl = useIntl();
+  const [, navigate] = useLocation();
 
   const handleCheckout = () => {
-    toast({
-      title: intl.formatMessage({ id: "cart.checkout" }),
-      description: intl.formatMessage({ id: "cart.checkout.message" }),
-    });
+    onClose();
+    navigate("/checkout");
   };
 
   return (

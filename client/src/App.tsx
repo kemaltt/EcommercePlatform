@@ -5,13 +5,13 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
-import { ProtectedRoute } from "@/lib/protected-route";
+import { ProtectedRoute, AdminRoute } from "@/lib/protected-route";
 import { queryClient } from "./lib/queryClient";
 import ProductDetail from "@/pages/product-detail";
 import FavoritesPage from "@/pages/favorites-page";
 import ProfilePage from "@/pages/profile-page";
 import AdminPage from "@/pages/admin/admin-page";
-import { AdminRoute } from "@/lib/protected-route";
+import CheckoutPage from "@/pages/checkout-page";
 
 function Router() {
   return (
@@ -21,6 +21,7 @@ function Router() {
       <Route path="/" component={HomePage} />
       <ProtectedRoute path="/favorites" component={FavoritesPage} />
       <ProtectedRoute path="/profile" component={ProfilePage} />
+      <ProtectedRoute path="/checkout" component={CheckoutPage} />
       <AdminRoute path="/admin" component={AdminPage} />
       <Route component={NotFound} />
     </Switch>

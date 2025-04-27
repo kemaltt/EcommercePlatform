@@ -81,7 +81,7 @@ export default {
   'product.addedToCart': 'Sepete Eklendi',
   'product.addedToCartDesc': '{name} sepetinize eklendi',
   'product.viewDetails': 'Detayları Gör',
-  'product.price': 'Fiyat',
+  'product.price': 'Fiyat {price}₺',
   'product.currency': '₺{price}',
 
   // Ürün Detay Sayfası
@@ -187,7 +187,32 @@ export default {
   "footer.instagram": "Instagram",
   "footer.twitter": "Twitter",
   "footer.github": "GitHub",
-  "footer.youtube": "YouTube"
+  "footer.youtube": "YouTube",
+
+  // Checkout
+  "checkout.title": "Ödeme",
+  "checkout.cartEmpty": "Sepetiniz boş. Ödeme yapmadan önce ürün ekleyin.",
+  "checkout.shippingInfo": "Teslimat Bilgileri",
+  "checkout.firstName": "Ad",
+  "checkout.lastName": "Soyad",
+  "checkout.address": "Adres",
+  "checkout.city": "Şehir",
+  "checkout.state": "Eyalet / Bölge",
+  "checkout.zip": "Posta Kodu",
+  "checkout.country": "Ülke",
+  "checkout.orderSummary": "Sipariş Özeti",
+  "checkout.shipping": "Kargo",
+  "checkout.taxes": "Vergiler",
+  "checkout.total": "Toplam",
+  "checkout.paymentInfo": "Ödeme Bilgileri",
+  "checkout.paymentPlaceholder": "Ödeme sistemi entegrasyonu buraya gelecek.",
+  "checkout.placeOrder": "Siparişi Tamamla",
+  "checkout.cardDetails": "Kart Bilgileri",
+  "checkout.paymentMethods": "Ödeme Yöntemleri",
+  "checkout.payWithCard": "Kart ile Öde",
+  "checkout.payWithPayPal": "PayPal ile Öde",
+  "checkout.payWithKlarna": "Klarna ile Öde",
+
 };
 
 
