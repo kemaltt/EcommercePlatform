@@ -25,11 +25,6 @@ export default {
   'auth.username': 'Benutzername',
   'auth.fullName': 'Vollständiger Name',
 
-  // Profil
-  'profile.title': 'Profilinformationen',
-  'profile.edit': 'Profil bearbeiten',
-  'profile.save': 'Änderungen speichern',
-  'profile.address': 'Adresse',
 
   // Produkte
 
@@ -164,5 +159,32 @@ export default {
   'cart.remove.success': 'Artikel wurde aus Ihrem Warenkorb entfernt',
   'cart.remove.error': 'Fehler beim Entfernen des Artikels',
   'cart.clear.success': 'Alle Artikel wurden aus Ihrem Warenkorb entfernt',
-  'cart.clear.error': 'Fehler beim Leeren des Warenkorbs'
+  'cart.clear.error': 'Fehler beim Leeren des Warenkorbs',
+  "cart.quantity.value": "Menge: {quantity}",
+
+
+  "profile.title": "Ihr Profil",
+  "profile.fullName": "Vollständiger Name",
+  "profile.email": "E-Mail-Adresse",
+  "profile.address": "Adresse",
+  "profile.address.placeholder": "Geben Sie Ihre Lieferadresse ein",
+  "profile.save": "Änderungen speichern",
+  "profile.saving": "Speichern...",
+  "profile.updated": "Profil aktualisiert",
+  "profile.updateFailed": "Profilaktualisierung fehlgeschlagen",
+  "profile.required": "Dieses Feld ist erforderlich",
+  "profile.invalidEmail": "Ungültige E-Mail-Adresse",
+
+  "footer.about": "Über uns",
+  "footer.blog": "Blog",
+  "footer.jobs": "Jobs",
+  "footer.press": "Presse",
+  "footer.accessibility": "Barrierefreiheit",
+  "footer.partners": "Partner",
+  "footer.copyright": "© 2023 DeinShop, Alle Rechte vorbehalten.",
+  "footer.facebook": "Facebook",
+  "footer.instagram": "Instagram",
+  "footer.twitter": "Twitter",
+  "footer.github": "GitHub",
+  "footer.youtube": "YouTube",
 };

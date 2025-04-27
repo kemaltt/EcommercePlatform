@@ -13,15 +13,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export default function ProfilePage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { user, updateProfileMutation } = useAuth();
+  const intl = useIntl();
 
   // Profile update form schema
   const profileSchema = z.object({
-    fullName: z.string().min(1, "Full name is required"),
-    email: z.string().email("Invalid email address"),
+    fullName: z.string().min(1, intl.formatMessage({ id: "profile.required" })),
+    email: z.string().email(intl.formatMessage({ id: "profile.invalidEmail" })),
     address: z.string().optional(),
   });
 
@@ -81,7 +83,9 @@ export default function ProfilePage() {
       
       <main className="flex-grow">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-6">Your Profile</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 mb-6">
+            <FormattedMessage id="profile.title" />
+          </h1>
           
           <Card>
             <CardHeader className="flex flex-row items-center space-x-4 pb-2">
@@ -102,7 +106,9 @@ export default function ProfilePage() {
                     name="fullName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Full name</FormLabel>
+                        <FormLabel>
+                          <FormattedMessage id="profile.fullName" />
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} disabled={updateProfileMutation.isPending} />
                         </FormControl>
@@ -116,7 +122,9 @@ export default function ProfilePage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email address</FormLabel>
+                        <FormLabel>
+                          <FormattedMessage id="profile.email" />
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} disabled={updateProfileMutation.isPending} />
                         </FormControl>
@@ -130,12 +138,14 @@ export default function ProfilePage() {
                     name="address"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Address</FormLabel>
+                        <FormLabel>
+                          <FormattedMessage id="profile.address" />
+                        </FormLabel>
                         <FormControl>
                           <Textarea 
                             {...field} 
                             rows={3}
-                            placeholder="Enter your shipping address"
+                            placeholder={intl.formatMessage({ id: "profile.address.placeholder" })}
                             disabled={updateProfileMutation.isPending}
                           />
                         </FormControl>
@@ -154,10 +164,10 @@ export default function ProfilePage() {
                         {updateProfileMutation.isPending ? (
                           <>
                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Saving...
+                            <FormattedMessage id="profile.saving" />
                           </>
                         ) : (
-                          'Save Changes'
+                          <FormattedMessage id="profile.save" />
                         )}
                       </Button>
                     </div>

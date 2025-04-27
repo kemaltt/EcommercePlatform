@@ -25,11 +25,6 @@ export default {
   'auth.username': 'Username',
   'auth.fullName': 'Full Name',
 
-  // Profile
-  'profile.title': 'Profile Information',
-  'profile.edit': 'Edit Profile',
-  'profile.save': 'Save Changes',
-  'profile.address': 'Address',
 
   // Products
   'product.inStock': 'In Stock',
@@ -55,6 +50,7 @@ export default {
   'cart.remove.error': 'Failed to remove item',
   'cart.clear.success': 'All items have been removed from your cart',
   'cart.clear.error': 'Failed to clear cart',
+  "cart.quantity.value": "Qty: {quantity}",
 
   // Messages
   'message.success': 'Operation successful',
@@ -104,13 +100,13 @@ export default {
 
   // Product Detail Page
   'productDetail.navigation.back': 'Back to Products',
-  
+
   // Loading and Error States
   'productDetail.loading': 'Loading product information...',
   'productDetail.error.title': 'Product Not Found',
   'productDetail.error.description': 'Sorry, we couldn\'t find the product you\'re looking for.',
   'productDetail.error.button': 'Continue Shopping',
-  
+
   // Product Information
   'productDetail.info.description': 'Product Description',
   'productDetail.info.details': 'Product Details',
@@ -120,12 +116,12 @@ export default {
   'productDetail.info.inStock': 'In Stock',
   'productDetail.info.outOfStock': 'Out of Stock',
   'productDetail.info.ratings': '{count} ratings',
-  
+
   // Order Options
   'productDetail.order.quantity': 'Quantity',
   'productDetail.order.addToCart': 'Add to Cart',
   'productDetail.order.outOfStock': 'Out of Stock',
-  
+
   // Shipping and Returns
   'productDetail.shipping.free': 'Free shipping for orders over €100',
   'productDetail.shipping.return': '30-day return policy',
@@ -162,4 +158,28 @@ export default {
   'favorites.empty.description': 'Add items to your favorites by clicking the heart icon on products you like.',
   'favorites.browseProducts': 'Browse Products',
 
+  // Profile
+  "profile.title": "Your Profile",
+  "profile.fullName": "Full name",
+  "profile.email": "Email address",
+  "profile.address": "Address",
+  "profile.address.placeholder": "Enter your shipping address",
+  "profile.save": "Save Changes",
+  "profile.saving": "Saving...",
+  "profile.required": "This field is required",
+  "profile.invalidEmail": "Invalid email address",
+
+  // Footer
+  "footer.about": "About",
+  "footer.blog": "Blog",
+  "footer.jobs": "Jobs",
+  "footer.press": "Press",
+  "footer.accessibility": "Accessibility",
+  "footer.partners": "Partners",
+  "footer.copyright": "© 2023 DeinShop, Inc. All rights reserved.",
+  "footer.facebook": "Facebook",
+  "footer.instagram": "Instagram",
+  "footer.twitter": "Twitter",
+  "footer.github": "GitHub",
+  "footer.youtube": "YouTube"
 };

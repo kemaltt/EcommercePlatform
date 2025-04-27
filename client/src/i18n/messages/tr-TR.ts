@@ -26,11 +26,6 @@ export default {
   'auth.username': 'Kullanıcı Adı',
   'auth.fullName': 'Ad Soyad',
 
-  // Profil
-  'profile.title': 'Profil Bilgileri',
-  'profile.edit': 'Profili Düzenle',
-  'profile.save': 'Değişiklikleri Kaydet',
-  'profile.address': 'Adres',
 
   // Ürünler
   'product.inStock': 'Stokta Var',
@@ -89,33 +84,33 @@ export default {
   'product.price': 'Fiyat',
   'product.currency': '₺{price}',
 
- // Ürün Detay Sayfası
- 'productDetail.navigation.back': 'Ürünlere Geri Dön',
-  
- // Yükleme ve Hata Durumları
- 'productDetail.loading': 'Ürün bilgileri yükleniyor...',
- 'productDetail.error.title': 'Ürün Bulunamadı',
- 'productDetail.error.description': 'Üzgünüz, aradığınız ürünü bulamadık.',
- 'productDetail.error.button': 'Alışverişe Devam Et',
- 
- // Ürün Bilgileri
- 'productDetail.info.description': 'Ürün Açıklaması',
- 'productDetail.info.details': 'Ürün Detayları',
- 'productDetail.info.category': 'Kategori',
- 'productDetail.info.stock': 'Stok Durumu: {count}',
- 'productDetail.info.status': 'Durum',
- 'productDetail.info.inStock': 'Stokta Var',
- 'productDetail.info.outOfStock': 'Stokta Yok',
- 'productDetail.info.ratings': '{count} değerlendirme',
- 
- // Sipariş Seçenekleri
- 'productDetail.order.quantity': 'Adet',
- 'productDetail.order.addToCart': 'Sepete Ekle',
- 'productDetail.order.outOfStock': 'Stokta Yok',
- 
- // Kargo ve İade
- 'productDetail.shipping.free': '100₺ üzeri siparişlerde ücretsiz kargo',
- 'productDetail.shipping.return': '30 gün iade garantisi',
+  // Ürün Detay Sayfası
+  'productDetail.navigation.back': 'Ürünlere Geri Dön',
+
+  // Yükleme ve Hata Durumları
+  'productDetail.loading': 'Ürün bilgileri yükleniyor...',
+  'productDetail.error.title': 'Ürün Bulunamadı',
+  'productDetail.error.description': 'Üzgünüz, aradığınız ürünü bulamadık.',
+  'productDetail.error.button': 'Alışverişe Devam Et',
+
+  // Ürün Bilgileri
+  'productDetail.info.description': 'Ürün Açıklaması',
+  'productDetail.info.details': 'Ürün Detayları',
+  'productDetail.info.category': 'Kategori',
+  'productDetail.info.stock': 'Stok Durumu: {count}',
+  'productDetail.info.status': 'Durum',
+  'productDetail.info.inStock': 'Stokta Var',
+  'productDetail.info.outOfStock': 'Stokta Yok',
+  'productDetail.info.ratings': '{count} değerlendirme',
+
+  // Sipariş Seçenekleri
+  'productDetail.order.quantity': 'Adet',
+  'productDetail.order.addToCart': 'Sepete Ekle',
+  'productDetail.order.outOfStock': 'Stokta Yok',
+
+  // Kargo ve İade
+  'productDetail.shipping.free': '100₺ üzeri siparişlerde ücretsiz kargo',
+  'productDetail.shipping.return': '30 gün iade garantisi',
 
   // Auth sayfası
   'auth.welcomeDescription': 'Tüm alışveriş ihtiyaçlarınız için tek adres. Topluluğumuza katılın ve harika ürünleri uygun fiyatlarla keşfedin.',
@@ -149,23 +144,50 @@ export default {
   'favorites.empty.description': 'Beğendiğiniz ürünlerdeki kalp ikonuna tıklayarak favorilerinize ekleyebilirsiniz.',
   'favorites.browseProducts': 'Ürünlere Göz At',
 
-    // Cart
-    'cart.empty.title': 'Sepetiniz boş',
-    'cart.empty.description': 'Alışverişe devam etmek için ürünleri keşfedin',
-    'cart.empty.button': 'Alışverişe Devam Et',
-    'cart.subtotal': 'Ara Toplam',
-    'cart.shipping.info': 'Kargo ve vergiler ödeme sırasında hesaplanacaktır.',
-    'cart.continue': 'veya Alışverişe Devam Et',
-    'cart.quantity': 'Adet',
-    'cart.checkout.message': 'Ödeme işlemi burada gerçekleştirilecek',
-    'cart.login.required': 'Sepete ürün eklemek için giriş yapmalısınız',
-    'cart.add.success': '{productName} sepetinize eklendi',
-    'cart.add.error': 'Sepete eklenirken bir hata oluştu',
-    'cart.update.error': 'Sepet güncellenirken bir hata oluştu',
-    'cart.remove.success': 'Ürün sepetinizden kaldırıldı',
-    'cart.remove.error': 'Ürün kaldırılırken bir hata oluştu',
-    'cart.clear.success': 'Tüm ürünler sepetinizden kaldırıldı',
-    'cart.clear.error': 'Sepet temizlenirken bir hata oluştu',
+  // Cart
+  'cart.empty.title': 'Sepetiniz boş',
+  'cart.empty.description': 'Alışverişe devam etmek için ürünleri keşfedin',
+  'cart.empty.button': 'Alışverişe Devam Et',
+  'cart.subtotal': 'Ara Toplam',
+  'cart.shipping.info': 'Kargo ve vergiler ödeme sırasında hesaplanacaktır.',
+  'cart.continue': 'veya Alışverişe Devam Et',
+  'cart.quantity': 'Adet',
+  'cart.checkout.message': 'Ödeme işlemi burada gerçekleştirilecek',
+  'cart.login.required': 'Sepete ürün eklemek için giriş yapmalısınız',
+  'cart.add.success': '{productName} sepetinize eklendi',
+  'cart.add.error': 'Sepete eklenirken bir hata oluştu',
+  'cart.update.error': 'Sepet güncellenirken bir hata oluştu',
+  'cart.remove.success': 'Ürün sepetinizden kaldırıldı',
+  'cart.remove.error': 'Ürün kaldırılırken bir hata oluştu',
+  'cart.clear.success': 'Tüm ürünler sepetinizden kaldırıldı',
+  'cart.clear.error': 'Sepet temizlenirken bir hata oluştu',
+  "cart.quantity.value": "{quantity} adet",
+
+  // Profil
+
+  "profile.title": "Profiliniz",
+  "profile.fullName": "Ad Soyad",
+  "profile.email": "E-posta adresi",
+  "profile.address": "Adres",
+  "profile.address.placeholder": "Teslimat adresinizi girin",
+  "profile.save": "Değişiklikleri Kaydet",
+  "profile.saving": "Kaydediliyor...",
+  "profile.required": "Bu alan zorunludur",
+  "profile.invalidEmail": "Geçersiz e-posta adresi",
+
+  // Footer
+  "footer.about": "Hakkında",
+  "footer.blog": "Blog",
+  "footer.jobs": "Kariyer",
+  "footer.press": "Basın",
+  "footer.accessibility": "Erişilebilirlik",
+  "footer.partners": "Partnerler",
+  "footer.copyright": "© 2023 DeinShop, Tüm hakları saklıdır.",
+  "footer.facebook": "Facebook",
+  "footer.instagram": "Instagram",
+  "footer.twitter": "Twitter",
+  "footer.github": "GitHub",
+  "footer.youtube": "YouTube"
 };
 
 

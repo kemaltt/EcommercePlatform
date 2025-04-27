@@ -6,6 +6,7 @@ import {
   Github, 
   Youtube 
 } from "lucide-react";
+import { FormattedMessage } from "react-intl";
 
 export default function Footer() {
   return (
@@ -14,58 +15,60 @@ export default function Footer() {
         <nav className="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
           <div className="px-5 py-2">
             <Link href="#" className="text-base text-gray-500 hover:text-gray-900">
-              About
+              <FormattedMessage id="footer.about" />
             </Link>
           </div>
           <div className="px-5 py-2">
             <Link href="#" className="text-base text-gray-500 hover:text-gray-900">
-              Blog
+              <FormattedMessage id="footer.blog" />
             </Link>
           </div>
           <div className="px-5 py-2">
             <Link href="#" className="text-base text-gray-500 hover:text-gray-900">
-              Jobs
+              <FormattedMessage id="footer.jobs" />
             </Link>
           </div>
           <div className="px-5 py-2">
             <Link href="#" className="text-base text-gray-500 hover:text-gray-900">
-              Press
+              <FormattedMessage id="footer.press" />
             </Link>
           </div>
           <div className="px-5 py-2">
             <Link href="#" className="text-base text-gray-500 hover:text-gray-900">
-              Accessibility
+              <FormattedMessage id="footer.accessibility" />
             </Link>
           </div>
           <div className="px-5 py-2">
             <Link href="#" className="text-base text-gray-500 hover:text-gray-900">
-              Partners
+              <FormattedMessage id="footer.partners" />
             </Link>
           </div>
         </nav>
         <div className="mt-8 flex justify-center space-x-6">
           <a href="#" className="text-gray-400 hover:text-gray-500">
-            <span className="sr-only">Facebook</span>
+            <span className="sr-only"><FormattedMessage id="footer.facebook" /></span>
             <Facebook className="h-6 w-6" />
           </a>
           <a href="#" className="text-gray-400 hover:text-gray-500">
-            <span className="sr-only">Instagram</span>
+            <span className="sr-only"><FormattedMessage id="footer.instagram" /></span>
             <Instagram className="h-6 w-6" />
           </a>
           <a href="#" className="text-gray-400 hover:text-gray-500">
-            <span className="sr-only">Twitter</span>
+            <span className="sr-only"><FormattedMessage id="footer.twitter" /></span>
             <Twitter className="h-6 w-6" />
           </a>
           <a href="#" className="text-gray-400 hover:text-gray-500">
-            <span className="sr-only">GitHub</span>
+            <span className="sr-only"><FormattedMessage id="footer.github" /></span>
             <Github className="h-6 w-6" />
           </a>
           <a href="#" className="text-gray-400 hover:text-gray-500">
-            <span className="sr-only">YouTube</span>
+            <span className="sr-only"><FormattedMessage id="footer.youtube" /></span>
             <Youtube className="h-6 w-6" />
           </a>
         </div>
-        <p className="mt-8 text-center text-base text-gray-400">&copy; 2023 DeinShop, Inc. All rights reserved.</p>
+        <p className="mt-8 text-center text-base text-gray-400">
+          <FormattedMessage id="footer.copyright" />
+        </p>
       </div>
     </footer>
   );
