@@ -162,6 +162,8 @@ export default {
   'cart.clear.success': 'Tüm ürünler sepetinizden kaldırıldı',
   'cart.clear.error': 'Sepet temizlenirken bir hata oluştu',
   "cart.quantity.value": "{quantity} adet",
+  "cart.quantity.decrease": "Azalt",
+  "cart.quantity.increase": "Arttır",
 
   // Profil
 

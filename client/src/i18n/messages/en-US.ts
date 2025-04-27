@@ -51,6 +51,8 @@ export default {
   'cart.clear.success': 'All items have been removed from your cart',
   'cart.clear.error': 'Failed to clear cart',
   "cart.quantity.value": "Qty: {quantity}",
+  "cart.quantity.decrease": "Decrease",
+  "cart.quantity.increase": "Increase",
 
   // Messages
   'message.success': 'Operation successful',

@@ -287,6 +287,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                   </div>
                   <div className="flex items-center space-x-2 ml-auto">
                     <ThemeToggle />
+                    <LanguageSwitcher />
                     <Button
                       variant="ghost"
                       size="icon"
