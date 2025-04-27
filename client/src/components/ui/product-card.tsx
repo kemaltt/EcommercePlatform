@@ -137,10 +137,10 @@ export default function ProductCard({ product }: ProductCardProps) {
       <CardFooter className="p-4 border-t border-gray-200 bg-gray-50">
         <div className="flex items-center justify-between w-full">
           <p className="text-lg font-medium text-gray-900">
-            {intl.formatNumber(product.price, {
-              style: 'currency',
-              currency: 'EUR'
-            })}
+          <FormattedMessage
+              id="product.currency"
+              values={{ price: product.price.toFixed(2) }}
+            />
           </p>
           <Button 
             onClick={handleAddToCart}

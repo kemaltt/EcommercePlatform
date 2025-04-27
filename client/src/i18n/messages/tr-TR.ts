@@ -10,6 +10,12 @@ export default {
   'nav.cart': 'Sepet',
   'nav.profile': 'Profil',
   'nav.admin': 'Yönetici Paneli',
+  'nav.favorites': 'Favoriler',
+  'nav.search.placeholder': 'Ürün ara...',
+  'nav.signIn': 'Giriş Yap',
+  'nav.signOut': 'Çıkış Yap',
+  'nav.signingOut': 'Çıkış yapılıyor...',
+  'nav.mobileMenu': 'Ana menüyü aç',
 
   // Kimlik Doğrulama
   'auth.login': 'Giriş Yap',
@@ -133,6 +139,33 @@ export default {
   'auth.haveAccount': 'Zaten hesabınız var mı?',
   'auth.signInNow': 'Giriş yapın',
   'language.select': 'Dil seçin:',
+
+  // Favoriler Sayfası
+  'favorites.title': 'Favorileriniz',
+  'favorites.loading': 'Favoriler yükleniyor...',
+  'favorites.error.title': 'Favoriler yüklenirken hata oluştu',
+  'favorites.error.description': 'Favorileriniz yüklenirken bir sorun oluştu. Lütfen daha sonra tekrar deneyin.',
+  'favorites.empty.title': 'Favori listeniz boş',
+  'favorites.empty.description': 'Beğendiğiniz ürünlerdeki kalp ikonuna tıklayarak favorilerinize ekleyebilirsiniz.',
+  'favorites.browseProducts': 'Ürünlere Göz At',
+
+    // Cart
+    'cart.empty.title': 'Sepetiniz boş',
+    'cart.empty.description': 'Alışverişe devam etmek için ürünleri keşfedin',
+    'cart.empty.button': 'Alışverişe Devam Et',
+    'cart.subtotal': 'Ara Toplam',
+    'cart.shipping.info': 'Kargo ve vergiler ödeme sırasında hesaplanacaktır.',
+    'cart.continue': 'veya Alışverişe Devam Et',
+    'cart.quantity': 'Adet',
+    'cart.checkout.message': 'Ödeme işlemi burada gerçekleştirilecek',
+    'cart.login.required': 'Sepete ürün eklemek için giriş yapmalısınız',
+    'cart.add.success': '{productName} sepetinize eklendi',
+    'cart.add.error': 'Sepete eklenirken bir hata oluştu',
+    'cart.update.error': 'Sepet güncellenirken bir hata oluştu',
+    'cart.remove.success': 'Ürün sepetinizden kaldırıldı',
+    'cart.remove.error': 'Ürün kaldırılırken bir hata oluştu',
+    'cart.clear.success': 'Tüm ürünler sepetinizden kaldırıldı',
+    'cart.clear.error': 'Sepet temizlenirken bir hata oluştu',
 };
 
 

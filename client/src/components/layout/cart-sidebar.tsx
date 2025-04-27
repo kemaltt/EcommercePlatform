@@ -5,6 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/cart-context";
+import { FormattedMessage, useIntl } from "react-intl";
 
 interface CartSidebarProps {
   isOpen: boolean;
@@ -14,11 +15,12 @@ interface CartSidebarProps {
 export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const { cartItems, subtotal, updateCartItemQuantity, removeCartItem } = useCart();
   const { toast } = useToast();
+  const intl = useIntl();
 
   const handleCheckout = () => {
     toast({
-      title: "Checkout",
-      description: "Checkout functionality would be implemented here",
+      title: intl.formatMessage({ id: "cart.checkout" }),
+      description: intl.formatMessage({ id: "cart.checkout.message" }),
     });
   };
 
@@ -26,7 +28,9 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="w-full sm:max-w-md p-0 flex flex-col h-full">
         <SheetHeader className="px-4 py-6 border-b">
-          <SheetTitle>Shopping Cart</SheetTitle>
+          <SheetTitle>
+            <FormattedMessage id="cart.title" />
+          </SheetTitle>
         </SheetHeader>
 
         {cartItems.length === 0 ? (
@@ -34,12 +38,14 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
             <div className="text-5xl text-muted mb-4">
               <ShoppingCart size={64} />
             </div>
-            <p className="text-muted-foreground text-center">Your cart is empty</p>
+            <p className="text-muted-foreground text-center">
+              <FormattedMessage id="cart.empty.title" />
+            </p>
             <Button 
               className="mt-4 bg-primary text-white hover:bg-primary/90"
               onClick={onClose}
             >
-              Continue Shopping
+              <FormattedMessage id="cart.empty.button" />
             </Button>
           </div>
         ) : (
@@ -60,7 +66,15 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                       <div>
                         <div className="flex justify-between text-base font-medium text-foreground">
                           <h3>{item.product.name}</h3>
-                          <p className="ml-4">${item.product.price.toFixed(2)}</p>
+                          <p className="ml-4">
+                            <FormattedMessage 
+                              id="product.price"
+                              values={{ 
+                                price: item.product.price.toFixed(2),
+                                currency: "$"
+                              }}
+                            />
+                          </p>
                         </div>
                       </div>
                       <div className="flex-1 flex items-end justify-between text-sm">
@@ -76,15 +90,22 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                                 removeCartItem(item.id);
                               }
                             }}
+                            aria-label={intl.formatMessage({ id: "cart.quantity.decrease" })}
                           >
                             <Minus size={14} />
                           </Button>
-                          <span className="mx-2 text-foreground">{item.quantity}</span>
+                          <span className="mx-2 text-foreground">
+                            <FormattedMessage 
+                              id="cart.quantity.value" 
+                              values={{ quantity: item.quantity }}
+                            />
+                          </span>
                           <Button 
                             variant="ghost" 
                             size="icon"
                             className="h-8 w-8 text-muted-foreground" 
                             onClick={() => updateCartItemQuantity(item.id, item.quantity + 1)}
+                            aria-label={intl.formatMessage({ id: "cart.quantity.increase" })}
                           >
                             <Plus size={14} />
                           </Button>
@@ -96,7 +117,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                           className="text-primary hover:text-primary/90"
                           onClick={() => removeCartItem(item.id)}
                         >
-                          Remove
+                          <FormattedMessage id="cart.remove" />
                         </Button>
                       </div>
                     </div>
@@ -107,27 +128,38 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
 
             <div className="border-t border-border py-6 px-4">
               <div className="flex justify-between text-base font-medium text-foreground">
-                <p>Subtotal</p>
-                <p>${subtotal.toFixed(2)}</p>
+                <p><FormattedMessage id="cart.subtotal" /></p>
+                <p>
+                  <FormattedMessage 
+                    id="product.price"
+                    values={{ 
+                      price: subtotal.toFixed(2),
+                      currency: "$"
+                    }}
+                  />
+                </p>
               </div>
-              <p className="mt-0.5 text-sm text-muted-foreground">Shipping and taxes calculated at checkout.</p>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                <FormattedMessage id="cart.shipping.info" />
+              </p>
               <div className="mt-6">
                 <Button 
                   className="w-full bg-primary text-white hover:bg-primary/90"
                   onClick={handleCheckout}
                 >
-                  Checkout
+                  <FormattedMessage id="cart.checkout" />
                 </Button>
               </div>
               <div className="mt-6 flex justify-center text-sm text-center text-muted-foreground">
                 <p>
-                  or{" "}
+                  <FormattedMessage id="cart.continue" />
                   <Button 
                     variant="link" 
                     className="text-primary p-0 hover:text-primary/90"
                     onClick={onClose}
                   >
-                    Continue Shopping<span aria-hidden="true"> &rarr;</span>
+                    <FormattedMessage id="cart.empty.button" />
+                    <span aria-hidden="true"> &rarr;</span>
                   </Button>
                 </p>
               </div>

@@ -6,10 +6,15 @@ export default {
 
   // Navigation
   'nav.home': 'Startseite',
-  'nav.products': 'Produkte',
-  'nav.cart': 'Warenkorb',
+  'nav.favorites': 'Favoriten',
+  'nav.admin': 'Admin',
+  'nav.search.placeholder': 'Produkte suchen...',
   'nav.profile': 'Profil',
-  'nav.admin': 'Admin-Bereich',
+  'nav.signIn': 'Anmelden',
+  'nav.signOut': 'Abmelden',
+  'nav.signingOut': 'Abmelden...',
+  'nav.cart': 'Warenkorb',
+  'nav.mobileMenu': 'Hauptmenü öffnen',
 
   // Authentifizierung
   'auth.login': 'Anmelden',
@@ -82,7 +87,7 @@ export default {
   'product.addedToCartDesc': '{name} wurde in Ihren Warenkorb gelegt',
   'product.viewDetails': 'Details anzeigen',
   'product.price': 'Preis',
-  'product.currency': '€{price}',
+  'product.currency': '{price} €',
 
   // Produktdetailseite
   'productDetail.navigation.back': 'Zurück zu den Produkten',
@@ -134,4 +139,30 @@ export default {
   'auth.haveAccount': 'Bereits ein Konto?',
   'auth.signInNow': 'Jetzt anmelden',
   'language.select': 'Sprache wählen:',
+
+  // Favoriten Seite
+  'favorites.title': 'Ihre Favoriten',
+  'favorites.loading': 'Favoriten werden geladen...',
+  'favorites.error.title': 'Fehler beim Laden der Favoriten',
+  'favorites.error.description': 'Beim Laden Ihrer Favoriten ist ein Problem aufgetreten. Bitte versuchen Sie es später erneut.',
+  'favorites.empty.title': 'Ihre Favoritenliste ist leer',
+  'favorites.empty.description': 'Fügen Sie Artikel zu Ihren Favoriten hinzu, indem Sie auf das Herzsymbol bei Produkten klicken, die Ihnen gefallen.',
+  'favorites.browseProducts': 'Produkte durchsuchen',
+
+  'cart.empty.title': 'Ihr Warenkorb ist leer',
+  'cart.empty.description': 'Stöbern Sie in Produkten, um mit dem Einkauf fortzufahren',
+  'cart.empty.button': 'Weiter Einkaufen',
+  'cart.subtotal': 'Zwischensumme',
+  'cart.shipping.info': 'Versand und Steuern werden beim Checkout berechnet.',
+  'cart.continue': 'oder Weiter Einkaufen',
+  'cart.quantity': 'Menge',
+  'cart.checkout.message': 'Checkout-Funktionalität würde hier implementiert',
+  'cart.login.required': 'Sie müssen eingeloggt sein, um Artikel in den Warenkorb zu legen',
+  'cart.add.success': '{productName} wurde in Ihren Warenkorb gelegt',
+  'cart.add.error': 'Fehler beim Hinzufügen zum Warenkorb',
+  'cart.update.error': 'Fehler beim Aktualisieren des Warenkorbs',
+  'cart.remove.success': 'Artikel wurde aus Ihrem Warenkorb entfernt',
+  'cart.remove.error': 'Fehler beim Entfernen des Artikels',
+  'cart.clear.success': 'Alle Artikel wurden aus Ihrem Warenkorb entfernt',
+  'cart.clear.error': 'Fehler beim Leeren des Warenkorbs'
 };

@@ -6,10 +6,15 @@ export default {
 
   // Navigation
   'nav.home': 'Home',
-  'nav.products': 'Products',
-  'nav.cart': 'Cart',
+  'nav.favorites': 'Favorites',
+  'nav.admin': 'Admin',
+  'nav.search.placeholder': 'Search products...',
   'nav.profile': 'Profile',
-  'nav.admin': 'Admin Panel',
+  'nav.signIn': 'Sign in',
+  'nav.signOut': 'Sign out',
+  'nav.signingOut': 'Signing out...',
+  'nav.cart': 'Cart',
+  'nav.mobileMenu': 'Open main menu',
 
   // Authentication
   'auth.login': 'Login',
@@ -32,10 +37,24 @@ export default {
 
   // Cart
   'cart.title': 'Shopping Cart',
-  'cart.empty': 'Your cart is empty',
-  'cart.total': 'Total',
-  'cart.checkout': 'Proceed to Checkout',
+  'cart.empty.title': 'Your cart is empty',
+  'cart.empty.description': 'Browse products to continue shopping',
+  'cart.empty.button': 'Continue Shopping',
+  'cart.subtotal': 'Subtotal',
+  'cart.shipping.info': 'Shipping and taxes calculated at checkout.',
+  'cart.checkout': 'Checkout',
+  'cart.continue': 'or Continue Shopping',
   'cart.remove': 'Remove',
+  'cart.quantity': 'Quantity',
+  'cart.checkout.message': 'Checkout functionality would be implemented here',
+  'cart.login.required': 'You must be logged in to add items to your cart',
+  'cart.add.success': '{productName} has been added to your cart',
+  'cart.add.error': 'Failed to add to cart',
+  'cart.update.error': 'Failed to update cart',
+  'cart.remove.success': 'Item has been removed from your cart',
+  'cart.remove.error': 'Failed to remove item',
+  'cart.clear.success': 'All items have been removed from your cart',
+  'cart.clear.error': 'Failed to clear cart',
 
   // Messages
   'message.success': 'Operation successful',
@@ -81,7 +100,7 @@ export default {
   'product.addedToCartDesc': '{name} has been added to your cart',
   'product.viewDetails': 'View Details',
   'product.price': 'Price',
-  'product.currency': '€{price}',
+  'product.currency': '${price}',
 
   // Product Detail Page
   'productDetail.navigation.back': 'Back to Products',
@@ -133,4 +152,14 @@ export default {
   'auth.haveAccount': 'Already have an account?',
   'auth.signInNow': 'Sign in',
   'language.select': 'Select language:',
+
+  // Favorites Page
+  'favorites.title': 'Your Favorites',
+  'favorites.loading': 'Loading favorites...',
+  'favorites.error.title': 'Error loading favorites',
+  'favorites.error.description': 'There was a problem loading your favorites. Please try again later.',
+  'favorites.empty.title': 'Your favorites list is empty',
+  'favorites.empty.description': 'Add items to your favorites by clicking the heart icon on products you like.',
+  'favorites.browseProducts': 'Browse Products',
+
 };

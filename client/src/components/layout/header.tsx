@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/cart-context";
 import { LanguageSwitcher } from "../ui/language-switcher";
+import { FormattedMessage, useIntl } from 'react-intl';
 
 interface HeaderProps {
   onCartOpen: () => void;
@@ -33,6 +34,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
   const { cartItems } = useCart();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const intl = useIntl();
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -88,7 +90,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                     : "text-muted-foreground hover:text-foreground"
                   }`}
               >
-                Home
+                <FormattedMessage id="nav.home" />
               </Link>
 
               {user && (
@@ -99,7 +101,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                       : "text-muted-foreground hover:text-foreground"
                     }`}
                 >
-                  Favorites
+                  <FormattedMessage id="nav.favorites" />
                 </Link>
               )}
 
@@ -111,7 +113,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                       : "text-muted-foreground hover:text-foreground"
                     }`}
                 >
-                  Admin
+                  <FormattedMessage id="nav.admin" />
                 </Link>
               )}
             </nav>
@@ -125,7 +127,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-3 py-2 w-60"
-                placeholder="Search products..."
+                placeholder={intl.formatMessage({ id: "nav.search.placeholder" })}
               />
             </form>
 
@@ -167,7 +169,9 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href="/profile">
-                      <div className="w-full cursor-pointer">Profile</div>
+                      <div className="w-full cursor-pointer">
+                        <FormattedMessage id="nav.profile" />
+                      </div>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -176,7 +180,11 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                     onClick={handleLogout}
                     disabled={logoutMutation.isPending}
                   >
-                    {logoutMutation.isPending ? "Signing out..." : "Sign out"}
+                    {logoutMutation.isPending ? (
+                      <FormattedMessage id="nav.signingOut" />
+                    ) : (
+                      <FormattedMessage id="nav.signOut" />
+                    )}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -186,7 +194,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                 onClick={() => navigate("/auth")}
                 className="bg-primary text-white hover:bg-primary/90"
               >
-                Sign in
+                <FormattedMessage id="nav.signIn" />
               </Button>
             )}
           </div>
@@ -200,7 +208,9 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
               aria-controls="mobile-menu"
               aria-expanded="false"
             >
-              <span className="sr-only">Open main menu</span>
+              <span className="sr-only">
+                <FormattedMessage id="nav.mobileMenu" />
+              </span>
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
@@ -219,7 +229,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                 }`}
               onClick={() => setIsMenuOpen(false)}
             >
-              Home
+              <FormattedMessage id="nav.home" />
             </Link>
 
             {user && (
@@ -231,7 +241,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                   }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                Favorites
+                <FormattedMessage id="nav.favorites" />
               </Link>
             )}
 
@@ -244,7 +254,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                   }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                Admin
+                <FormattedMessage id="nav.admin" />
               </Link>
             )}
 
@@ -256,7 +266,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 pr-3 py-2 w-full"
-                  placeholder="Search products..."
+                  placeholder={intl.formatMessage({ id: "nav.search.placeholder" })}
                 />
               </form>
             </div>
@@ -301,7 +311,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                     className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Profile
+                    <FormattedMessage id="nav.profile" />
                   </Link>
                   <button
                     onClick={() => {
@@ -311,7 +321,11 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                     className="block w-full text-left px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
                     disabled={logoutMutation.isPending}
                   >
-                    {logoutMutation.isPending ? "Signing out..." : "Sign out"}
+                    {logoutMutation.isPending ? (
+                      <FormattedMessage id="nav.signingOut" />
+                    ) : (
+                      <FormattedMessage id="nav.signOut" />
+                    )}
                   </button>
                 </div>
               </div>
@@ -324,7 +338,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                   }}
                   className="w-full justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary/90"
                 >
-                  Sign in
+                  <FormattedMessage id="nav.signIn" />
                 </Button>
               </div>
             )}
