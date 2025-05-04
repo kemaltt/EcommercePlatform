@@ -12,12 +12,14 @@ import FavoritesPage from "@/pages/favorites-page";
 import ProfilePage from "@/pages/profile-page";
 import AdminPage from "@/pages/admin/admin-page";
 import CheckoutPage from "@/pages/checkout-page";
+import EmailVerificationPage from "./pages/email-verification-page";
 
 function Router() {
   return (
     <Switch>
       <Route path="/auth" component={AuthPage} />
       <Route path="/product/:id" component={ProductDetail} />
+      <Route path="/email-verified" component={EmailVerificationPage} /> 
       <Route path="/" component={HomePage} />
       <ProtectedRoute path="/favorites" component={FavoritesPage} />
       <ProtectedRoute path="/profile" component={ProfilePage} />

@@ -3,9 +3,10 @@ import {
   useQuery,
   useMutation,
   UseMutationResult,
+  useQueryClient,
 } from "@tanstack/react-query";
 import { User, InsertUser } from "@shared/schema";
-import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
+import { getQueryFn, apiRequest } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 type AuthContextType = {
@@ -14,7 +15,7 @@ type AuthContextType = {
   error: Error | null;
   loginMutation: UseMutationResult<User, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
-  registerMutation: UseMutationResult<User, Error, RegisterData>;
+  registerMutation: UseMutationResult<RegisterApiResponse, Error, RegisterData>;
   updateProfileMutation: UseMutationResult<User, Error, UpdateProfileData>;
 };
 
@@ -31,69 +32,70 @@ type UpdateProfileData = {
   address?: string;
 };
 
+type RegisterApiResponse = {
+  message: string;
+}
+
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const {
     data: user,
     error,
     isLoading,
   } = useQuery<User | null, Error>({
-    queryKey: ["/api/user"],
-    queryFn: getQueryFn({ on401: "returnNull" }),
+    queryKey: ["profile"],
+    queryFn: () => apiRequest("GET", "/api/auth/verify-email").then(res => res.status === 401 ? null : res.json()),
+    retry: false,
+    refetchOnWindowFocus: false,
   });
 
-  const loginMutation = useMutation({
-    mutationFn: async (credentials: LoginData) => {
-      const res = await apiRequest("POST", "/api/login", credentials);
+  const loginMutation = useMutation<User, Error, LoginData>({
+    mutationFn: async (credentials) => {
+      const res = await apiRequest("POST", "/api/auth/login", credentials);
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ message: 'Login request failed' }));
+        const error = new Error(errorData.message || 'Login failed');
+        (error as any).response = { status: res.status, data: errorData };
+        throw error;
+      }
+      return await res.json().then(data => data.user);
+    },
+    onSuccess: (loggedInUser) => {
+      queryClient.setQueryData(["profile"], loggedInUser);
+    },
+    onError: (error: any) => {
+      console.error("Login mutation failed:", error.response?.data?.message || error.message);
+    },
+  });
+
+  const registerMutation = useMutation<RegisterApiResponse, Error, RegisterData>({
+    mutationFn: async (userData) => {
+      const res = await apiRequest("POST", "/api/auth/register", userData);
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ message: 'Registration request failed' }));
+        const error = new Error(errorData.message || 'Registration failed');
+        (error as any).response = { status: res.status, data: errorData };
+        throw error;
+      }
       return await res.json();
     },
-    onSuccess: (user: User) => {
-      queryClient.setQueryData(["/api/user"], user);
-      toast({
-        title: "Login successful",
-        description: `Welcome back, ${user.fullName}!`,
-      });
+    onSuccess: (data) => {
+      console.log("Registration API call successful:", data.message);
     },
-    onError: (error: Error) => {
-      toast({
-        title: "Login failed",
-        description: error.message,
-        variant: "destructive",
-      });
+    onError: (error: any) => {
+      console.error("Register mutation failed:", error.response?.data?.message || error.message);
     },
   });
 
-  const registerMutation = useMutation({
-    mutationFn: async (userData: RegisterData) => {
-      const res = await apiRequest("POST", "/api/register", userData);
-      return await res.json();
-    },
-    onSuccess: (user: User) => {
-      queryClient.setQueryData(["/api/user"], user);
-      toast({
-        title: "Registration successful",
-        description: `Welcome to DeinShop, ${user.fullName}!`,
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Registration failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  const logoutMutation = useMutation({
+  const logoutMutation = useMutation<void, Error, void>({
     mutationFn: async () => {
-      await apiRequest("POST", "/api/logout");
+      await apiRequest("POST", "/api/auth/logout");
     },
     onSuccess: () => {
-      queryClient.setQueryData(["/api/user"], null);
-      // Invalidate all queries to refresh data
-      queryClient.invalidateQueries();
+      queryClient.setQueryData(["profile"], null);
       toast({
         title: "Logged out",
         description: "You have been successfully logged out.",
@@ -108,22 +110,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
-  const updateProfileMutation = useMutation({
-    mutationFn: async (profileData: UpdateProfileData) => {
+  const updateProfileMutation = useMutation<User, Error, UpdateProfileData>({
+    mutationFn: async (profileData) => {
       const res = await apiRequest("PUT", "/api/user/profile", profileData);
-      return await res.json();
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ message: 'Profile update request failed' }));
+        const error = new Error(errorData.message || 'Profile update failed');
+        (error as any).response = { status: res.status, data: errorData };
+        throw error;
+      }
+      return await res.json().then(data => data.user);
     },
-    onSuccess: (updatedUser: User) => {
-      queryClient.setQueryData(["/api/user"], updatedUser);
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["profile"], updatedUser);
       toast({
         title: "Profile updated",
         description: "Your profile has been successfully updated.",
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       toast({
         title: "Update failed",
-        description: error.message,
+        description: error.response?.data?.message || error.message,
         variant: "destructive",
       });
     },

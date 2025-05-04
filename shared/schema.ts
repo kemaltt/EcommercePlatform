@@ -13,6 +13,9 @@ export const users = pgTable("users", {
   status: text("status").default("active").notNull(),
   address: text("address"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  emailVerified: boolean("email_verified").default(false).notNull(), // Varsayılan false
+  emailVerificationToken: text("email_verification_token").unique(), // Benzersiz olmalı
+  verificationTokenExpiresAt: timestamp("verification_token_expires_at", { mode: 'date' }), // Son kullanma tarihi
 });
 
 export const insertUserSchema = createInsertSchema(users)

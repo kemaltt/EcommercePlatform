@@ -89,13 +89,13 @@ export default function AuthPage() {
     try {
       await loginMutation.mutateAsync(data);
       toast({
-        title: "Success!",
-        description: "You have successfully logged in.",
+        title: "Login Successful!",
+        description: "Welcome back!",
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: "Error!",
-        description: "Failed to login. Please check your credentials.",
+        title: "Login Failed",
+        description: error?.response?.data?.message || error?.message || "Failed to login. Please check your credentials.",
         variant: "destructive",
       });
     }
@@ -115,16 +115,17 @@ export default function AuthPage() {
     }
 
     try {
-      await registerMutation.mutateAsync(data);
+      const response = await registerMutation.mutateAsync(data);
       toast({
-        title: "Success!",
-        description: "Account created successfully. You can now login.",
+        title: "Registration Submitted!",
+        description: response?.message || "Please check your email to verify your account.",
       });
       setActiveTab("login");
-    } catch (error) {
+      registerForm.reset();
+    } catch (error: any) {
       toast({
         title: "Registration Failed",
-        description: error instanceof Error ? error.message : "An error occurred during registration.",
+        description: error?.response?.data?.message || error?.message || "An error occurred during registration.",
         variant: "destructive",
       });
     }
