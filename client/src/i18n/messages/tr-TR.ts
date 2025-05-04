@@ -65,7 +65,7 @@ export default {
   // Sayfalama
   'home.pagination.previous': 'Önceki',
   'home.pagination.next': 'Sonraki',
-  'home.pagination.page': 'Sayfa {number}',
+  'home.pagination.page': '{page}',
 
   // Ürün Kartı
   'product.addToCart': 'Sepete Ekle',

@@ -65,7 +65,7 @@ export default {
   // Seitennummerierung
   'home.pagination.previous': 'Vorherige',
   'home.pagination.next': 'Nächste',
-  'home.pagination.page': 'Seite {number}',
+  'home.pagination.page': '{page}',
 
   // Produktkarte
   'product.addToCart': 'In den Warenkorb',

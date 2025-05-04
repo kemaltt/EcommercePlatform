@@ -81,7 +81,7 @@ export default {
   // Pagination
   'home.pagination.previous': 'Previous',
   'home.pagination.next': 'Next',
-  'home.pagination.page': 'Page {number}',
+  'home.pagination.page': '{page}',
 
   // Product Card
   'product.addToCart': 'Add to Cart',

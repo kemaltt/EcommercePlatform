@@ -166,7 +166,7 @@ export default function HomePage() {
                           onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                           className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                         />
-                        <FormattedMessage id="home.pagination.previous" />
+                        {/* <FormattedMessage id="home.pagination.previous" /> */}
                       </PaginationItem>
 
                       {[...Array(totalPages)].map((_, i) => (
@@ -186,7 +186,7 @@ export default function HomePage() {
                           onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
                           className={currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                         />
-                        <FormattedMessage id="home.pagination.next" />
+                        {/* <FormattedMessage id="home.pagination.next" /> */}
                       </PaginationItem>
                     </PaginationContent>
                   </Pagination>
