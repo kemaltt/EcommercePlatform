@@ -50,9 +50,11 @@ app.use((req, res, next) => {
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  if (app.get("env") === "development") {
+  if (process.env.NODE_ENV === "development") {
+    log("Running in development mode, setting up Vite middleware.");
     await setupVite(app, server);
   } else {
+    log(`Running in ${process.env.NODE_ENV} mode, serving static build.`);
     serveStatic(app);
   }
 
