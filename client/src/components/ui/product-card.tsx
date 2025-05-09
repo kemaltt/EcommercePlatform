@@ -88,7 +88,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   // Handle favorite toggle
   const handleFavoriteToggle = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent navigating to product details
+    e.preventDefault();
+    e.stopPropagation();
     toggleFavoriteMutation.mutate();
   };
 
@@ -96,25 +97,28 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card className="bg-white rounded-lg shadow overflow-hidden flex flex-col h-full">
-      <div className="relative">
-        <img 
-          src={product.imageUrl} 
-          alt={product.name} 
-          className="h-48 w-full object-cover"
-        />
-        <button 
-          onClick={handleFavoriteToggle}
-          disabled={isFavoriteLoading || toggleFavoriteMutation.isPending}
-          className={`absolute top-2 right-2 p-1.5 bg-white bg-opacity-70 rounded-full 
-            ${isFavorite ? 'text-primary' : 'text-gray-600 hover:text-primary'} transition-colors`}
-        >
-          <Heart fill={isFavorite ? "currentColor" : "none"} size={18} />
-        </button>
-      </div>
+      <Link href={`/product/${product.id}`} className="block">
+        <div className="relative">
+          <img 
+            src={product.imageUrl} 
+            alt={product.name} 
+            className="h-48 w-full object-cover"
+          />
+          <button 
+            onClick={handleFavoriteToggle}
+            disabled={isFavoriteLoading || toggleFavoriteMutation.isPending}
+            className={`absolute top-2 right-2 p-1.5 bg-white bg-opacity-70 rounded-full 
+              ${isFavorite ? 'text-primary' : 'text-gray-600 hover:text-primary'} transition-colors z-10`}
+            aria-label={intl.formatMessage({ id: isFavorite ? "product.removeFromFavoritesAria" : "product.addToFavoritesAria" })}
+          >
+            <Heart fill={isFavorite ? "currentColor" : "none"} size={18} />
+          </button>
+        </div>
+      </Link>
       
       <CardContent className="p-4 flex-grow">
         <Link href={`/product/${product.id}`}>
-          <h3 className="text-lg font-medium text-gray-900 hover:text-primary transition-colors">
+          <h3 className="text-lg font-medium text-gray-900 hover:text-primary transition-colors cursor-pointer">
             {product.name}
           </h3>
         </Link>
