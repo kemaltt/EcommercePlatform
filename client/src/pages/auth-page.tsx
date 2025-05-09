@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ComponentProps } from "react";
 import { useLocation } from "wouter";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, ControllerRenderProps, FieldValues } from "react-hook-form";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +16,51 @@ import { insertUserSchema } from "@shared/schema";
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
+
+// PasswordInput Bileşenini AuthPage dışına taşıyalım
+interface PasswordInputProps {
+  // field prop'unun tipini daha spesifik hale getirelim
+  field: ControllerRenderProps<FieldValues, any>; 
+  showPassword: boolean;
+  onTogglePassword: () => void;
+  placeholder: string;
+  isLoading?: boolean;
+  // Input bileşeninin kabul ettiği diğer propları da alabilmesi için
+  // inputProps?: ComponentProps<typeof Input>; 
+}
+
+const PasswordInputComponent = ({ 
+  field, 
+  showPassword, 
+  onTogglePassword, 
+  placeholder, 
+  isLoading = false,
+  // inputProps 
+}: PasswordInputProps) => (
+  <div className="relative">
+    <Input
+      type={showPassword ? "text" : "password"}
+      placeholder={placeholder}
+      {...field}
+      disabled={isLoading}
+      className="pr-10"
+      // {...inputProps}
+    />
+    <button
+      type="button"
+      onClick={onTogglePassword}
+      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+      tabIndex={-1} // Butonun forma dahil olmaması için
+      aria-label={showPassword ? "Hide password" : "Show password"} // Erişilebilirlik
+    >
+      {showPassword ? (
+        <Eye className="h-4 w-4" />
+      ) : (
+        <EyeOff className="h-4 w-4" />
+      )}
+    </button>
+  </div>
+);
 
 // Form şemalarını ayrı tanımlayalım
 const loginSchema = z.object({
@@ -39,7 +84,7 @@ const registerSchema = z.object({
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
-type RegisterFormValues = z.infer<typeof insertUserSchema>;
+type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const [location, navigate] = useLocation();
@@ -105,9 +150,8 @@ export default function AuthPage() {
     const validationResult = registerSchema.safeParse(data);
     
     if (!validationResult.success) {
-      const errors = validationResult.error.errors;
       toast({
-        title: "Required Fields Missing",
+        title: "Validation Error",
         description: "Please fill in all required fields correctly.",
         variant: "destructive",
       });
@@ -115,7 +159,8 @@ export default function AuthPage() {
     }
 
     try {
-      const response = await registerMutation.mutateAsync(data);
+      const { confirmPassword, ...registerData } = data;
+      const response = await registerMutation.mutateAsync(registerData);
       toast({
         title: "Registration Submitted!",
         description: response?.message || "Please check your email to verify your account.",
@@ -130,43 +175,6 @@ export default function AuthPage() {
       });
     }
   };
-
-  // Password input component
-  const PasswordInput = ({ 
-    field, 
-    showPassword, 
-    onTogglePassword, 
-    placeholder,
-    isLoading = false 
-  }: {
-    field: any;
-    showPassword: boolean;
-    onTogglePassword: () => void;
-    placeholder: string;
-    isLoading?: boolean;
-  }) => (
-    <div className="relative">
-      <Input
-        type={showPassword ? "text" : "password"}
-        placeholder={placeholder}
-        {...field}
-        disabled={isLoading}
-        className="pr-10"
-      />
-      <button
-        type="button"
-        onClick={onTogglePassword}
-        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-        tabIndex={-1}
-      >
-        {showPassword ? (
-          <Eye className="h-4 w-4" />
-        ) : (
-          <EyeOff className="h-4 w-4" />
-        )}
-      </button>
-    </div>
-  );
 
   return (
     <div className="min-h-screen flex flex-col sm:flex-row bg-gray-50">
@@ -268,7 +276,7 @@ export default function AuthPage() {
                             <FormattedMessage id="auth.password" />
                           </FormLabel>
                           <FormControl>
-                            <PasswordInput
+                            <PasswordInputComponent
                               field={field}
                               showPassword={showPassword.login}
                               onTogglePassword={() => setShowPassword(prev => ({ ...prev, login: !prev.login }))}
@@ -419,7 +427,7 @@ export default function AuthPage() {
                             <div className={`relative ${
                               registerForm.formState.errors.password ? "border-red-500 focus-within:ring-red-500" : ""
                             }`}>
-                              <PasswordInput
+                              <PasswordInputComponent
                                 field={field}
                                 showPassword={showPassword.register}
                                 onTogglePassword={() => setShowPassword(prev => ({ ...prev, register: !prev.register }))}
@@ -445,7 +453,7 @@ export default function AuthPage() {
                             <div className={`relative ${
                               registerForm.formState.errors.confirmPassword ? "border-red-500 focus-within:ring-red-500" : ""
                             }`}>
-                              <PasswordInput
+                              <PasswordInputComponent
                                 field={field}
                                 showPassword={showPassword.confirmPassword}
                                 onTogglePassword={() => setShowPassword(prev => ({ 
