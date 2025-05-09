@@ -283,9 +283,18 @@ export function setupAuth(app: Express) {
   (async () => {
     try {
       // Admin bilgilerini çevre değişkenlerinden al (daha güvenli)
-      const adminUsername = process.env.ADMIN_USERNAME || "admin";
-      const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
-      const adminEmail = process.env.ADMIN_EMAIL || "admin@shopease.com";
+      const adminUsername = process.env.ADMIN_USERNAME ;
+      const adminPassword = process.env.ADMIN_PASSWORD ;
+      const adminEmail = process.env.ADMIN_EMAIL;
+
+      if (!adminUsername || !adminPassword || !adminEmail) {
+        console.error("Admin credentials (username, password, email) must be set in environment variables.");
+        // Uygulamanın bu kritik yapılandırma olmadan devam etmesini engellemek için
+        // bir hata fırlatabilir veya süreci sonlandırabilirsiniz.
+        // Örneğin: throw new Error("Admin credentials not configured.");
+        // Bu örnekte, sadece konsola yazdırıp devam ediyoruz, ancak bu ideal değildir.
+        return; // Fonksiyondan erken çık
+      }
 
       let admin = await storage.getUserByUsername(adminUsername);
       if (!admin) {
