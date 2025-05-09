@@ -22,8 +22,10 @@ export default {
   'auth.logout': 'Logout',
   'auth.email': 'Email',
   'auth.password': 'Password',
+  'auth.confirm.password': 'Confirm Password',
   'auth.username': 'Username',
   'auth.fullName': 'Full Name',
+  'auth.address': 'Address',
 
 
   // Products

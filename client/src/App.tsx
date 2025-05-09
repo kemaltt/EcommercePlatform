@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home-page";
-import AuthPage from "@/pages/auth-page";
+import AuthPage from "@/pages/auth/auth-page";
 import { ProtectedRoute, AdminRoute } from "@/lib/protected-route";
 import { queryClient } from "./lib/queryClient";
 import ProductDetail from "@/pages/product-detail";

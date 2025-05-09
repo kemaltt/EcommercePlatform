@@ -23,8 +23,10 @@ export default {
   'auth.logout': 'Çıkış Yap',
   'auth.email': 'E-posta',
   'auth.password': 'Şifre',
+  "auth.confirm.password": "Şifreyi Onayla",
   'auth.username': 'Kullanıcı Adı',
   'auth.fullName': 'Ad Soyad',
+  "auth.address": "Adres",
 
 
   // Ürünler

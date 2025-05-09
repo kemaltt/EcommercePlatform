@@ -13,21 +13,27 @@ export const users = pgTable("users", {
   status: text("status").default("active").notNull(),
   address: text("address"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-  emailVerified: boolean("email_verified").default(false).notNull(), // Varsayılan false
-  emailVerificationToken: text("email_verification_token").unique(), // Benzersiz olmalı
-  verificationTokenExpiresAt: timestamp("verification_token_expires_at", { mode: 'date' }), // Son kullanma tarihi
+  emailVerified: boolean("email_verified").default(false).notNull(),
+  emailVerificationToken: text("email_verification_token").unique(),
+  verificationTokenExpiresAt: timestamp("verification_token_expires_at", { mode: 'date' }),
 });
 
-export const insertUserSchema = createInsertSchema(users)
-  .omit({ id: true, createdAt: true })
-  .extend({
-    confirmPassword: z.string(),
-    address: z.string().optional(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
+export const insertUserSchema = createInsertSchema(users, {
+  username: z.string().min(1, "validation.username.required"),
+  email: z.string().email("validation.email.invalid").min(1, "validation.email.required"),
+  fullName: z.string().min(1, "validation.fullName.required"),
+  password: z.string()
+    .min(6, "validation.password.minLengthShared")
+})
+.omit({ 
+  id: true, 
+  createdAt: true, 
+  emailVerified: true, 
+  emailVerificationToken: true, 
+  verificationTokenExpiresAt: true,
+  isAdmin: true, 
+  status: true,
+});
 
 // Product schema
 export const products = pgTable("products", {
