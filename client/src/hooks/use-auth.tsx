@@ -8,6 +8,8 @@ import {
 import { User, InsertUser } from "@shared/schema";
 import { getQueryFn, apiRequest } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useIntl } from "react-intl";
+import { useCart } from "@/contexts/cart-context";
 
 type AuthContextType = {
   user: User | null;
@@ -41,6 +43,9 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const intl = useIntl();
+  // const { clearCart } = useCart();
+
   const {
     data: user,
     error,
@@ -96,14 +101,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: () => {
       queryClient.setQueryData(["profile"], null);
+      // clearCart();
       toast({
-        title: "Logged out",
-        description: "You have been successfully logged out.",
+        title: intl.formatMessage({ id: "toast.logout.success.title" }),
+        description: intl.formatMessage({ id: "toast.logout.success.description" }),
       });
     },
     onError: (error: Error) => {
       toast({
-        title: "Logout failed",
+        title: intl.formatMessage({ id: "toast.logout.error.title" }),
         description: error.message,
         variant: "destructive",
       });

@@ -217,6 +217,20 @@ export default {
   "checkout.payWithPayPal": "PayPal ile Öde",
   "checkout.payWithKlarna": "Klarna ile Öde",
 
+  // Toast mesajları
+  'toast.login.success.title': 'Giriş Başarılı',
+  'toast.login.success.description': 'Başarıyla giriş yaptınız.',
+  'toast.login.error.title': 'Giriş Başarısız',
+  'toast.login.error.defaultDescription': 'Giriş yapılırken bir hata oluştu.',
+  'toast.register.success.title': 'Kayıt Başarılı',
+  'toast.register.success.defaultDescription': 'Hesabınız başarıyla oluşturuldu.',
+  'toast.register.error.title': 'Kayıt Başarısız',
+  'toast.register.error.defaultDescription': 'Kayıt olurken bir hata oluştu.',
+  'toast.logout.success.title': 'Çıkış Başarılı',
+  'toast.logout.success.description': 'Başarıyla çıkış yaptınız.',
+  'toast.logout.error.title': 'Çıkış Başarısız',
+  'toast.logout.error.description': 'Çıkış yapılırken bir hata oluştu.',
+
 };
 
 

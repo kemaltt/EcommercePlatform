@@ -210,4 +210,18 @@ export default {
   "checkout.payWithCard": "Pay with Card",
   "checkout.payWithPayPal": "Pay with PayPal",
   "checkout.payWithKlarna": "Pay with Klarna",
+
+  // Toast messages
+  'toast.login.success.title': 'Login Successful',
+  'toast.login.success.description': 'You have successfully logged in.',
+  'toast.login.error.title': 'Login Failed',
+  'toast.login.error.defaultDescription': 'An error occurred while logging in.',
+  'toast.register.success.title': 'Registration Successful',
+  'toast.register.success.defaultDescription': 'Your account has been successfully created.',
+  'toast.register.error.title': 'Registration Failed',
+  'toast.register.error.defaultDescription': 'An error occurred while registering.',
+  'toast.logout.success.title': 'Logout Successful',
+  'toast.logout.success.description': 'You have been successfully logged out.',
+  'toast.logout.error.title': 'Logout Failed',
+  'toast.logout.error.description': 'An error occurred while logging out.',
 };

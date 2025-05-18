@@ -214,4 +214,18 @@ export default {
   "checkout.payWithCard": "Mit Karte zahlen",
   "checkout.payWithPayPal": "Mit PayPal zahlen",
   "checkout.payWithKlarna": "Mit Klarna zahlen",
+
+  // Toast-Nachrichten
+  'toast.login.success.title': 'Anmeldung erfolgreich',
+  'toast.login.success.description': 'Sie wurden erfolgreich angemeldet.',
+  'toast.login.error.title': 'Anmeldung fehlgeschlagen',
+  'toast.login.error.defaultDescription': 'Bei der Anmeldung ist ein Fehler aufgetreten.',
+  'toast.register.success.title': 'Registrierung erfolgreich',
+  'toast.register.success.defaultDescription': 'Ihr Konto wurde erfolgreich erstellt.',
+  'toast.register.error.title': 'Registrierung fehlgeschlagen',
+  'toast.register.error.defaultDescription': 'Bei der Registrierung ist ein Fehler aufgetreten.',
+  'toast.logout.success.title': 'Abmeldung erfolgreich',
+  'toast.logout.success.description': 'Sie wurden erfolgreich abgemeldet.',
+  'toast.logout.error.title': 'Abmeldung fehlgeschlagen',
+  'toast.logout.error.description': 'Bei der Abmeldung ist ein Fehler aufgetreten.',
 };
