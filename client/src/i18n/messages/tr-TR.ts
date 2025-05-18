@@ -27,7 +27,9 @@ export default {
   'auth.username': 'Kullanıcı Adı',
   'auth.fullName': 'Ad Soyad',
   "auth.address": "Adres",
-
+  "auth.login.submit": "Giriş Yap",
+  "auth.login.submitting": "Giriş yapılıyor...",
+  "auth.login.forgotPassword": "Şifremi Unuttum",
 
   // Ürünler
   'product.inStock': 'Stokta Var',
@@ -230,6 +232,24 @@ export default {
   'toast.logout.success.description': 'Başarıyla çıkış yaptınız.',
   'toast.logout.error.title': 'Çıkış Başarısız',
   'toast.logout.error.description': 'Çıkış yapılırken bir hata oluştu.',
+
+  // Şifre Sıfırlama
+  'auth.forgotPassword.title': 'Şifremi Unuttum',
+  'auth.forgotPassword.description': 'E-posta adresinizi girin, size şifre sıfırlama bağlantısı gönderelim',
+  'auth.forgotPassword.submit': 'Şifre Sıfırlama Bağlantısı Gönder',
+  'auth.forgotPassword.success.title': 'E-posta Gönderildi',
+  'auth.forgotPassword.success.description': 'Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.',
+  'auth.forgotPassword.error.title': 'Hata',
+  'auth.forgotPassword.error.description': 'Şifre sıfırlama bağlantısı gönderilirken bir hata oluştu.',
+
+  'auth.resetPassword.title': 'Şifre Sıfırlama',
+  'auth.resetPassword.description': 'Lütfen yeni şifrenizi belirleyin',
+  'auth.resetPassword.submit': 'Şifreyi Sıfırla',
+  'auth.resetPassword.success.title': 'Şifre Güncellendi',
+  'auth.resetPassword.success.description': 'Şifreniz başarıyla güncellendi. Yeni şifrenizle giriş yapabilirsiniz.',
+  'auth.resetPassword.error.title': 'Hata',
+  'auth.resetPassword.error.description': 'Şifre güncellenirken bir hata oluştu.',
+  'auth.resetPassword.error.invalidToken': 'Geçersiz veya süresi dolmuş şifre sıfırlama bağlantısı.',
 
 };
 

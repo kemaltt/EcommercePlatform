@@ -26,7 +26,27 @@ export default {
   'auth.username': 'Benutzername',
   'auth.fullName': 'Vollständiger Name',
   "auth.address": "Adresse",
+  "auth.login.submit": "Anmelden",
+  "auth.login.submitting": "Anmeldung läuft...",
+  "auth.login.forgotPassword": "Passwort vergessen?",
 
+  // Passwort zurücksetzen
+  "auth.forgotPassword.title": "Passwort vergessen",
+  "auth.forgotPassword.description": "Geben Sie Ihre E-Mail-Adresse ein, wir senden Ihnen einen Link zum Zurücksetzen des Passworts",
+  "auth.forgotPassword.submit": "Link zum Zurücksetzen des Passworts senden",
+  "auth.forgotPassword.success.title": "E-Mail gesendet",
+  "auth.forgotPassword.success.description": "Ein Link zum Zurücksetzen des Passworts wurde an Ihre E-Mail-Adresse gesendet.",
+  "auth.forgotPassword.error.title": "Fehler",
+  "auth.forgotPassword.error.description": "Beim Senden des Links zum Zurücksetzen des Passworts ist ein Fehler aufgetreten.",
+
+  "auth.resetPassword.title": "Passwort zurücksetzen",
+  "auth.resetPassword.description": "Bitte geben Sie Ihr neues Passwort ein",
+  "auth.resetPassword.submit": "Passwort zurücksetzen",
+  "auth.resetPassword.success.title": "Passwort aktualisiert",
+  "auth.resetPassword.success.description": "Ihr Passwort wurde erfolgreich aktualisiert. Sie können sich jetzt mit Ihrem neuen Passwort anmelden.",
+  "auth.resetPassword.error.title": "Fehler",
+  "auth.resetPassword.error.description": "Beim Aktualisieren des Passworts ist ein Fehler aufgetreten.",
+  "auth.resetPassword.error.invalidToken": "Ungültiger oder abgelaufener Link zum Zurücksetzen des Passworts.",
 
   // Produkte
 

@@ -7,11 +7,11 @@ import { promisify } from "util";
 import { storage } from "./storage"; // storage örneğinin doğru şekilde export edildiğini varsayıyoruz
 import { User as SelectUser } from "@shared/schema";
 import { db } from "./db";
-import { users, insertUserSchema } from "@shared/schema";
+import { users, insertUserSchema, passwordResets } from "@shared/schema";
 import crypto from 'crypto';
-import { sendVerificationEmail } from './email';
+import { sendVerificationEmail, sendEmail } from './email';
 import { eq, and, gt } from "drizzle-orm";
-import { comparePasswords } from "./utils";
+import { comparePasswords } from "./utils.js";
 
 declare global {
   namespace Express {
@@ -365,6 +365,110 @@ export function setupAuth(app: Express) {
       console.error("Email verification process error:", error);
       // Genel bir hata durumunda frontend'e hata ile yönlendir
       return res.redirect(`${frontendUrl}/email-verified?error=verification_failed`);
+    }
+  });
+
+  // Şifre sıfırlama isteği gönderme
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      const user = await storage.getUserByEmail(email);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Şifre sıfırlama token'ı oluştur
+      const resetToken = crypto.randomBytes(32).toString('hex');
+      const tokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 saat
+
+      // Token'ı veritabanına kaydet
+      await db.insert(passwordResets).values({
+        token: resetToken,
+        userId: user.id,
+        expiresAt: tokenExpiry,
+        createdAt: new Date(),
+      });
+
+      // Şifre sıfırlama linkini oluştur
+      const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+
+      // Email gönder
+      await sendEmail({
+        to: user.email,
+        subject: "Password Reset Request",
+        text: `Click the link below to reset your password: ${resetLink}`,
+        html: `
+          <h1>Password Reset Request</h1>
+          <p>Click the link below to reset your password:</p>
+          <a href="${resetLink}">${resetLink}</a>
+          <p>This link will expire in 1 hour.</p>
+        `,
+      });
+
+      res.json({ message: "Password reset email sent" });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "Failed to process password reset request" });
+    }
+  });
+
+  // Şifre sıfırlama token'ını doğrula
+  app.post("/api/auth/verify-reset-token", async (req, res) => {
+    try {
+      const { token } = req.body;
+
+      const resetRequest = await db.query.passwordResets.findFirst({
+        where: eq(passwordResets.token, token),
+      });
+
+      if (!resetRequest) {
+        return res.status(400).json({ message: "Invalid or expired token" });
+      }
+
+      if (resetRequest.expiresAt < new Date()) {
+        await db.delete(passwordResets).where(eq(passwordResets.token, token));
+        return res.status(400).json({ message: "Token has expired" });
+      }
+
+      res.json({ message: "Token is valid", userId: resetRequest.userId });
+    } catch (error) {
+      console.error("Token verification error:", error);
+      res.status(500).json({ message: "Failed to verify token" });
+    }
+  });
+
+  // Yeni şifre belirleme
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, password } = req.body;
+
+      const resetRequest = await db.query.passwordResets.findFirst({
+        where: eq(passwordResets.token, token),
+      });
+
+      if (!resetRequest) {
+        return res.status(400).json({ message: "Invalid or expired token" });
+      }
+
+      if (resetRequest.expiresAt < new Date()) {
+        await db.delete(passwordResets).where(eq(passwordResets.token, token));
+        return res.status(400).json({ message: "Token has expired" });
+      }
+
+      // Yeni şifreyi hashle
+      const hashedPassword = await hashPassword(password);
+
+      // Kullanıcının şifresini güncelle
+      await db.update(users)
+        .set({ password: hashedPassword })
+        .where(eq(users.id, resetRequest.userId));
+
+      res.json({ message: "Password has been reset successfully" });
+    } catch (error) {
+      console.error("Password reset error:", error);
+      res.status(500).json({ message: "Failed to reset password" });
     }
   });
 }

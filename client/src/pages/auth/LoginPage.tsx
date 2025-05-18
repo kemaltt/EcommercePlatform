@@ -11,6 +11,7 @@ import { Loader2 } from 'lucide-react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { AuthPasswordInput } from "./AuthPasswordInput";
 import { loginSchema, type LoginFormValues } from "./authSchemas";
+import { Link } from "wouter";
 // import { useLocation } from "wouter"; // Eğer başarılı login sonrası yönlendirme burada yapılacaksa
 
 export function LoginPage() {
@@ -105,9 +106,11 @@ export function LoginPage() {
               </FormItem>
             )}
           />
-          <Button type="button" variant="link" className="px-0 text-sm">
-            <FormattedMessage id="auth.forgotPassword" />
-          </Button>
+          <Link href="/forgot-password">
+            <Button type="button" variant="link" className="px-0 text-sm">
+              <FormattedMessage id="auth.forgotPassword" />
+            </Button>
+          </Link>
         </div>
         <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
           {loginMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

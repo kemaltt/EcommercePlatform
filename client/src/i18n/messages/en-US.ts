@@ -26,7 +26,9 @@ export default {
   'auth.username': 'Username',
   'auth.fullName': 'Full Name',
   'auth.address': 'Address',
-
+  'auth.login.submit': 'Sign In',
+  'auth.login.submitting': 'Signing in...',
+  'auth.login.forgotPassword': 'Forgot Password?',
 
   // Products
   'product.inStock': 'In Stock',
@@ -224,4 +226,22 @@ export default {
   'toast.logout.success.description': 'You have been successfully logged out.',
   'toast.logout.error.title': 'Logout Failed',
   'toast.logout.error.description': 'An error occurred while logging out.',
+
+  // Password Reset
+  'auth.forgotPassword.title': 'Forgot Password',
+  'auth.forgotPassword.description': 'Enter your email address and we will send you a password reset link',
+  'auth.forgotPassword.submit': 'Send Password Reset Link',
+  'auth.forgotPassword.success.title': 'Email Sent',
+  'auth.forgotPassword.success.description': 'A password reset link has been sent to your email address.',
+  'auth.forgotPassword.error.title': 'Error',
+  'auth.forgotPassword.error.description': 'An error occurred while sending the password reset link.',
+
+  'auth.resetPassword.title': 'Reset Password',
+  'auth.resetPassword.description': 'Please enter your new password',
+  'auth.resetPassword.submit': 'Reset Password',
+  'auth.resetPassword.success.title': 'Password Updated',
+  'auth.resetPassword.success.description': 'Your password has been successfully updated. You can now log in with your new password.',
+  'auth.resetPassword.error.title': 'Error',
+  'auth.resetPassword.error.description': 'An error occurred while updating your password.',
+  'auth.resetPassword.error.invalidToken': 'Invalid or expired password reset link.',
 };

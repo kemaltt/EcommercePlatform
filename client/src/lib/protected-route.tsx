@@ -22,11 +22,7 @@ export function ProtectedRoute({
   }
 
   if (!user) {
-    return (
-      <Route path={path}>
-        <Redirect to="/auth" />
-      </Route>
-    );
+    return <Redirect to="/auth" />;
   }
 
   return <Route path={path} component={Component} />;
@@ -52,19 +48,11 @@ export function AdminRoute({
   }
 
   if (!user) {
-    return (
-      <Route path={path}>
-        <Redirect to="/auth" />
-      </Route>
-    );
+    return <Redirect to="/auth" />;
   }
 
   if (!user.isAdmin) {
-    return (
-      <Route path={path}>
-        <Redirect to="/" />
-      </Route>
-    );
+    return <Redirect to="/" />;
   }
 
   return <Route path={path} component={Component} />;
