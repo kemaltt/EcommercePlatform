@@ -430,7 +430,7 @@ export class DatabaseStorage implements IStorage {
           await this.createProduct(product);
         }
         
-        console.log("Örnek ürünler veritabanına eklendi");
+        // Sample products added to database
       }
     } catch (error) {
       console.error("Veritabanı başlatılırken hata:", error);

@@ -176,10 +176,8 @@ const CheckoutPageContent = () => {
        setIsPlacingOrder(false);
     } else if (paymentIntent?.status === 'succeeded') {
        // 2. Ödeme Başarılı -> Siparişi Kaydet
-       console.log("Payment successful!", paymentIntent);
        try {
           // const response = await fetch('/api/orders', { method: 'POST', ... });
-          console.log("Order saved successfully! (Simulated)");
           clearCart();
           // navigate('/order-confirmation/' + paymentIntent.id);
        } catch(error) {
@@ -226,7 +224,6 @@ const CheckoutPageContent = () => {
   };
 
   const handlePayPalSuccess = () => {
-    console.log("Ödeme başarılı!");
     // Siparişi onayla veya yönlendirme yap
   };
 

@@ -20,7 +20,7 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/cart-context";
-import { LanguageSwitcher } from "../ui/language-switcher";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { FormattedMessage, useIntl } from 'react-intl';
 import { cn } from "@/lib/utils";
 

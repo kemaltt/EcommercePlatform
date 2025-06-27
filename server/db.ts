@@ -20,9 +20,7 @@ async function testConnection() {
   // Test pool'u için de process.env kullan
   const testPool = new Pool({ connectionString });
   try {
-    console.log("Testing database connection...");
     await testPool.query('SELECT NOW()');
-    console.log("Database connection successful!");
     return true;
   } catch (error) {
     console.error("Database connection error:", error);

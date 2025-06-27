@@ -335,9 +335,8 @@ export function setupAuth(app: Express) {
               emailVerified: true, // Admin e-postasını doğrulanmış kabul et
               // Şemaya göre diğer gerekli alanları ekle
           }).onConflictDoNothing(); // Zaten varsa hata verme
-          console.log(`Admin user '${adminUsername}' created or already exists.`);
       } else {
-        console.log(`Admin user '${adminUsername}' already exists.`);
+        // Admin user already exists
         // Opsiyonel: Şifre çevre değişkeninde değiştiyse güncelle? Dikkatli ol.
       }
     } catch (error) {
@@ -369,7 +368,6 @@ export function setupAuth(app: Express) {
 
       if (!user) {
         // Token geçersiz veya süresi dolmuş
-        console.log(`Email verification failed: Invalid or expired token (${token})`);
         return res.redirect(`${frontendUrl}/email-verified?error=invalid_or_expired_token`);
       }
 
@@ -382,7 +380,6 @@ export function setupAuth(app: Express) {
         })
         .where(eq(users.id, user.id));
 
-      console.log(`Email verified successfully for user ID: ${user.id}`);
       // Başarılı doğrulama sayfasına yönlendir
       return res.redirect(`${frontendUrl}/email-verified?success=true`);
 

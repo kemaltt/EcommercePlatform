@@ -6,7 +6,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { User, InsertUser } from "@shared/schema";
-import { getQueryFn, apiRequest } from "../lib/queryClient";
+import { apiRequest } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useIntl } from "react-intl";
 
@@ -100,7 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return await res.json();
     },
     onSuccess: (data) => {
-      console.log("Registration API call successful:", data.message);
+      // Registration successful
     },
     onError: (error: any) => {
       console.error("Register mutation failed:", error.response?.data?.message || error.message);
