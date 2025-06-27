@@ -43,7 +43,7 @@ export default function FavoritesPage() {
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : error ? (
-            <div className="bg-white rounded-lg shadow p-6 text-center">
+            <div className="bg-card rounded-lg shadow p-6 text-center">
               <div className="text-red-500 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -63,7 +63,7 @@ export default function FavoritesPage() {
               </Button>
             </div>
           ) : !favorites || favorites.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-6 text-center">
+            <div className="bg-card rounded-lg shadow p-6 text-center">
               <div className="text-4xl text-gray-300 mb-4">
                 <Heart size={64} className="mx-auto" />
               </div>

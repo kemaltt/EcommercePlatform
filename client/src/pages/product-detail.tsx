@@ -132,7 +132,7 @@ export default function ProductDetail() {
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to products
             </Button>
 
-            <Card className="bg-white rounded-lg shadow overflow-hidden">
+            <Card className="bg-card rounded-lg shadow overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
                 {/* Image skeleton */}
                 <div className="flex flex-col space-y-4">
@@ -187,7 +187,7 @@ export default function ProductDetail() {
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to products
             </Button>
 
-            <Card className="bg-white rounded-lg shadow p-10 text-center">
+            <Card className="bg-card rounded-lg shadow p-10 text-center">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 {intl.formatMessage({ id: "productDetail.error.title" })}
               </h2>
@@ -227,7 +227,7 @@ export default function ProductDetail() {
             {intl.formatMessage({ id: "productDetail.navigation.back" })}
           </Button>
 
-          <Card className="bg-white rounded-lg shadow overflow-hidden">
+          <Card className="bg-card rounded-lg shadow overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
               {/* Product Images */}
               <div className="flex flex-col space-y-4">

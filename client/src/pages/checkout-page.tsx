@@ -348,7 +348,9 @@ const CheckoutPageContent = () => {
                   <CardContent>
                     <Label className="mb-2 block"><FormattedMessage id="checkout.cardDetails" /></Label>
                     {paymentMethod === PAYMENT_METHODS.CARD && (
-                      <CardElement options={cardElementOptions} />
+                      <div className="p-3 border border-gray-300 rounded bg-card mb-4">
+                        <CardElement options={cardElementOptions} />
+                      </div>
                     )}
                     {paymentMethod === PAYMENT_METHODS.PAYPAL && (
                       <PayPalButton
@@ -454,7 +456,7 @@ const CheckoutFormWrapper = () => {
   return (
     <>
       <Label className="mb-2 block"><FormattedMessage id="checkout.cardDetails" defaultMessage="Card Details" /></Label>
-      <div className="p-3 border border-gray-300 rounded bg-white mb-4">
+      <div className="p-3 border border-gray-300 rounded bg-card mb-4">
         <CardElement options={cardElementOptions} />
       </div>
     </>

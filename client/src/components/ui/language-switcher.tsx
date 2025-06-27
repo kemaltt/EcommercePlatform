@@ -1,37 +1,66 @@
-// client/src/components/language-switcher.tsx
+// client/src/components/ui/language-switcher.tsx
 import { useLanguage } from '@/contexts/language-context';
 import { LOCALES, LOCALE_NAMES } from '@/i18n/locales';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Globe } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useState, useEffect } from 'react';
+
+const LANGUAGES = [
+  { code: LOCALES.TURKISH, label: 'TR', flag: '🇹🇷' },
+  { code: LOCALES.ENGLISH, label: 'EN', flag: '🇺🇸' },
+  { code: LOCALES.GERMAN,  label: 'DE', flag: '🇩🇪' },
+];
 
 export function LanguageSwitcher() {
   const { locale, setLocale } = useLanguage();
+  const currentIndex = LANGUAGES.findIndex(l => l.code === locale);
+  const nextIndex = (currentIndex + 1) % LANGUAGES.length;
+  const current = LANGUAGES[currentIndex];
+  const next = LANGUAGES[nextIndex];
+
+  // Animasyon için state
+  const [animating, setAnimating] = useState(false);
+  const [iconKey, setIconKey] = useState(current.code);
+
+  useEffect(() => {
+    setIconKey(current.code);
+  }, [current.code]);
+
+  const handleClick = () => {
+    setAnimating(true);
+    setTimeout(() => {
+      setLocale(next.code);
+      setAnimating(false);
+    }, 200);
+  };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="flex items-center gap-2">
-          <Globe className="h-4 w-4" />
-          <span>{LOCALE_NAMES[locale]}</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        {Object.entries(LOCALE_NAMES).map(([key, name]) => (
-          <DropdownMenuItem
-            key={key}
-            onClick={() => setLocale(key as keyof typeof LOCALE_NAMES)}
-            className={locale === key ? 'bg-accent' : ''}
-          >
-            {name}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <button
+      aria-label="Dili değiştir"
+      className={cn(
+        "relative flex items-center justify-center w-14 h-10 rounded-full transition-colors bg-muted hover:bg-primary/10 focus:outline-none overflow-hidden",
+        animating && "ring-2 ring-primary/40"
+      )}
+      onClick={handleClick}
+      style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", padding: 0 }}
+    >
+      <span
+        key={iconKey}
+        className={cn(
+          "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1 text-base font-semibold transition-all duration-200 ease-in-out",
+          animating ? "scale-0 opacity-0 rotate-45" : "scale-100 opacity-100 rotate-0"
+        )}
+      >
+        <span className="text-xl">{current.flag}</span> {current.label}
+      </span>
+      <span
+        key={next.code}
+        className={cn(
+          "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-1 text-base font-semibold transition-all duration-200 ease-in-out",
+          animating ? "scale-100 opacity-100 rotate-0" : "scale-0 opacity-0 -rotate-45"
+        )}
+      >
+        <span className="text-xl">{next.flag}</span> {next.label}
+      </span>
+    </button>
   );
 }

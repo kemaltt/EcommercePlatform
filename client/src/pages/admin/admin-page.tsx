@@ -28,7 +28,7 @@ export default function AdminPage() {
       
       <main className="flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Card className="bg-white shadow overflow-hidden sm:rounded-lg">
+          <Card className="bg-card shadow overflow-hidden sm:rounded-lg">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <div className="border-b border-gray-200">
                 <TabsList className="flex -mb-px">
