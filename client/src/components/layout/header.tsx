@@ -6,7 +6,8 @@ import {
   ShoppingCart,
   User,
   Menu,
-  X
+  X,
+  Heart
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { Button } from "@/components/ui/button";
@@ -23,6 +24,7 @@ import { useCart } from "@/contexts/cart-context";
 import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { FormattedMessage, useIntl } from 'react-intl';
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 
 interface HeaderProps {
   onCartOpen: () => void;
@@ -38,6 +40,18 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
   const intl = useIntl();
 
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Favori ürün sayısı için query
+  const { data: favorites = [] } = useQuery({
+    queryKey: ["/api/favorites"],
+    queryFn: async () => {
+      if (!user) return [];
+      const res = await fetch("/api/favorites", { credentials: "include" });
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!user,
+  });
 
   const handleLogout = () => {
     logoutMutation.mutate();
@@ -82,19 +96,6 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
               <span className="text-primary font-extrabold text-2xl tracking-tight cursor-pointer select-none drop-shadow-sm">DeinShop</span>
             </Link>
             <nav className="hidden sm:flex gap-2 ml-6" aria-label="Main Navigation">
-              {user && (
-                <Link
-                  href="/favorites"
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-base font-medium transition-all duration-200",
-                    isActive("/favorites")
-                      ? "bg-primary/10 text-primary shadow-sm"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  <FormattedMessage id="nav.favorites" />
-                </Link>
-              )}
               {user && user.isAdmin && (
                 <Link
                   href="/admin"
@@ -124,6 +125,25 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
             </form>
             <ThemeToggle />
             <LanguageSwitcher />
+            {user && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/favorites")}
+                className={cn(
+                  "relative p-0 h-10 w-10 flex items-center justify-center text-muted-foreground hover:text-primary focus:outline-none transition-all duration-200",
+                  isActive("/favorites") && "text-primary"
+                )}
+                aria-label="Favoriler"
+              >
+                <Heart className="h-6 w-6" />
+                {favorites.length > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-pink-500 rounded-full shadow-md">
+                    {favorites.length}
+                  </span>
+                )}
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
