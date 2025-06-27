@@ -279,6 +279,31 @@ export function setupAuth(app: Express) {
     res.status(200).json(userResponse);
   });
 
+  // Frontend için session kontrolü endpoint'i (mevcut kullanıcı bilgilerini döndürür)
+  app.get("/api/auth/me", (req, res) => {
+    // Kullanıcının kimliği doğrulanmış mı kontrol et
+    if (!req.isAuthenticated()) {
+      // Doğrulanmamışsa 401 Unauthorized döndür
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    // Kullanıcı doğrulanmış, req.user deserializeUser tarafından doldurulmuş olmalı
+    const user = req.user as SelectUser;
+
+    // Hassas verileri (şifre hash'i gibi) ayıklayarak yanıtı hazırla
+    const userResponse = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      fullName: user.fullName,
+      address: user.address,
+      emailVerified: user.emailVerified,
+      createdAt: user.createdAt
+    };
+    res.status(200).json(userResponse);
+  });
+
   // Başlangıçta Admin Kullanıcısı Oluşturma (Geliştirme için kullanışlı, Prodüksiyon için dikkat!)
   (async () => {
     try {

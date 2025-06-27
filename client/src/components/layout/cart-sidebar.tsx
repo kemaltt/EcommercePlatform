@@ -151,17 +151,14 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                 </Button>
               </div>
               <div className="mt-6 flex justify-center text-sm text-center text-muted-foreground">
-                <p>
-                  <FormattedMessage id="cart.continue" />
-                  <Button 
-                    variant="link" 
-                    className="text-primary p-0 hover:text-primary/90"
-                    onClick={onClose}
-                  >
-                    <FormattedMessage id="cart.empty.button" />
-                    <span aria-hidden="true"> &rarr;</span>
-                  </Button>
-                </p>
+                <Button 
+                  variant="link" 
+                  className="text-primary p-0 hover:text-primary/90"
+                  onClick={onClose}
+                >
+                  <FormattedMessage id="cart.empty.button" />
+                  <span aria-hidden="true"> &rarr;</span>
+                </Button>
               </div>
             </div>
           </>

@@ -9,7 +9,6 @@ import { User, InsertUser } from "@shared/schema";
 import { getQueryFn, apiRequest } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useIntl } from "react-intl";
-import { useCart } from "@/contexts/cart-context";
 
 type AuthContextType = {
   user: User | null;
@@ -44,7 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const intl = useIntl();
-  // const { clearCart } = useCart();
 
   const {
     data: user,
@@ -52,9 +50,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
   } = useQuery<User | null, Error>({
     queryKey: ["profile"],
-    queryFn: () => apiRequest("GET", "/api/auth/verify-email").then(res => res.status === 401 ? null : res.json()),
+    queryFn: async () => {
+      try {
+        const res = await apiRequest("GET", "/api/auth/me");
+        if (res.status === 401) {
+          return null; // Kullanıcı giriş yapmamış
+        }
+        const userData = await res.json();
+        return userData as User;
+      } catch (error) {
+        console.error("Session check failed:", error);
+        return null; // Hata durumunda null döndür
+      }
+    },
     retry: false,
     refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000, // 5 dakika
+    gcTime: 10 * 60 * 1000, // 10 dakika (eski cacheTime)
   });
 
   const loginMutation = useMutation<User, Error, LoginData>({
@@ -101,7 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: () => {
       queryClient.setQueryData(["profile"], null);
-      // clearCart();
+      queryClient.setQueryData(["/api/cart"], []);
       toast({
         title: intl.formatMessage({ id: "toast.logout.success.title" }),
         description: intl.formatMessage({ id: "toast.logout.success.description" }),

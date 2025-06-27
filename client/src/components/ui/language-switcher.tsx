@@ -37,7 +37,7 @@ export function LanguageSwitcher() {
     <button
       aria-label="Dili değiştir"
       className={cn(
-        "relative flex items-center justify-center w-14 h-10 rounded-full transition-colors bg-muted hover:bg-primary/10 focus:outline-none overflow-hidden",
+        "relative flex items-center justify-center w-14 h-10 rounded-full transition-colors focus:outline-none overflow-hidden",
         animating && "ring-2 ring-primary/40"
       )}
       onClick={handleClick}

@@ -119,22 +119,11 @@ export default function HomePage() {
 
           {/* Products Grid */}
           {isLoading ? (
-            //    <div className="flex items-center justify-center min-h-[400px]">
-            //    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            //  </div>
-            <div className="flex flex-col items-center justify-center min-h-[256px] h-64"> {/* min-h-[256px] eklendi */}
-              <span className="relative flex h-20 w-20"> {/* Boyut h-20 w-20 olarak büyütüldü */}
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-20 w-20 bg-primary"></span> {/* Boyut h-20 w-20 */}
-                <span className="absolute inset-0 flex items-center justify-center">
-                  <svg className="h-10 w-10 text-white animate-spin" fill="none" viewBox="0 0 24 24"> {/* Boyut h-10 w-10 */}
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                  </svg>
-                </span>
-              </span>
-              {/* Opsiyonel: Yükleniyor mesajı eklenebilir */}
-              {/* <span className="mt-4 text-primary font-medium text-lg">Loading Products...</span> */}
+            <div className="flex flex-col items-center justify-center min-h-[256px] h-64">
+              <svg className="animate-spin h-20 w-20 text-primary" viewBox="0 0 48 48">
+                <circle className="opacity-20" cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="3" fill="none"/>
+                <path className="opacity-80" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" d="M44 24a20 20 0 0 0-20-20" />
+              </svg>
             </div>
           ) : error ? (
             <div className="text-center py-10">

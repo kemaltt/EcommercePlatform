@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { useCart } from "@/contexts/cart-context";
 import { LanguageSwitcher } from "../ui/language-switcher";
 import { FormattedMessage, useIntl } from 'react-intl';
+import { cn } from "@/lib/utils";
 
 interface HeaderProps {
   onCartOpen: () => void;
@@ -73,45 +74,36 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
   };
 
   return (
-    <header className="shadow-sm sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex">
-            <div className="flex-shrink-0 flex items-center">
-              <Link href="/">
-                <span className="text-primary font-bold text-xl cursor-pointer">DeinShop</span>
-              </Link>
-            </div>
-            <nav className="hidden sm:ml-6 sm:flex sm:space-x-8" aria-label="Main Navigation">
-              <Link
-                href="/"
-                className={`px-3 py-2 text-sm font-medium ${isActive("/")
-                    ? "text-primary border-b-2 border-primary"
-                    : "text-muted-foreground hover:text-foreground"
-                  }`}
-              >
-                <FormattedMessage id="nav.home" />
-              </Link>
-
+    <header className="backdrop-blur-md bg-white/70 dark:bg-background/80 shadow-lg sticky top-0 z-50 transition-all duration-300 border-b border-border/60">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12">
+        <div className="flex justify-between h-20 items-center rounded-2xl mt-2 mb-2 shadow-md bg-white/60 dark:bg-background/80 backdrop-blur-md px-4 transition-all duration-300">
+          <div className="flex items-center gap-6">
+            <Link href="/">
+              <span className="text-primary font-extrabold text-2xl tracking-tight cursor-pointer select-none drop-shadow-sm">DeinShop</span>
+            </Link>
+            <nav className="hidden sm:flex gap-2 ml-6" aria-label="Main Navigation">
               {user && (
                 <Link
                   href="/favorites"
-                  className={`px-3 py-2 text-sm font-medium ${isActive("/favorites")
-                      ? "text-primary border-b-2 border-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                    }`}
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-base font-medium transition-all duration-200",
+                    isActive("/favorites")
+                      ? "bg-primary/10 text-primary shadow-sm"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
                 >
                   <FormattedMessage id="nav.favorites" />
                 </Link>
               )}
-
               {user && user.isAdmin && (
                 <Link
                   href="/admin"
-                  className={`px-3 py-2 text-sm font-medium ${isActive("/admin")
-                      ? "text-primary border-b-2 border-primary"
-                      : "text-muted-foreground hover:text-foreground"
-                    }`}
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-base font-medium transition-all duration-200",
+                    isActive("/admin")
+                      ? "bg-primary/10 text-primary shadow-sm"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
                 >
                   <FormattedMessage id="nav.admin" />
                 </Link>
@@ -119,67 +111,65 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
             </nav>
           </div>
 
-          <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
-            <form onSubmit={handleSearchSubmit} className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="flex items-center gap-2 sm:gap-4">
+            <form onSubmit={handleSearchSubmit} className="relative hidden md:block">
               <Input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-3 py-2 w-60"
+                className="pl-10 pr-3 py-2 w-56 rounded-lg bg-muted/60 border-none focus:ring-2 focus:ring-primary/30 transition-all duration-200 shadow-sm"
                 placeholder={intl.formatMessage({ id: "nav.search.placeholder" })}
               />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </form>
-
-            {/* Tema değiştirici */}
             <ThemeToggle />
-
-            {/* Dil değiştirici - BURAYA EKLENDİ */}
             <LanguageSwitcher />
             <Button
               variant="ghost"
               size="icon"
               onClick={onCartOpen}
-              className="relative p-2 text-muted-foreground hover:text-foreground focus:outline-none"
+              className="relative p-0 h-10 w-10 flex items-center justify-center text-muted-foreground hover:text-primary focus:outline-none transition-all duration-200"
             >
-              <ShoppingCart />
+              <ShoppingCart className="h-6 w-6" />
               {cartItemCount > 0 && (
-                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-primary rounded-full">
+                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-primary rounded-full shadow-md">
                   {cartItemCount}
                 </span>
               )}
             </Button>
-
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    <Avatar className="h-8 w-8">
+                  <Button variant="ghost" className="relative h-10 w-10 rounded-full hover:bg-muted/60 transition-all duration-200">
+                    <Avatar className="h-10 w-10">
                       <AvatarFallback>{getUserInitials()}</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <div className="flex items-center justify-start gap-2 p-2">
-                    <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium">{user.fullName}</p>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                <DropdownMenuContent align="end" className="rounded-xl shadow-2xl bg-white/80 dark:bg-background/90 backdrop-blur-md border-none p-2 min-w-[220px]">
+                  <div className="flex items-center gap-3 p-4 rounded-lg bg-muted/60 mb-2 shadow-sm">
+                    <Avatar className="h-14 w-14">
+                      <AvatarFallback>{getUserInitials()}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-base text-foreground">{user.fullName}</span>
+                      <span className="text-xs text-muted-foreground">{user.email}</span>
                     </div>
                   </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile">
-                      <div className="w-full cursor-pointer">
-                        <FormattedMessage id="nav.profile" />
-                      </div>
+                  <DropdownMenuSeparator className="my-2 bg-muted/60" />
+                  <DropdownMenuItem asChild className="rounded-lg px-3 py-2 gap-2 text-base font-medium transition-all duration-150 hover:bg-primary/10 hover:text-primary">
+                    <Link href="/profile" className="flex items-center w-full">
+                      <User className="h-5 w-5 mr-2 text-muted-foreground" />
+                      <span><FormattedMessage id="nav.profile" /></span>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
+                  <DropdownMenuSeparator className="my-2 bg-muted/60" />
                   <DropdownMenuItem
-                    className="text-red-600 cursor-pointer"
+                    className="rounded-lg px-3 py-2 gap-2 text-base font-medium transition-all duration-150 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 text-red-600 flex items-center"
                     onClick={handleLogout}
                     disabled={logoutMutation.isPending}
                   >
+                    <X className="h-5 w-5 mr-2" />
                     {logoutMutation.isPending ? (
                       <FormattedMessage id="nav.signingOut" />
                     ) : (
@@ -192,27 +182,11 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
               <Button
                 variant="default"
                 onClick={() => navigate("/auth")}
-                className="bg-primary text-white hover:bg-primary/90"
+                className="bg-primary text-white hover:bg-primary/90 rounded-lg px-5 py-2 text-base font-semibold shadow-md transition-all duration-200"
               >
                 <FormattedMessage id="nav.signIn" />
               </Button>
             )}
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="flex items-center sm:hidden">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
-              aria-controls="mobile-menu"
-              aria-expanded="false"
-            >
-              <span className="sr-only">
-                <FormattedMessage id="nav.mobileMenu" />
-              </span>
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
           </div>
         </div>
       </div>
@@ -297,7 +271,7 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                       }}
                       className="relative p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                     >
-                      <ShoppingCart />
+                      <ShoppingCart className="h-6 w-6" />
                       {cartItemCount > 0 && (
                         <span className="absolute inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-primary rounded-full">
                           {cartItemCount}
@@ -349,3 +323,4 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
     </header>
   );
 }
+
