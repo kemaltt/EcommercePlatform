@@ -144,19 +144,21 @@ export default function Header({ onCartOpen, onSearch }: HeaderProps) {
                 )}
               </Button>
             )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onCartOpen}
-              className="relative p-0 h-10 w-10 flex items-center justify-center text-muted-foreground hover:text-primary focus:outline-none transition-all duration-200"
-            >
-              <ShoppingCart className="h-6 w-6" />
-              {cartItemCount > 0 && (
-                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-primary rounded-full shadow-md">
-                  {cartItemCount}
-                </span>
-              )}
-            </Button>
+            {user && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onCartOpen}
+                className="relative p-0 h-10 w-10 flex items-center justify-center text-muted-foreground hover:text-primary focus:outline-none transition-all duration-200"
+              >
+                <ShoppingCart className="h-6 w-6" />
+                {cartItemCount > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-primary rounded-full shadow-md">
+                    {cartItemCount}
+                  </span>
+                )}
+              </Button>
+            )}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
