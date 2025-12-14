@@ -2,7 +2,7 @@ import { User, InsertUser, Product, InsertProduct, Favorite, InsertFavorite, Car
 import session from "express-session";
 import createMemoryStore from "memorystore";
 import connectPg from "connect-pg-simple";
-import { db, pool } from "./db";
+import { db, pool } from "./src/config/db";
 import { eq, and, desc, sql } from "drizzle-orm";
 
 const MemoryStore = createMemoryStore(session);

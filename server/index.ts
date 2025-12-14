@@ -1,5 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
+import { createServer } from "http";
+import { setupPassport } from "./src/services/passport";
+import routes from "./src/routes/index"; // Explicitly point to the index file in routes directory
 
 const app = express();
 app.use(express.json());
@@ -36,7 +38,19 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  // Setup authentication (Passport)
+  setupPassport(app);
+
+  // Register all API routes
+  app.use("/api", routes);
+
+  // Mount verify-email at root level to match existing behavior/links
+  // We need to dynamically import it or just import it at top if possible.
+  // Dynamic import is fine to avoid circular deps if any, but top level is better.
+  const { verifyEmail } = await import("./src/controllers/authController");
+  app.get("/verify-email", verifyEmail);
+
+  const server = createServer(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

@@ -15,7 +15,11 @@
     "baseUrl": ".",
     "types": ["node"],
     "paths": {
-      "@shared/*": ["../shared/*"]
+      "@shared/*": ["../shared/*"],
+      "drizzle-orm": ["../shared/node_modules/drizzle-orm"],
+      "drizzle-orm/*": ["../shared/node_modules/drizzle-orm/*"],
+      "zod": ["../shared/node_modules/zod"],
+      "zod/*": ["../shared/node_modules/zod/*"]
     }
   }
 } 
