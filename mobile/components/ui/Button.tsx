@@ -1,40 +1,64 @@
-import { TouchableOpacity, Text, ActivityIndicator } from "react-native";
+import { TouchableOpacity, Text, ActivityIndicator, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface ButtonProps {
   onPress: () => void;
   title: string;
   loading?: boolean;
   disabled?: boolean;
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "primary" | "secondary" | "outline" | "ghost";
   className?: string;
+  icon?: React.ReactNode;
 }
 
-export function Button({ onPress, title, loading, disabled, variant = "primary", className = "" }: ButtonProps) {
-  const baseStyles = "flex-row items-center justify-center py-3 px-6 rounded-xl";
+export function Button({ 
+  onPress, 
+  title, 
+  loading, 
+  disabled, 
+  variant = "primary", 
+  className = "",
+  icon 
+}: ButtonProps) {
+  const isDisabled = loading || disabled;
+
+  const baseContainerStyles = "rounded-2xl overflow-hidden active:opacity-90 transition-opacity";
+  const baseContentStyles = "flex-row items-center justify-center py-4 px-6";
+
   const variants = {
-    primary: "bg-primary",
+    primary: "bg-primary shadow-lg shadow-primary/30",
     secondary: "bg-secondary",
-    outline: "bg-transparent border border-primary",
+    outline: "bg-transparent border-2 border-primary/20",
+    ghost: "bg-transparent",
   };
 
   const textStyles = {
-    primary: "text-primary-foreground",
-    secondary: "text-secondary-foreground",
-    outline: "text-primary",
+    primary: "text-primary-foreground font-bold tracking-wide",
+    secondary: "text-secondary-foreground font-semibold",
+    outline: "text-primary font-bold",
+    ghost: "text-primary font-medium",
   };
+
+  const Content = () => (
+    <View className={baseContentStyles}>
+      {loading ? (
+        <ActivityIndicator color={variant === "outline" || variant === "ghost" ? "#6366f1" : "white"} className="mr-2" />
+      ) : icon ? (
+        <View className="mr-2">{icon}</View>
+      ) : null}
+      <Text className={`text-base ${textStyles[variant]}`}>
+        {title}
+      </Text>
+    </View>
+  );
 
   return (
     <TouchableOpacity
       onPress={onPress}
-      disabled={loading || disabled}
-      className={`${baseStyles} ${variants[variant]} ${loading || disabled ? "opacity-70" : ""} ${className}`}
+      disabled={isDisabled}
+      className={`${baseContainerStyles} ${variants[variant]} ${isDisabled ? "opacity-60" : ""} ${className}`}
     >
-      {loading ? (
-        <ActivityIndicator color={variant === "outline" ? "#3b82f6" : "white"} className="mr-2" />
-      ) : null}
-      <Text className={`text-base font-semibold ${textStyles[variant]}`}>
-        {title}
-      </Text>
+        <Content />
     </TouchableOpacity>
   );
 }
