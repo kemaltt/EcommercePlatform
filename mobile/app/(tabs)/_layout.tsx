@@ -1,3 +1,4 @@
+import React from "react";
 import { Tabs, useRouter } from "expo-router";
 import { Home, ShoppingBag, User, Compass, ShoppingCart } from "lucide-react-native";
 import { useAuth } from "../../hooks/use-auth";
@@ -8,10 +9,17 @@ export default function TabsLayout() {
   const { user } = useAuth();
   const intl = useIntl();
   const router = useRouter();
+  
+  // Use a ref to ensure the listener always has the latest user state
+  const userRef = React.useRef(user);
+  React.useEffect(() => {
+    userRef.current = user;
+  }, [user]);
 
   // Helper to intercept navigation for protected tabs
   const handleProtectedTabPress = (e: any) => {
-    if (!user) {
+    const currentUser = userRef.current;
+    if (!currentUser) {
       // Prevent default navigation
       e.preventDefault();
       // Redirect to login
