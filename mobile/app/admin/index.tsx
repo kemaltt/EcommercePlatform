@@ -36,7 +36,7 @@ export default function AdminConsoleScreen() {
   const ManagementCard = ({ title, count, subtitle, icon, onPress }: any) => (
     <TouchableOpacity 
       onPress={onPress}
-      className="bg-[#2A2C39] p-5 rounded-3xl flex-1 mr-4 last:mr-0 border border-white/5"
+      className="bg-[#2A2C39] p-5 rounded-3xl flex-1 border border-white/5"
     >
       <View className="w-10 h-10 bg-[#6366f1]/20 rounded-xl items-center justify-center mb-4">
         {icon}
@@ -52,22 +52,22 @@ export default function AdminConsoleScreen() {
   );
 
   const ActiveInventoryItem = ({ image, title, stock, price }: any) => (
-     <View className="bg-[#2A2C39] p-3 rounded-2xl mb-3 flex-row items-center border border-white/5">
-        <View className="w-16 h-16 bg-white rounded-xl mr-4 overflow-hidden">
-           {/* Placeholder for image */}
-           <View className="w-full h-full bg-slate-200" /> 
+     <View className="bg-[#2A2C39] p-3 rounded-[30px] mb-3 flex-row items-center border border-white/5">
+        <View className="w-16 h-16 bg-white rounded-2xl mr-4 overflow-hidden items-center justify-center p-1">
+           {/* Placeholder for image - using Box icon since we don't have actual asset here easily */}
+           <Package size={30} color="#6366f1" />
         </View>
         <View className="flex-1">
            <Text className="text-white font-bold text-base mb-1">{title}</Text>
            <Text className="text-slate-400 text-xs">Stock: {stock} • Ref: #7721</Text>
            <Text className="text-[#6366f1] font-bold mt-1">${price}</Text>
         </View>
-        <View className="flex-row gap-3">
-            <TouchableOpacity className="p-2">
-              <Box size={18} color="#94a3b8" />
+        <View className="flex-row gap-4 mr-1">
+            <TouchableOpacity hitSlop={10}>
+              <Plus size={20} color="#94a3b8" />
             </TouchableOpacity>
-            <TouchableOpacity className="p-2">
-              <Box size={18} color="#94a3b8" />
+            <TouchableOpacity hitSlop={10}>
+              <Box size={20} color="#94a3b8" />
             </TouchableOpacity>
         </View>
      </View>
@@ -78,19 +78,17 @@ export default function AdminConsoleScreen() {
       <StatusBar style="light" />
       <SafeAreaView className="flex-1" edges={['top']}>
         {/* Header */}
-        <View className="px-6 py-4 flex-row justify-between items-center">
-          <View className="flex-row items-center gap-4">
-             <View className="w-10 h-10 bg-[#2A2C39] rounded-xl items-center justify-center">
-               <View className="flex-row flex-wrap justify-center gap-0.5 w-4">
-                  <View className="w-1.5 h-1.5 bg-[#6366f1] rounded-sm" />
-                  <View className="w-1.5 h-1.5 bg-[#6366f1] rounded-sm" />
-                  <View className="w-1.5 h-1.5 bg-[#6366f1] rounded-sm" />
-                  <View className="w-1.5 h-1.5 bg-[#6366f1]/50 rounded-sm" />
-               </View>
-             </View>
+        <View className="px-6 py-4 flex-row justify-between items-center bg-[#1e2029]">
+          <View className="flex-row items-center">
+             <TouchableOpacity 
+               onPress={() => router.back()}
+               className="w-10 h-10 bg-[#2A2C39] rounded-full items-center justify-center border border-white/10 mr-4"
+             >
+                <ChevronLeft size={20} color="white" />
+             </TouchableOpacity>
              <View>
                <Text className="text-white text-lg font-bold">Admin Console</Text>
-               <Text className="text-slate-400 text-xs">Store Overview • Live</Text>
+               <Text className="text-slate-400 text-xs text-indigo-400">Store Overview • Live</Text>
              </View>
           </View>
           
@@ -109,20 +107,24 @@ export default function AdminConsoleScreen() {
           
           <Text className="text-white font-bold text-lg mb-4">Management</Text>
           <View className="flex-row mb-8">
-             <ManagementCard 
-               title="Products" 
-               count="1,240" 
-               subtitle="TOTAL" 
-               icon={<Package size={20} color="#6366f1" />} 
-               onPress={() => router.push("/admin/products")}
-             />
-             <ManagementCard 
-               title="Users" 
-               count="850" 
-               subtitle="USERS" 
-               icon={<Users size={20} color="#6366f1" />} 
-               onPress={() => router.push("/admin/users")}
-             />
+             <View className="flex-1 mr-4">
+               <ManagementCard 
+                 title="Products" 
+                 count="1,240" 
+                 subtitle="TOTAL" 
+                 icon={<Package size={20} color="#6366f1" />} 
+                 onPress={() => router.push("/admin/products")}
+               />
+             </View>
+             <View className="flex-1">
+               <ManagementCard 
+                 title="Users" 
+                 count="850" 
+                 subtitle="USERS" 
+                 icon={<Users size={20} color="#6366f1" />} 
+                 onPress={() => router.push("/admin/users")}
+               />
+             </View>
           </View>
 
           <View className="flex-row justify-between items-center mb-4">

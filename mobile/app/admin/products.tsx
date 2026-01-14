@@ -54,35 +54,54 @@ export default function AdminProductsScreen() {
   };
 
   const renderProduct = ({ item }: { item: Product }) => (
-    <View className="bg-[#1e2029] border border-white/10 rounded-3xl p-4 mb-4">
-      <View className="flex-row items-center mb-4">
+    <View className="bg-[#1e2029] border border-white/5 rounded-[30px] p-3 flex-row items-center mb-4 min-h-[100px]">
+      {/* Image Wrapper with explicit style for expo-image compatibility */}
+      <View 
+        style={{ width: 80, height: 80 }} 
+        className="bg-white rounded-[22px] mr-4 overflow-hidden items-center justify-center p-1.5"
+      >
         <Image
           source={item.imageUrl}
-          className="w-16 h-16 rounded-xl mr-4 bg-white"
-          contentFit="cover"
+          style={{ width: '100%', height: '100%' }}
+          contentFit="contain"
+          transition={300}
         />
-        <View className="flex-1">
-          <Text className="font-bold text-white text-lg mb-1" numberOfLines={1}>{item.name}</Text>
-          <Text className="text-slate-400 text-xs uppercase font-bold tracking-widest mb-1">{item.category}</Text>
-          <Text className="text-[#6366f1] font-bold">${Number(item.price).toFixed(2)}</Text>
-        </View>
       </View>
       
-      <View className="flex-row gap-3">
-        <TouchableOpacity
-          onPress={() => router.push({ pathname: "/admin/manage-product", params: { id: item.id } })}
-          className="flex-1 bg-[#2A2C39] border border-white/5 py-3 rounded-xl flex-row items-center justify-center dashed"
-        >
-          <Edit2 size={14} color="white" className="mr-2" />
-          <Text className="text-white text-xs font-bold">Edit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleDelete(item.id)}
-          className="flex-1 bg-red-500/10 border border-red-500/20 py-3 rounded-xl flex-row items-center justify-center"
-        >
-          <Trash2 size={14} color="#ef4444" className="mr-2" />
-          <Text className="text-red-500 text-xs font-bold">Delete</Text>
-        </TouchableOpacity>
+      <View className="flex-1 justify-center py-1">
+        <View className="flex-row items-center justify-between pr-1">
+          <View className="flex-1 flex-row items-center">
+            <Text className="font-bold text-white text-base mr-2 flex-shrink" numberOfLines={1}>{item.name}</Text>
+            {item.price > 100 && (
+              <View className="bg-orange-500/10 px-2 py-0.5 rounded-lg border border-orange-500/20">
+                <Text className="text-orange-400 text-[8px] font-bold uppercase tracking-widest">Premium</Text>
+              </View>
+            )}
+          </View>
+          
+          <View className="flex-row items-center gap-4">
+            <TouchableOpacity
+              onPress={() => router.push({ pathname: "/admin/manage-product", params: { id: item.id } })}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Edit2 size={20} color="#94a3b8" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleDelete(item.id)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Trash2 size={20} color="#94a3b8" />
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        <Text className="text-slate-500 text-xs font-medium mt-1">
+          Stock: {item.stock} • Ref: #{item.id}
+        </Text>
+        
+        <Text className="text-[#6366f1] text-lg font-bold mt-2">
+          ${Number(item.price).toFixed(2)}
+        </Text>
       </View>
     </View>
   );
