@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Update this with your machine's local IP address for physical device testing
 // Or use localhost for simulator/emulator
-const API_URL = "http://localhost:5000y/api";
+const API_URL = "http://localhost:5002/api";
 
 export const api = axios.create({
   baseURL: API_URL,
