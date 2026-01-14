@@ -1,4 +1,4 @@
-import { View, Text, FlatList, ScrollView, TouchableOpacity, ActivityIndicator, Image as RNImage, Dimensions, Alert } from "react-native";
+import { View, Text, FlatList, ScrollView, TouchableOpacity, ActivityIndicator, Image as RNImage, Dimensions, Alert, TextInput } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { api } from "../../lib/api";
@@ -109,16 +109,12 @@ export default function HomeScreen() {
         {/* Header */}
         <View className="px-6 py-4 flex-row justify-between items-center">
           <View>
-            <Text className="text-muted-foreground text-xs font-bold tracking-widest uppercase mb-1">
-              Discover
-            </Text>
             <Text className="text-white text-3xl font-bold">
               Catalog
             </Text>
           </View>
           <TouchableOpacity 
             className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
-            // Maybe notifications also require login? 
           >
              <Bell size={20} color="white" />
           </TouchableOpacity>
@@ -126,17 +122,19 @@ export default function HomeScreen() {
 
         {/* Search Bar */}
         <View className="px-6 mb-6">
-           <View className="flex-row items-center bg-card border border-border rounded-2xl px-4 h-12">
-              <Search size={20} color="#94a3b8" />
-              <Input 
+           {/* Custom Search Input Appearance matching Image 1 */}
+           <View className="flex-row items-center bg-[#2A2C39] rounded-2xl px-4 h-14 border border-white/5">
+              <Search size={22} color="#94a3b8" />
+              <TextInput
                  value={searchQuery}
                  onChangeText={setSearchQuery}
                  placeholder="Search for premium products..."
-                 className="flex-1 mb-0 border-0 bg-transparent"
-                 // @ts-ignore
+                 placeholderTextColor="#64748b"
+                 className="flex-1 mx-3 text-base text-foreground font-medium h-full"
               />
-              <View className="w-px h-6 bg-border mx-2" />
-              <SlidersHorizontal size={20} color="#6366f1" />
+              <View className="mr-1">
+                <SlidersHorizontal size={22} color="#6366f1" />
+              </View>
            </View>
         </View>
 
