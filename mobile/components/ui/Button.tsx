@@ -10,6 +10,7 @@ interface ButtonProps {
   className?: string;
   icon?: React.ReactNode;
   style?: any;
+  textStyle?: any;
 }
 
 export function Button({ 
@@ -20,7 +21,8 @@ export function Button({
   variant = "primary", 
   className = "",
   icon,
-  style
+  style,
+  textStyle
 }: ButtonProps) {
   const isDisabled = loading || disabled;
 
@@ -50,7 +52,7 @@ export function Button({
       ) : icon ? (
         <View className="mr-2">{icon}</View>
       ) : null}
-      <Text className={`text-base ${textStyles[variant]}`}>
+      <Text className={`text-base ${textStyles[variant]}`} style={textStyle}>
         {title}
       </Text>
     </View>

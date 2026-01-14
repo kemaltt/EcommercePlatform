@@ -1,101 +1,214 @@
-import { View, Text, FlatList, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../../lib/api";
-import { Product } from "@shared/schema";
-import { Image } from "expo-image";
-import { Plus, Edit2, Trash2, ArrowLeft } from "lucide-react-native";
-import { useRouter } from "expo-router";
-import { FormattedMessage, useIntl } from "react-intl";
 
-export default function AdminDashboard() {
-  const queryClient = useQueryClient();
+import { View, Text, ScrollView, TouchableOpacity, Dimensions } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import { useRouter, Stack } from "expo-router";
+import { 
+  ChevronLeft, 
+  Bell, 
+  User, 
+  Package, 
+  Users, 
+  ChevronRight,
+  Plus,
+  Box
+} from "lucide-react-native";
+import { useAuth } from "../../hooks/use-auth";
+import { LineChart } from "react-native-chart-kit";
+
+const { width } = Dimensions.get("window");
+
+export default function AdminConsoleScreen() {
   const router = useRouter();
-  const intl = useIntl();
-
-  const { data: products, isLoading } = useQuery<Product[]>({
-    queryKey: ["/api/products"],
-    queryFn: async () => {
-      const res = await api.get("/products");
-      return res.data;
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      await api.delete(`/products/${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      Alert.alert(
-        intl.formatMessage({ id: "common.success" }),
-        "Product deleted successfully"
-      );
-    },
-  });
-
-  const handleDelete = (id: number) => {
-    Alert.alert(
-      intl.formatMessage({ id: "admin.delete.title" }),
-      intl.formatMessage({ id: "admin.delete.confirm" }),
-      [
-        { text: intl.formatMessage({ id: "common.cancel" }), style: "cancel" },
-        { 
-          text: intl.formatMessage({ id: "common.error" }), // "Delete" is not in keys, using common.error for now or could add "common.delete"
-          style: "destructive", 
-          onPress: () => deleteMutation.mutate(id) 
-        },
-      ]
-    );
+  const { user } = useAuth();
+  
+  // Mock Data for Chart
+  const lineChartData = {
+    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    datasets: [
+      {
+        data: [20, 45, 28, 80, 40, 95, 10],
+        strokeWidth: 2, // optional
+      },
+    ],
   };
 
-  if (isLoading) {
-    return (
-      <View className="flex-1 justify-center items-center bg-background">
-        <ActivityIndicator size="large" color="#3b82f6" />
+  const ManagementCard = ({ title, count, subtitle, icon, onPress }: any) => (
+    <TouchableOpacity 
+      onPress={onPress}
+      className="bg-[#2A2C39] p-5 rounded-3xl flex-1 mr-4 last:mr-0 border border-white/5"
+    >
+      <View className="w-10 h-10 bg-[#6366f1]/20 rounded-xl items-center justify-center mb-4">
+        {icon}
       </View>
-    );
-  }
+      <Text className="text-white font-bold text-lg mb-1">{title}</Text>
+      <Text className="text-slate-400 text-xs font-bold mb-4">{count} {subtitle}</Text>
+      
+      <View className="flex-row items-center">
+         <Text className="text-[#6366f1] text-xs font-bold mr-1">Manage</Text>
+         <ChevronRight size={12} color="#6366f1" />
+      </View>
+    </TouchableOpacity>
+  );
+
+  const ActiveInventoryItem = ({ image, title, stock, price }: any) => (
+     <View className="bg-[#2A2C39] p-3 rounded-2xl mb-3 flex-row items-center border border-white/5">
+        <View className="w-16 h-16 bg-white rounded-xl mr-4 overflow-hidden">
+           {/* Placeholder for image */}
+           <View className="w-full h-full bg-slate-200" /> 
+        </View>
+        <View className="flex-1">
+           <Text className="text-white font-bold text-base mb-1">{title}</Text>
+           <Text className="text-slate-400 text-xs">Stock: {stock} • Ref: #7721</Text>
+           <Text className="text-[#6366f1] font-bold mt-1">${price}</Text>
+        </View>
+        <View className="flex-row gap-3">
+            <TouchableOpacity className="p-2">
+              <Box size={18} color="#94a3b8" />
+            </TouchableOpacity>
+            <TouchableOpacity className="p-2">
+              <Box size={18} color="#94a3b8" />
+            </TouchableOpacity>
+        </View>
+     </View>
+  );
 
   return (
-    <View className="flex-1 bg-background">
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ padding: 16, paddingBottom: 100 }}
-        renderItem={({ item }) => (
-          <View className="flex-row bg-card rounded-xl p-3 mb-3 border border-border items-center">
-            <Image
-              source={item.imageUrl}
-              className="w-16 h-16 rounded-lg mr-4"
-            />
-            <View className="flex-1">
-              <Text className="font-bold text-foreground" numberOfLines={1}>{item.name}</Text>
-              <Text className="text-primary font-bold">${item.price.toFixed(2)}</Text>
-            </View>
-            <View className="flex-row">
-              <TouchableOpacity
-                onPress={() => router.push({ pathname: "/admin/manage-product", params: { id: item.id } })}
-                className="p-2 bg-blue-100 rounded-full mr-2"
-              >
-                <Edit2 size={18} color="#2563eb" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => handleDelete(item.id)}
-                className="p-2 bg-red-100 rounded-full"
-              >
-                <Trash2 size={18} color="#ef4444" />
-              </TouchableOpacity>
-            </View>
+    <View className="flex-1 bg-[#1e2029]">
+      <StatusBar style="light" />
+      <SafeAreaView className="flex-1" edges={['top']}>
+        {/* Header */}
+        <View className="px-6 py-4 flex-row justify-between items-center">
+          <View className="flex-row items-center gap-4">
+             <View className="w-10 h-10 bg-[#2A2C39] rounded-xl items-center justify-center">
+               <View className="flex-row flex-wrap justify-center gap-0.5 w-4">
+                  <View className="w-1.5 h-1.5 bg-[#6366f1] rounded-sm" />
+                  <View className="w-1.5 h-1.5 bg-[#6366f1] rounded-sm" />
+                  <View className="w-1.5 h-1.5 bg-[#6366f1] rounded-sm" />
+                  <View className="w-1.5 h-1.5 bg-[#6366f1]/50 rounded-sm" />
+               </View>
+             </View>
+             <View>
+               <Text className="text-white text-lg font-bold">Admin Console</Text>
+               <Text className="text-slate-400 text-xs">Store Overview • Live</Text>
+             </View>
           </View>
-        )}
-      />
+          
+          <View className="flex-row gap-3">
+            <TouchableOpacity className="w-10 h-10 items-center justify-center relative">
+               <Bell size={20} color="#e2e8f0" />
+               <View className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#1e2029]" />
+            </TouchableOpacity>
+            <TouchableOpacity className="w-10 h-10 bg-[#fbbf24] rounded-full items-center justify-center" onPress={() => router.back()}>
+               <User size={20} color="#1e2029" />
+            </TouchableOpacity>
+          </View>
+        </View>
 
-      <TouchableOpacity
-        onPress={() => router.push("/admin/manage-product")}
-        className="absolute bottom-10 right-6 bg-primary w-16 h-16 rounded-full items-center justify-center shadow-xl"
-      >
-        <Plus size={32} color="white" />
-      </TouchableOpacity>
+        <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
+          
+          <Text className="text-white font-bold text-lg mb-4">Management</Text>
+          <View className="flex-row mb-8">
+             <ManagementCard 
+               title="Products" 
+               count="1,240" 
+               subtitle="TOTAL" 
+               icon={<Package size={20} color="#6366f1" />} 
+               onPress={() => router.push("/admin/products")}
+             />
+             <ManagementCard 
+               title="Users" 
+               count="850" 
+               subtitle="USERS" 
+               icon={<Users size={20} color="#6366f1" />} 
+               onPress={() => router.push("/admin/users")}
+             />
+          </View>
+
+          <View className="flex-row justify-between items-center mb-4">
+             <Text className="text-white font-bold text-lg">Sales Velocity</Text>
+             <View className="flex-row bg-[#2A2C39] rounded-lg p-0.5">
+                <TouchableOpacity className="px-3 py-1 bg-[#2A2C39] rounded-md">
+                   <Text className="text-white text-xs font-bold">WEEK</Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="px-3 py-1">
+                   <Text className="text-slate-400 text-xs font-bold">MONTH</Text>
+                </TouchableOpacity>
+             </View>
+          </View>
+
+          <View className="bg-[#2A2C39] rounded-3xl p-4 mb-8 border border-white/5 items-center">
+             <LineChart
+                data={lineChartData}
+                width={width - 80}
+                height={180}
+                yAxisLabel=""
+                yAxisSuffix=""
+                chartConfig={{
+                  backgroundColor: "#2A2C39",
+                  backgroundGradientFrom: "#2A2C39",
+                  backgroundGradientTo: "#2A2C39",
+                  decimalPlaces: 0,
+                  color: (opacity = 1) => `rgba(99, 102, 241, ${opacity})`,
+                  labelColor: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`,
+                  style: {
+                    borderRadius: 16,
+                  },
+                  propsForDots: {
+                    r: "0",
+                  },
+                  propsForBackgroundLines: {
+                    strokeDasharray: "", // solid lines
+                    stroke: "#334155",
+                    strokeWidth: 1
+                  }
+                }}
+                bezier
+                style={{
+                  marginVertical: 8,
+                  borderRadius: 16,
+                }}
+                withVerticalLines={false}
+                withHorizontalLines={false}
+              />
+              <View className="flex-row justify-between w-full px-4 mt-2">
+                 {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((day, i) => (
+                    <Text key={i} className="text-slate-500 text-[10px] font-bold">{day}</Text>
+                 ))}
+              </View>
+          </View>
+
+          <View className="flex-row justify-between items-center mb-4">
+             <Text className="text-white font-bold text-lg">Active Inventory</Text>
+             <TouchableOpacity>
+                <Text className="text-slate-400 text-xs flex-row items-center">See All <ChevronRight size={10} /></Text>
+             </TouchableOpacity>
+          </View>
+
+          <ActiveInventoryItem 
+             title="Leather Weekend Bag" 
+             stock={12}
+             price="320.00"
+          />
+           <ActiveInventoryItem 
+             title="Indigo Denim Jacket" 
+             stock={48} 
+             price="185.00"
+          />
+
+          <View className="h-20" />
+          
+        </ScrollView>
+        
+        {/* Floating Add Button */}
+        <TouchableOpacity 
+          className="absolute bottom-8 right-6 w-14 h-14 bg-[#6366f1] rounded-full items-center justify-center shadow-lg shadow-indigo-500/50 z-50"
+          onPress={() => router.push("/admin/products/new")}
+        >
+           <Plus size={24} color="white" />
+        </TouchableOpacity>
+
+      </SafeAreaView>
     </View>
   );
 }
