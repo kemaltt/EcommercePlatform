@@ -41,7 +41,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
-      Alert.alert("Success", "Added to cart");
     },
   });
 

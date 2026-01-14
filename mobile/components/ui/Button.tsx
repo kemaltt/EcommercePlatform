@@ -6,9 +6,10 @@ interface ButtonProps {
   title: string;
   loading?: boolean;
   disabled?: boolean;
-  variant?: "primary" | "secondary" | "outline" | "ghost";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "success";
   className?: string;
   icon?: React.ReactNode;
+  style?: any;
 }
 
 export function Button({ 
@@ -18,7 +19,8 @@ export function Button({
   disabled, 
   variant = "primary", 
   className = "",
-  icon 
+  icon,
+  style
 }: ButtonProps) {
   const isDisabled = loading || disabled;
 
@@ -30,6 +32,7 @@ export function Button({
     secondary: "bg-secondary",
     outline: "bg-transparent border-2 border-primary/20",
     ghost: "bg-transparent",
+    success: "bg-green-500 shadow-lg shadow-green-500/30",
   };
 
   const textStyles = {
@@ -37,6 +40,7 @@ export function Button({
     secondary: "text-secondary-foreground font-semibold",
     outline: "text-primary font-bold",
     ghost: "text-primary font-medium",
+    success: "text-white font-bold tracking-wide",
   };
 
   const Content = () => (
@@ -57,6 +61,7 @@ export function Button({
       onPress={onPress}
       disabled={isDisabled}
       className={`${baseContainerStyles} ${variants[variant]} ${isDisabled ? "opacity-60" : ""} ${className}`}
+      style={style}
     >
         <Content />
     </TouchableOpacity>

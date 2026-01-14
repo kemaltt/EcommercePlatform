@@ -6,7 +6,7 @@ import { api } from "../../lib/api";
 import { Product } from "@shared/schema";
 import { Button } from "../../components/ui/Button";
 import { useCart } from "../../hooks/use-cart";
-import { ArrowLeft, Star, ShoppingBag, ShieldCheck, Heart, Truck, CheckCircle } from "lucide-react-native";
+import { ArrowLeft, Star, ShoppingBag, ShieldCheck, Heart, Truck, CheckCircle, Plus, Minus } from "lucide-react-native";
 import { FormattedMessage, useIntl } from "react-intl";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../hooks/use-auth";
@@ -17,10 +17,15 @@ const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 export default function ProductDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { addToCart } = useCart();
+  const { addToCart, cartItems, removeFromCart, updateQuantity } = useCart();
   const { user } = useAuth();
   const intl = useIntl();
   const [selectedSize, setSelectedSize] = useState("M");
+  const [isAdded, setIsAdded] = useState(false);
+
+  // Find if item is in cart
+  // id from params is string, productId is number
+  const cartItem = cartItems.find(item => item.productId === Number(id));
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: ["/api/products", id],
@@ -30,7 +35,7 @@ export default function ProductDetailsScreen() {
     },
   });
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
      if (!user) {
         Alert.alert(
           "Login Required",
@@ -44,8 +49,9 @@ export default function ProductDetailsScreen() {
      }
      
      if (product) {
-       addToCart(product);
-       Alert.alert("Success", "Added to cart!");
+       await addToCart(product);
+       setIsAdded(true);
+       setTimeout(() => setIsAdded(false), 2000);
      }
   };
 
@@ -168,17 +174,43 @@ export default function ProductDetailsScreen() {
             
             {/* Add to Cart & Actions */}
             <View className="flex-row items-center gap-4 mb-8">
-               <TouchableOpacity className="w-14 h-14 bg-card rounded-2xl items-center justify-center border border-border">
+               <TouchableOpacity onPress={() => router.push("/(tabs)/cart")} className="w-14 h-14 bg-card rounded-2xl items-center justify-center border border-border">
                   <ShoppingBag size={24} color="#94a3b8" />
+                  {cartItems.length > 0 && (
+                    <View className="absolute top-3 right-3 w-2.5 h-2.5 bg-red-500 rounded-full" />
+                  )}
                </TouchableOpacity>
                
-               <Button
-                 title="Add to Cart"
-                 onPress={handleAddToCart}
-                 variant="primary"
-                 className="flex-1 h-14 rounded-2xl"
-                 disabled={product.stock === 0}
-               />
+               {cartItem ? (
+                 <View className="flex-1 h-14 bg-card border border-border rounded-2xl flex-row items-center justify-between px-2">
+                    <TouchableOpacity 
+                      className="w-10 h-10 bg-[#2c2e3e] rounded-xl items-center justify-center"
+                      onPress={() => cartItem.quantity > 1 ? updateQuantity(cartItem.id, cartItem.quantity - 1) : removeFromCart(cartItem.id)}
+                    >
+                      <Minus size={20} color="#94a3b8" />
+                    </TouchableOpacity>
+                    
+                    <View className="items-center">
+                       <Text className="text-white font-bold text-base">{cartItem.quantity} in Cart</Text>
+                    </View>
+
+                    <TouchableOpacity 
+                      className="w-10 h-10 bg-[#6366f1] rounded-xl items-center justify-center"
+                      onPress={() => updateQuantity(cartItem.id, cartItem.quantity + 1)}
+                    >
+                      <Plus size={20} color="white" />
+                    </TouchableOpacity>
+                 </View>
+               ) : (
+                 <Button
+                   title={isAdded ? "Added to Cart!" : "Add to Cart"}
+                   onPress={handleAddToCart}
+                   variant={isAdded ? "success" : "primary"}
+                   className={`flex-1 h-14 rounded-2xl ${isAdded ? "bg-green-500" : ""}`}
+                   disabled={product.stock === 0 || isAdded}
+                   icon={isAdded ? <CheckCircle size={20} color="white" /> : undefined}
+                 />
+               )}
             </View>
             
             {/* Footer Badges */}
