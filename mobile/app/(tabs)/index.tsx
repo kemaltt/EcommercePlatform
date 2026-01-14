@@ -1,14 +1,16 @@
-import { View, Text, FlatList, ScrollView, TouchableOpacity, ActivityIndicator, Image as RNImage, Dimensions } from "react-native";
+import { View, Text, FlatList, ScrollView, TouchableOpacity, ActivityIndicator, Image as RNImage, Dimensions, Alert } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { api } from "../../lib/api";
 import { Product } from "@shared/schema";
 import { Input } from "../../components/ui/Input";
-import { Search, Bell, Heart, SlidersHorizontal } from "lucide-react-native";
+import { Search, Bell, Heart, SlidersHorizontal, ChevronRight } from "lucide-react-native";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Image } from "expo-image";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { useAuth } from "../../hooks/use-auth";
+import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = (width - 48) / 2; // px-6 is 24px each side -> 48px total
@@ -26,6 +28,8 @@ export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const intl = useIntl();
+  const { user } = useAuth();
+  const router = useRouter();
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products", selectedCategory, searchQuery],
@@ -39,10 +43,29 @@ export default function HomeScreen() {
     },
   });
 
+  const handleAuthProtectedAction = () => {
+    if (!user) {
+      // Prompt or redirect
+      Alert.alert(
+        "Login Required",
+        "Please login to perform this action",
+        [
+          { text: "Cancel", style: "cancel" },
+          { text: "Login", onPress: () => router.push("/(auth)/login") }
+        ]
+      );
+    } else {
+      // Perform action (e.g. toggle favorite)
+      // For now just console log or toast
+      console.log("Action performed by user:", user.username);
+    }
+  };
+
   const renderProductCard = ({ item, index }: { item: Product, index: number }) => (
     <TouchableOpacity 
       className="bg-card rounded-3xl overflow-hidden mb-6 shadow-sm border border-border/50"
       style={{ width: CARD_WIDTH }}
+      onPress={() => router.push(`/product/${item.id}`)}
     >
       <View className="h-48 bg-muted relative">
         <Image
@@ -50,8 +73,11 @@ export default function HomeScreen() {
           style={{ width: "100%", height: "100%" }}
           contentFit="cover"
         />
-        <TouchableOpacity className="absolute top-3 right-3 w-8 h-8 bg-black/20 backdrop-blur-md rounded-full items-center justify-center">
-           <Heart size={16} color="#ef4444" fill="#ef4444" />
+        <TouchableOpacity 
+          className="absolute top-3 right-3 w-8 h-8 bg-black/20 backdrop-blur-md rounded-full items-center justify-center"
+          onPress={handleAuthProtectedAction}
+        >
+           <Heart size={16} color="#ef4444" fill={false ? "#ef4444" : "transparent"} />
         </TouchableOpacity>
         {/* NEW Badge Logic - Optional */}
         {index % 3 === 0 && (
@@ -90,7 +116,10 @@ export default function HomeScreen() {
               Catalog
             </Text>
           </View>
-          <TouchableOpacity className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border">
+          <TouchableOpacity 
+            className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
+            // Maybe notifications also require login? 
+          >
              <Bell size={20} color="white" />
           </TouchableOpacity>
         </View>
@@ -104,10 +133,7 @@ export default function HomeScreen() {
                  onChangeText={setSearchQuery}
                  placeholder="Search for premium products..."
                  className="flex-1 mb-0 border-0 bg-transparent"
-                 // @ts-ignore - passing custom style helper via className prop hack or need to refactor input
-                 // Actually Input component has styles we might fight. 
-                 // Let's use raw TextInput here for perfect custom look or refactor Input.
-                 // Using raw TextInput for "Search" specific look as per design
+                 // @ts-ignore
               />
               <View className="w-px h-6 bg-border mx-2" />
               <SlidersHorizontal size={20} color="#6366f1" />
