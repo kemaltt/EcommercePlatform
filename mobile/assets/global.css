@@ -4,66 +4,66 @@
 
 @layer base {
   :root {
-    /* Zombie Zinc Theme (Light) */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 4%; /* zinc-950 */
+    /* Midnight Blue Theme - Based on Target Screenshot */
+    
+    /* Background: Deep Indigo/Navy (#1e2029 approx) */
+    --background: 230 25% 14%;
+    --foreground: 210 40% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 4%;
+    /* Card: Slightly lighter/transparent overlay */
+    --card: 230 25% 18%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 4%;
+    --popover: 230 25% 18%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 262 83% 58%; /* Indigo/Violet ish */
+    /* Primary: The Button Color (Indigo/Blue #4f46e5 approx) */
+    --primary: 243 75% 59%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 240 5% 96%; /* zinc-100 */
-    --secondary-foreground: 240 6% 10%;
+    /* Secondary */
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 240 5% 96%; /* zinc-100 */
-    --muted-foreground: 240 4% 46%; /* zinc-500 */
+    /* Muted: Label colors */
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 240 5% 96%; /* zinc-100 */
-    --accent-foreground: 240 6% 10%;
+    /* Accent */
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    /* Destructive */
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 240 6% 90%; /* zinc-200 */
-    --input: 240 6% 90%;
-    --ring: 262 83% 58%;
+    /* Borders: Inputs and lines */
+    --border: 230 25% 25%;
+    --input: 230 25% 20%;
+    --ring: 243 75% 59%;
 
     --radius: 0.75rem;
   }
 
   .dark {
-    /* Zombie Zinc Theme (Dark) */
-    --background: 240 10% 4%; /* zinc-950 */
-    --foreground: 0 0% 98%; /* zinc-50 */
-
-    --card: 240 10% 4%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 240 10% 4%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 263 70% 50%; /* Indigo-600 */
+    --background: 230 25% 14%;
+    --foreground: 210 40% 98%;
+    --card: 230 25% 18%;
+    --card-foreground: 210 40% 98%;
+    --popover: 230 25% 18%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 243 75% 59%;
     --primary-foreground: 210 40% 98%;
-
-    --secondary: 240 4% 16%; /* zinc-800 */
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 240 4% 16%; /* zinc-800 */
-    --muted-foreground: 240 5% 65%; /* zinc-400 */
-
-    --accent: 240 4% 16%; /* zinc-800 */
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 4% 16%; /* zinc-800 */
-    --input: 240 4% 16%;
-    --ring: 263 70% 50%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 230 25% 25%;
+    --input: 230 25% 20%;
+    --ring: 243 75% 59%;
   }
 }
