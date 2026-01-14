@@ -10,6 +10,7 @@ import { Image } from "expo-image";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../hooks/use-auth";
+import { useFavorites } from "../../hooks/use-favorites";
 import { useRouter } from "expo-router";
 
 const { width } = Dimensions.get("window");
@@ -43,21 +44,20 @@ export default function HomeScreen() {
     },
   });
 
-  const handleAuthProtectedAction = () => {
+  const { toggleFavorite, isFavorite } = useFavorites();
+
+  const handleAuthProtectedAction = (product: Product) => {
     if (!user) {
-      // Prompt or redirect
       Alert.alert(
         "Login Required",
-        "Please login to perform this action",
+        "Please login to add to wishlist",
         [
           { text: "Cancel", style: "cancel" },
           { text: "Login", onPress: () => router.push("/(auth)/login") }
         ]
       );
     } else {
-      // Perform action (e.g. toggle favorite)
-      // For now just console log or toast
-      console.log("Action performed by user:", user.username);
+      toggleFavorite(product);
     }
   };
 
@@ -75,9 +75,13 @@ export default function HomeScreen() {
         />
         <TouchableOpacity 
           className="absolute top-3 right-3 w-8 h-8 bg-black/20 backdrop-blur-md rounded-full items-center justify-center"
-          onPress={handleAuthProtectedAction}
+          onPress={() => handleAuthProtectedAction(item)}
         >
-           <Heart size={16} color="#ef4444" fill={false ? "#ef4444" : "transparent"} />
+           <Heart 
+              size={16} 
+              color={isFavorite(item.id) ? "#ef4444" : "#cbd5e1"} 
+              fill={isFavorite(item.id) ? "#ef4444" : "transparent"} 
+           />
         </TouchableOpacity>
         {/* NEW Badge Logic - Optional */}
         {index % 3 === 0 && (

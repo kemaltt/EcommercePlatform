@@ -7,27 +7,30 @@ import "../assets/global.css";
 import { AuthProvider } from "../hooks/use-auth";
 import { CartProvider } from "../hooks/use-cart";
 import { I18nProvider } from "../contexts/i18n-context";
+import { FavoritesProvider } from "../hooks/use-favorites";
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
   return (
-    <I18nProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <CartProvider>
-            <SafeAreaProvider>
-              <StatusBar style="auto" />
-              <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="(auth)" />
-                <Stack.Screen name="product/[id]" />
-                <Stack.Screen name="admin" />
-              </Stack>
-            </SafeAreaProvider>
-          </CartProvider>
-        </AuthProvider>
-      </QueryClientProvider>
-    </I18nProvider>
+    <SafeAreaProvider>
+      <I18nProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <CartProvider>
+              <FavoritesProvider>
+                <StatusBar style="auto" />
+                <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                  <Stack.Screen name="product/[id]" options={{ presentation: "modal" }} />
+                  <Stack.Screen name="admin" />
+                </Stack>
+              </FavoritesProvider>
+            </CartProvider>
+          </AuthProvider>
+        </QueryClientProvider>
+      </I18nProvider>
+    </SafeAreaProvider>
   );
 }

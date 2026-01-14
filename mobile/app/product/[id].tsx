@@ -5,12 +5,15 @@ import { Image } from "expo-image";
 import { api } from "../../lib/api";
 import { Product } from "@shared/schema";
 import { Button } from "../../components/ui/Button";
-import { useCart } from "../../hooks/use-cart";
+import { useFavorites } from "../../hooks/use-favorites";
+
+
 import { ArrowLeft, Star, ShoppingBag, ShieldCheck, Heart, Truck, CheckCircle, Plus, Minus } from "lucide-react-native";
 import { FormattedMessage, useIntl } from "react-intl";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../hooks/use-auth";
 import { useState } from "react";
+import { useCart } from "@/hooks/use-cart";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -19,6 +22,7 @@ export default function ProductDetailsScreen() {
   const router = useRouter();
   const { addToCart, cartItems, removeFromCart, updateQuantity } = useCart();
   const { user } = useAuth();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const intl = useIntl();
   const [selectedSize, setSelectedSize] = useState("M");
   const [isAdded, setIsAdded] = useState(false);
@@ -99,9 +103,14 @@ export default function ProductDetailsScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity
+            onPress={() => product && toggleFavorite(product)}
             className="w-12 h-12 bg-black/20 backdrop-blur-md rounded-full items-center justify-center border border-white/10"
           >
-            <Heart size={24} color="white" fill="white" />
+            <Heart 
+              size={24} 
+              color={product && isFavorite(product.id) ? "#ef4444" : "white"} 
+              fill={product && isFavorite(product.id) ? "#ef4444" : "transparent"} 
+            />
           </TouchableOpacity>
         </View>
       </View>

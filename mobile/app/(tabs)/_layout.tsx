@@ -1,12 +1,16 @@
 import React from "react";
 import { Tabs, useRouter } from "expo-router";
-import { Home, ShoppingBag, User, Compass, ShoppingCart } from "lucide-react-native";
+import { Home, ShoppingBag, User, Compass, ShoppingCart, Heart } from "lucide-react-native";
 import { useAuth } from "../../hooks/use-auth";
+import { useCart } from "../../hooks/use-cart";
+import { useFavorites } from "../../hooks/use-favorites";
 import { useIntl } from "react-intl";
 import { View, Platform, Text } from "react-native";
 
 export default function TabsLayout() {
   const { user } = useAuth();
+  const { cartItems } = useCart();
+  const { favorites } = useFavorites();
   const intl = useIntl();
   const router = useRouter();
   
@@ -73,6 +77,25 @@ export default function TabsLayout() {
           href: null, // Placeholder if no actual route yet, or we can make a dummy one
         }}
       />
+      <Tabs.Screen
+        name="saved"
+        listeners={{
+          tabPress: handleProtectedTabPress,
+        }}
+        options={{
+          title: "WISHLIST",
+          tabBarIcon: ({ color, focused }) => (
+             <View>
+               <Heart size={24} color={color} fill={focused ? color : "none"} />
+               {favorites.length > 0 && (
+                 <View className="absolute -top-1.5 -right-2 bg-red-500 w-4 h-4 rounded-full items-center justify-center border border-[#1e2029]">
+                    <Text className="text-[9px] font-bold text-white">{favorites.length > 9 ? '9+' : favorites.length}</Text>
+                 </View>
+               )}
+             </View>
+          ),
+        }}
+      />
 
       <Tabs.Screen
         name="cart"
@@ -84,14 +107,11 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, focused }) => (
              <View>
                <ShoppingCart size={24} color={color} fill={focused ? color : "none"} />
-               {/* Badge could go here. Only show if user has cart items (omitted for now) */}
-               {/* 
-               <View className="absolute -top-2 -right-2 bg-[#6366f1] w-4 h-4 rounded-full items-center justify-center">
-                  <View className="bg-primary w-full h-full rounded-full items-center justify-center">
-                    <Text style={{ fontSize: 9, color: 'white', fontWeight: 'bold' }}>3</Text>
-                  </View>
-               </View>
-               */}
+               {cartItems.length > 0 && (
+                 <View className="absolute -top-1.5 -right-2 bg-red-500 w-4 h-4 rounded-full items-center justify-center border border-[#1e2029]">
+                    <Text className="text-[9px] font-bold text-white">{cartItems.length > 9 ? '9+' : cartItems.length}</Text>
+                 </View>
+               )}
              </View>
           ),
         }}
