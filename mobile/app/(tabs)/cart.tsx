@@ -1,4 +1,4 @@
-import { View, Text, FlatList, TouchableOpacity, Alert, ScrollView } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, Alert, ScrollView, ActivityIndicator } from "react-native";
 import { useCart } from "../../hooks/use-cart";
 import { Button } from "../../components/ui/Button";
 import { Trash2, Plus, Minus, ShoppingBag, X, Sparkles, ChevronLeft, ArrowRight } from "lucide-react-native";
@@ -9,9 +9,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
 export default function CartScreen() {
-  const { cartItems, subtotal, updateQuantity, removeFromCart } = useCart();
+  const { cartItems, subtotal, updateQuantity, removeFromCart, isLoading } = useCart();
   const router = useRouter();
   const intl = useIntl();
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 justify-center items-center bg-background">
+        <ActivityIndicator size="large" color="#6366f1" />
+      </View>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
