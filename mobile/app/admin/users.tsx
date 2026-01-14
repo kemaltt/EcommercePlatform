@@ -18,9 +18,9 @@ export default function AdminUsersScreen() {
   // For now, I'll use /api/users and if it fails I'll add it to the backend.
   
   const { data: users, isLoading } = useQuery<User[]>({
-    queryKey: ["/api/users"],
+    queryKey: ["/api/admin/users"],
     queryFn: async () => {
-      const res = await api.get("/users");
+      const res = await api.get("/admin/users");
       return res.data;
     },
   });
@@ -37,11 +37,18 @@ export default function AdminUsersScreen() {
               />
           </View>
           <View className="flex-1">
-             <Text className="text-white font-bold text-lg">{item.fullName}</Text>
+             <View className="flex-row items-center">
+               <Text className="text-white font-bold text-lg mr-2">{item.fullName}</Text>
+               {item.isAdmin && (
+                 <View className="bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30">
+                    <Text className="text-amber-500 text-[8px] font-bold uppercase tracking-tighter">Admin</Text>
+                 </View>
+               )}
+             </View>
              <Text className="text-slate-400 text-sm">{item.email}</Text>
           </View>
-          <View className={`px-2 py-1 rounded-md ${item.status === 'active' ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
-              <Text className={`text-[10px] font-bold uppercase ${item.status === 'active' ? 'text-green-500' : 'text-red-500'}`}>
+          <View className={`px-2 py-1 rounded-md ${item.status === 'active' || !item.status ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+              <Text className={`text-[10px] font-bold uppercase ${item.status === 'active' || !item.status ? 'text-green-500' : 'text-red-500'}`}>
                  {item.status || 'ACTIVE'}
               </Text>
           </View>

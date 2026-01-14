@@ -3,6 +3,8 @@ import { View, Text, ScrollView, TouchableOpacity, Dimensions } from "react-nati
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useRouter, Stack } from "expo-router";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../../lib/api";
 import { 
   ChevronLeft, 
   Bell, 
@@ -22,6 +24,14 @@ export default function AdminConsoleScreen() {
   const router = useRouter();
   const { user } = useAuth();
   
+  const { data: stats } = useQuery({
+    queryKey: ["/api/admin/stats"],
+    queryFn: async () => {
+      const res = await api.get("/admin/stats");
+      return res.data;
+    },
+  });
+
   // Mock Data for Chart
   const lineChartData = {
     labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
@@ -110,7 +120,7 @@ export default function AdminConsoleScreen() {
              <View className="flex-1 mr-4">
                <ManagementCard 
                  title="Products" 
-                 count="1,240" 
+                 count={stats?.totalProducts || "0"} 
                  subtitle="TOTAL" 
                  icon={<Package size={20} color="#6366f1" />} 
                  onPress={() => router.push("/admin/products")}
@@ -119,7 +129,7 @@ export default function AdminConsoleScreen() {
              <View className="flex-1">
                <ManagementCard 
                  title="Users" 
-                 count="850" 
+                 count={stats?.totalUsers || "0"} 
                  subtitle="USERS" 
                  icon={<Users size={20} color="#6366f1" />} 
                  onPress={() => router.push("/admin/users")}
