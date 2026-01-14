@@ -4,16 +4,18 @@ import { Link, useRouter } from "expo-router";
 import { useAuth } from "../../hooks/use-auth";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { StatusBar } from "expo-status-bar";
 import { ShoppingBag, Mail, Lock, Eye, EyeOff, ArrowRight, ChevronLeft } from "lucide-react-native";
-import { Image } from "expo-image";
+import { VerificationModal } from "../../components/VerificationModal";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
+
   const { login } = useAuth();
   const router = useRouter();
   const intl = useIntl();
@@ -32,13 +34,26 @@ export default function LoginScreen() {
       await login({ username: email, password });
       router.replace("/(tabs)");
     } catch (error: any) {
-      Alert.alert(
-        intl.formatMessage({ id: "common.error" }),
-        error?.response?.data?.message || "Invalid credentials"
-      );
+      const message = error?.response?.data?.message || "Invalid credentials";
+      
+      if (error?.response?.status === 403 && message.includes("verify your email")) {
+         // Show verification modal instead of alert
+         setShowVerification(true);
+      } else {
+        Alert.alert(
+          intl.formatMessage({ id: "common.error" }),
+          message
+        );
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleVerificationSuccess = async () => {
+     setShowVerification(false);
+     // Retry login automatically
+     handleLogin();
   };
 
   return (
@@ -163,6 +178,13 @@ export default function LoginScreen() {
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
+
+      <VerificationModal 
+         visible={showVerification} 
+         email={email} 
+         onClose={() => setShowVerification(false)}
+         onSuccess={handleVerificationSuccess}
+      />
     </View>
   );
 }

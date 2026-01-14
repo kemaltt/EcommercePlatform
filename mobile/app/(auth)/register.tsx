@@ -4,9 +4,10 @@ import { Link, useRouter } from "expo-router";
 import { useAuth } from "../../hooks/use-auth";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useIntl } from "react-intl";
 import { StatusBar } from "expo-status-bar";
-import { User, Mail, Lock, Eye, EyeOff, Check, ChevronLeft, RefreshCw } from "lucide-react-native";
+import { User, Mail, Lock, Eye, EyeOff, ChevronLeft, RefreshCw } from "lucide-react-native";
+import { VerificationModal } from "../../components/VerificationModal";
 
 export default function RegisterScreen() {
   const [fullName, setFullName] = useState("");
@@ -16,8 +17,9 @@ export default function RegisterScreen() {
   
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
   
-  const { register } = useAuth();
+  const { register, login } = useAuth();
   const router = useRouter();
   const intl = useIntl();
 
@@ -37,27 +39,16 @@ export default function RegisterScreen() {
 
     setLoading(true);
     try {
-      // Backend expects username, so we use email or generate one from generic logic if needed
-      // Ideally backend schema should support separate name. 
-      // For now mapping fullName -> username constraint might be tight, but let's try mapping:
-      // username = email (since they login with email now) OR separate field.
-      // Based on previous files, 'username' is required. Let's use email as username for simplicity or let user pick?
-      // The design has "Full Name" and "Email". No explicit "Username".
-      // Strategy: Use email as username mostly, or slugify fullname. 
-      // Safest: Use email as username since login uses email now.
-      
+      // Register (backend sends email code inside)
       await register({ 
         fullName, 
         email, 
-        username: email, // Mapping email to username for backend compatibility if needed, or let's assume backend handles unique constraint 
+        username: email, 
         password 
       });
 
-      Alert.alert(
-        intl.formatMessage({ id: "common.success" }),
-        "Account created successfully!",
-        [{ text: intl.formatMessage({ id: "common.ok" }), onPress: () => router.replace("/(tabs)") }]
-      );
+      // Show Verification Modal
+      setShowVerification(true);
     } catch (error: any) {
       Alert.alert(
         intl.formatMessage({ id: "common.error" }),
@@ -66,6 +57,22 @@ export default function RegisterScreen() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleVerificationSuccess = async () => {
+     setShowVerification(false);
+     
+     // Attempt auto-login or redirect
+     setLoading(true);
+     try {
+       await login({ username: email, password });
+       router.replace("/(tabs)");
+     } catch (err) {
+        // Fallback if login fails but verification worked
+        router.replace("/(auth)/login");
+     } finally {
+        setLoading(false);
+     }
   };
 
   return (
@@ -176,6 +183,13 @@ export default function RegisterScreen() {
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
+
+      <VerificationModal 
+         visible={showVerification} 
+         email={email} 
+         onClose={() => setShowVerification(false)}
+         onSuccess={handleVerificationSuccess}
+      />
     </View>
   );
 }

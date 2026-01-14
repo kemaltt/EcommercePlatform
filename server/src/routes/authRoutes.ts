@@ -11,12 +11,14 @@ router.get("/me", authController.getCurrentUser); // Frontend uses /me
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/verify-reset-token", authController.verifyResetToken);
 router.post("/reset-password", authController.resetPassword);
+router.post("/verify-email-code", authController.verifyEmailCode);
+router.post("/resend-verification-code", authController.resendVerificationCode);
 
-// Note: /verify-email is a GET request usually handled at root or specific path, 
+// Note: /verify-email is a GET request usually handled at root or specific path,
 // but here it was mounted on app directly. Let's keep it here but route path might need adjustment if mounted under /api/auth
 // The original code had app.get('/verify-email', ...) which is root level.
 // If we mount this router at /api/auth, then it becomes /api/auth/verify-email.
-// We should check where the email link points to. 
+// We should check where the email link points to.
 // Usually verification links are like /verify-email?token=...
 // If we want to keep it at root, we might need a separate route file or mount it differently.
 // For now, let's assume we will mount this router at /api/auth and the link in email needs to match.
