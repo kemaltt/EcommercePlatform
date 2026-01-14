@@ -1,7 +1,8 @@
 import { Tabs } from "expo-router";
-import { Home, ShoppingCart, User } from "lucide-react-native";
+import { Home, ShoppingBag, User, Compass, ShoppingCart } from "lucide-react-native";
 import { useAuth } from "../../hooks/use-auth";
 import { useIntl } from "react-intl";
+import { View, Platform } from "react-native";
 
 export default function TabsLayout() {
   const { user } = useAuth();
@@ -10,40 +11,73 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#3b82f6",
-        tabBarInactiveTintColor: "#9ca3af",
+        tabBarActiveTintColor: "#fbbf24", // Gold/Amber accent
+        tabBarInactiveTintColor: "#94a3b8", // Slate-400
         tabBarStyle: {
+          backgroundColor: "#1e2029", // Midnight Blue
           borderTopWidth: 1,
-          borderTopColor: "#e5e7eb",
-          paddingBottom: 5,
-          paddingTop: 5,
-          height: 60,
+          borderTopColor: "#334155", // Slate-700
+          paddingTop: 10,
+          paddingBottom: Platform.OS === "ios" ? 25 : 10,
+          height: Platform.OS === "ios" ? 90 : 70,
+          elevation: 0,
+          shadowOpacity: 0,
         },
-        headerShown: true,
+        tabBarLabelStyle: {
+          fontSize: 10,
+          fontWeight: "600",
+          marginTop: 4,
+          letterSpacing: 0.5,
+        },
+        headerShown: false, // We will use custom headers in screens
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: intl.formatMessage({ id: "cart.startShopping" }), // "Shop"
-          tabBarIcon: ({ color }) => <Home size={24} color={color} />,
-          headerTitle: "E-Commerce",
+          title: "HOME",
+          tabBarIcon: ({ color, focused }) => (
+             <Home size={24} color={color} fill={focused ? color : "none"} />
+          ),
         }}
       />
+      
+      {/* Search/Explore Tab - New */}
+      <Tabs.Screen
+        name="explore" 
+        options={{
+          title: "EXPLORE",
+          tabBarIcon: ({ color, focused }) => (
+             <Compass size={24} color={color} fill={focused ? color : "none"} />
+          ),
+          href: null, // Placeholder if no actual route yet, or we can make a dummy one
+        }}
+      />
+
       <Tabs.Screen
         name="cart"
         options={{
-          title: intl.formatMessage({ id: "cart.title" }),
-          tabBarIcon: ({ color }) => <ShoppingCart size={24} color={color} />,
-          headerTitle: intl.formatMessage({ id: "cart.title" }),
+          title: "CART",
+          tabBarIcon: ({ color, focused }) => (
+             <View>
+               <ShoppingCart size={24} color={color} fill={focused ? color : "none"} />
+               {/* Badge could go here */}
+               <View className="absolute -top-2 -right-2 bg-[#6366f1] w-4 h-4 rounded-full items-center justify-center">
+                  <View className="bg-primary w-full h-full rounded-full items-center justify-center">
+                    <Text style={{ fontSize: 9, color: 'white', fontWeight: 'bold' }}>3</Text>
+                  </View>
+               </View>
+             </View>
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: intl.formatMessage({ id: "profile.title" }),
-          tabBarIcon: ({ color }) => <User size={24} color={color} />,
-          headerTitle: intl.formatMessage({ id: "profile.title" }),
+          title: "PROFILE",
+          tabBarIcon: ({ color, focused }) => (
+            <User size={24} color={color} fill={focused ? color : "none"} />
+          ),
         }}
       />
     </Tabs>
