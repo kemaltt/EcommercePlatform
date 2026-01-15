@@ -7,6 +7,7 @@ import {
   doublePrecision,
   timestamp,
   foreignKey,
+  json,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -118,6 +119,13 @@ export const insertPasswordResetSchema = createInsertSchema(
 ).omit({
   id: true,
   createdAt: true,
+});
+
+// Session table for connect-pg-simple
+export const session = pgTable("session", {
+  sid: text("sid").primaryKey(),
+  sess: json("sess").notNull(),
+  expire: timestamp("expire", { precision: 6 }).notNull(),
 });
 
 // Type exports
