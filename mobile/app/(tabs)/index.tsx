@@ -136,7 +136,7 @@ export default function HomeScreen() {
                  onChangeText={setSearchQuery}
                  placeholder="Search for premium products..."
                  placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
-                 className="flex-1 mx-3 text-base text-foreground font-medium h-full"
+                 className="flex-1 ml-3 px-2 text-base text-foreground font-medium h-full"
               />
               <View className="mr-1">
                 <SlidersHorizontal size={22} color="#6366f1" />

@@ -100,7 +100,7 @@ export default function AdminUsersScreen() {
               <TextInput 
                  placeholder="Search users by name or email..." 
                  placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
-                 className="flex-1 ml-3 text-foreground"
+                 className="flex-1 ml-3 px-2 text-foreground"
               />
            </View>
         </View>

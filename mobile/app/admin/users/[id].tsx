@@ -102,7 +102,7 @@ export default function EditUserScreen() {
                 onChangeText={setFullName}
                 placeholder="Full Name"
                 placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
-                className="flex-1 ml-3 text-foreground font-medium"
+                className="flex-1 ml-3 px-2 text-foreground font-medium"
               />
             </View>
           </View>
@@ -118,7 +118,7 @@ export default function EditUserScreen() {
                 placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
                 keyboardType="email-address"
                 autoCapitalize="none"
-                className="flex-1 ml-3 text-foreground font-medium"
+                className="flex-1 ml-3 px-2 text-foreground font-medium"
               />
             </View>
           </View>

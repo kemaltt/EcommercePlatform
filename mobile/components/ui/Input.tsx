@@ -53,7 +53,7 @@ export function Input({
         style={multiline ? { alignItems: 'flex-start', height: 'auto', minHeight: 100 } : undefined}
       >
         {icon && (
-          <View className="pl-4">
+          <View className="pl-5">
             {icon}
           </View>
         )}
@@ -63,13 +63,14 @@ export function Input({
           placeholder={placeholder}
           secureTextEntry={secureTextEntry}
           autoCapitalize={autoCapitalize}
-          className={`flex-1 p-4 text-base text-foreground font-medium ${multiline ? 'text-top pt-4' : 'h-14'}`}
+          className={`flex-1 px-5 text-base text-foreground font-medium ${multiline ? 'text-top pt-4 min-h-[100px]' : 'h-14'}`}
           placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
           multiline={multiline}
           numberOfLines={numberOfLines}
+          textAlignVertical={multiline ? "top" : "center"}
         />
         {rightIcon && (
-          <View className="pr-4">
+          <View className="pr-5">
             {rightIcon}
           </View>
         )}

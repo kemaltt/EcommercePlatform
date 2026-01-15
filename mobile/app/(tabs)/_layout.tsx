@@ -6,6 +6,7 @@ import { useCart } from "../../hooks/use-cart";
 import { useFavorites } from "../../hooks/use-favorites";
 import { useIntl } from "react-intl";
 import { View, Platform, Text } from "react-native";
+import { useTheme } from "../../contexts/theme-context";
 
 export default function TabsLayout() {
   const { user } = useAuth();
@@ -13,6 +14,7 @@ export default function TabsLayout() {
   const { favorites } = useFavorites();
   const intl = useIntl();
   const router = useRouter();
+  const { isDark } = useTheme();
   
   // Use a ref to ensure the listener always has the latest user state
   const userRef = React.useRef(user);
@@ -35,17 +37,19 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: "#fbbf24", // Gold/Amber accent
-        tabBarInactiveTintColor: "#94a3b8", // Slate-400
+        tabBarActiveTintColor: isDark ? "#fbbf24" : "#4f46e5",
+        tabBarInactiveTintColor: isDark ? "#94a3b8" : "#64748b",
         tabBarStyle: {
-          backgroundColor: "#1e2029", // Midnight Blue
+          backgroundColor: isDark ? "#1e2029" : "#ffffff",
           borderTopWidth: 1,
-          borderTopColor: "#334155", // Slate-700
+          borderTopColor: isDark ? "#334155" : "#e2e8f0",
           paddingTop: 10,
           paddingBottom: Platform.OS === "ios" ? 25 : 10,
           height: Platform.OS === "ios" ? 90 : 70,
           elevation: 0,
-          shadowOpacity: 0,
+          shadowOpacity: isDark ? 0 : 0.05,
+          shadowOffset: { width: 0, height: -4 },
+          shadowRadius: 10,
         },
         tabBarLabelStyle: {
           fontSize: 10,
@@ -53,7 +57,7 @@ export default function TabsLayout() {
           marginTop: 4,
           letterSpacing: 0.5,
         },
-        headerShown: false, // We will use custom headers in screens
+        headerShown: false,
       }}
     >
       <Tabs.Screen
@@ -88,7 +92,10 @@ export default function TabsLayout() {
              <View>
                <Heart size={24} color={color} fill={focused ? color : "none"} />
                {favorites.length > 0 && (
-                 <View className="absolute -top-1.5 -right-2 bg-red-500 w-4 h-4 rounded-full items-center justify-center border border-[#1e2029]">
+                 <View 
+                   className="absolute -top-1.5 -right-2 bg-red-500 w-4 h-4 rounded-full items-center justify-center border-2"
+                   style={{ borderColor: isDark ? "#1e2029" : "#ffffff" }}
+                 >
                     <Text className="text-[9px] font-bold text-white">{favorites.length > 9 ? '9+' : favorites.length}</Text>
                  </View>
                )}
@@ -108,7 +115,10 @@ export default function TabsLayout() {
              <View>
                <ShoppingCart size={24} color={color} fill={focused ? color : "none"} />
                {cartItems.length > 0 && (
-                 <View className="absolute -top-1.5 -right-2 bg-red-500 w-4 h-4 rounded-full items-center justify-center border border-[#1e2029]">
+                 <View 
+                   className="absolute -top-1.5 -right-2 bg-red-500 w-4 h-4 rounded-full items-center justify-center border-2"
+                   style={{ borderColor: isDark ? "#1e2029" : "#ffffff" }}
+                 >
                     <Text className="text-[9px] font-bold text-white">{cartItems.length > 9 ? '9+' : cartItems.length}</Text>
                  </View>
                )}
