@@ -91,14 +91,20 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, focused }) => (
              <View>
                <Heart size={24} color={color} fill={focused ? color : "none"} />
-               {favorites.length > 0 && (
-                 <View 
-                   className="absolute -top-1.5 -right-2 bg-red-500 w-4 h-4 rounded-full items-center justify-center border-2"
-                   style={{ borderColor: isDark ? "#1e2029" : "#ffffff" }}
-                 >
-                    <Text className="text-[9px] font-bold text-white">{favorites.length > 9 ? '9+' : favorites.length}</Text>
-                 </View>
-               )}
+                {favorites.length > 0 && (
+                  <View 
+                    className="absolute -top-1.5 -right-2 bg-rose-500 rounded-full items-center justify-center border-2 shadow-sm"
+                    style={{ 
+                      borderColor: isDark ? "#1e2029" : "#ffffff",
+                      width: 18,
+                      height: 18
+                    }}
+                  >
+                     <Text className="text-[10px] font-black text-white leading-none">
+                       {favorites.length > 9 ? '9+' : favorites.length}
+                     </Text>
+                  </View>
+                )}
              </View>
           ),
         }}
@@ -114,14 +120,20 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, focused }) => (
              <View>
                <ShoppingCart size={24} color={color} fill={focused ? color : "none"} />
-               {cartItems.length > 0 && (
-                 <View 
-                   className="absolute -top-1.5 -right-2 bg-red-500 w-4 h-4 rounded-full items-center justify-center border-2"
-                   style={{ borderColor: isDark ? "#1e2029" : "#ffffff" }}
-                 >
-                    <Text className="text-[9px] font-bold text-white">{cartItems.length > 9 ? '9+' : cartItems.length}</Text>
-                 </View>
-               )}
+                {cartItems.length > 0 && (
+                  <View 
+                    className="absolute -top-1.5 -right-2 bg-rose-500 rounded-full items-center justify-center border-2 shadow-sm"
+                    style={{ 
+                      borderColor: isDark ? "#1e2029" : "#ffffff",
+                      width: 18,
+                      height: 18
+                    }}
+                  >
+                     <Text className="text-[10px] font-black text-white leading-none">
+                       {cartItems.length > 9 ? '9+' : cartItems.length}
+                     </Text>
+                  </View>
+                )}
              </View>
           ),
         }}

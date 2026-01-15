@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useMemo } from 'react';
 import { useColorScheme as useNativeColorScheme } from 'nativewind';
 import { Appearance, View } from 'react-native';
 
@@ -27,32 +27,34 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    // Sync NativeWind v4 color scheme
+    if (themeMode === 'system') {
+      setColorScheme(Appearance.getColorScheme() || 'light');
+    } else {
+      setColorScheme(themeMode);
+    }
+
     const subscription = Appearance.addChangeListener(({ colorScheme: newScheme }) => {
       if (themeMode === 'system') {
-        const scheme = newScheme || 'dark';
-        setColorScheme(scheme);
+        setColorScheme(newScheme || 'light');
       }
     });
 
     return () => subscription.remove();
   }, [themeMode, setColorScheme]);
 
-  const isDark = colorScheme === 'dark';
+  // Immediate isDark calculation for faster UI response
+  const isDark = themeMode === 'dark' || (themeMode === 'system' && Appearance.getColorScheme() === 'dark');
+
+  const contextValue = useMemo(() => ({
+    themeMode,
+    setThemeMode,
+    isDark
+  }), [themeMode, isDark]);
 
   return (
-    <AppThemeContext.Provider 
-      value={{ 
-        themeMode, 
-        setThemeMode, 
-        isDark 
-      }}
-    >
-      <View 
-        className={isDark ? "dark" : ""} 
-        style={{ flex: 1, backgroundColor: isDark ? "#111827" : "#FFFFFF" }}
-      >
-        {children}
-      </View>
+    <AppThemeContext.Provider value={contextValue}>
+      {children}
     </AppThemeContext.Provider>
   );
 }
