@@ -5,17 +5,12 @@ import {
   User, 
   Settings, 
   LogOut, 
-  Package, 
-  CreditCard, 
-  ChevronRight, 
   ShieldCheck, 
-  Languages,
-  Moon,
-  HelpCircle,
-  Shield,
   Edit2,
-  Trash2,
-  ChevronLeft
+  ChevronLeft,
+  Lock,
+  Bell,
+  Trophy
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -77,43 +72,26 @@ export default function ProfileScreen() {
     </Text>
   );
 
-  const MenuItem = ({ icon, label, subLabel, onPress, showToggle, isToggled, isDestructive = false }: any) => (
+  const GridMenuItem = ({ icon, label, subLabel, onPress, isFullWidth = false }: any) => (
     <TouchableOpacity 
       onPress={onPress}
       activeOpacity={0.7}
-      disabled={showToggle}
-      className={`flex-row items-center justify-between p-4 bg-card mb-[1px] ${
-        // Add rounded corners for first/last items if we grouped them, 
-        // but for now simplistic approach similar to design
-        "border-b border-border/10 last:border-b-0"
-      }`}
+      style={{ width: isFullWidth ? '100%' : '48%' }}
+      className="bg-slate-800/80 rounded-[28px] p-5 mb-4 aspect-[1.1] justify-between border border-white/5"
     >
-      <View className="flex-row items-center flex-1">
-        <View className={`w-10 h-10 rounded-full items-center justify-center mr-4 ${
-          isDestructive ? 'bg-red-500/10' : 'bg-secondary/30'
-        }`}>
-          {icon}
-        </View>
-        <View>
-           <Text className={`text-base font-semibold ${isDestructive ? 'text-red-500' : 'text-foreground'}`}>
-             {label}
-           </Text>
-           {subLabel && (
-             <Text className="text-xs text-muted-foreground mt-0.5">{subLabel}</Text>
-           )}
-        </View>
+      <View className="w-10 h-10 rounded-2xl bg-slate-700/50 items-center justify-center">
+        {icon}
       </View>
-      
-      {showToggle ? (
-        <Switch 
-          value={isToggled} 
-          onValueChange={onPress}
-          trackColor={{ false: "#3f3f46", true: "#6366f1" }}
-          thumbColor={Platform.OS === 'ios' ? '#fff' : isToggled ? '#fff' : '#f4f3f4'}
-        />
-      ) : (
-        <ChevronRight size={20} color="#52525b" />
-      )}
+      <View>
+         <Text className="text-white text-lg font-bold leading-6">
+           {label}
+         </Text>
+         {subLabel && (
+           <Text className="text-slate-400 text-xs mt-1" numberOfLines={1}>
+             {subLabel}
+           </Text>
+         )}
+      </View>
     </TouchableOpacity>
   );
 
@@ -157,78 +135,56 @@ export default function ProfileScreen() {
             <Text className="text-slate-400 text-sm mt-1">{user.email}</Text>
           </View>
 
-          {/* GROUPS */}
-          
-          {/* Account Settings */}
-          <SectionHeader title="Account Settings" />
-          <View className="bg-slate-800 rounded-2xl overflow-hidden">
-             <MenuItem 
-                icon={<User size={18} color="#6366f1" />} 
-                label="Profile Picture" 
+          {/* GRID MENU */}
+          <View className="flex-row flex-wrap justify-between mt-4">
+             <GridMenuItem 
+                icon={<Bell size={22} color="white" />} 
+                label="Mitteilungen" 
+                subLabel="0 neu"
                 onPress={() => {}}
              />
-             <MenuItem 
-                icon={<User size={18} color="#6366f1" />} // Using user icon for email based on design, typically mail icon
-                label="Email Address" 
-                subLabel={user.email}
+             <GridMenuItem 
+                icon={<User size={22} color="white" />} 
+                label="Profil" 
+                subLabel="Name, Profilbild..."
                 onPress={() => {}}
              />
-             <MenuItem 
-                icon={<Lock size={18} color="#6366f1" />} // Assuming Lock icon
-                label="Change Password" 
+             <GridMenuItem 
+                icon={<Lock size={22} color="white" />} 
+                label="Konto" 
+                subLabel="Daten, Sicherheit, Plus..."
                 onPress={() => {}}
              />
-          </View>
-
-          {/* Preferences */}
-          <SectionHeader title="Preferences" />
-          <View className="bg-slate-800 rounded-2xl overflow-hidden">
-             <MenuItem 
-                icon={<Languages size={18} color="#fbbf24" />} 
-                label="Language" 
-                subLabel={locale === 'en' ? 'English (US)' : 'Türkçe (TR)'}
-                onPress={toggleLanguage}
-             />
-             <MenuItem 
-                icon={<Moon size={18} color="#fbbf24" />} 
-                label="Dark Mode" 
-                showToggle
-                isToggled={isDarkMode}
-                onPress={() => setIsDarkMode(!isDarkMode)}
-             />
-          </View>
-
-          {/* Support */}
-          <SectionHeader title="Support" />
-          <View className="bg-slate-800 rounded-2xl overflow-hidden">
-             <MenuItem 
-                icon={<HelpCircle size={18} color="#e2e8f0" />} 
-                label="Help Center" 
+             <GridMenuItem 
+                icon={<Settings size={22} color="white" />} 
+                label="Einstellungen" 
+                subLabel="Sprache, Design..."
                 onPress={() => {}}
              />
-             <MenuItem 
-                icon={<ShieldCheck size={18} color="#e2e8f0" />} 
-                label="Privacy Policy" 
+             <GridMenuItem 
+                icon={<Trophy size={22} color="white" />} 
+                label="Erfolge" 
+                subLabel="Abzeichen"
                 onPress={() => {}}
              />
              
-             {/* Admin Link if Admin */}
              {user.isAdmin && (
-               <MenuItem 
-                  icon={<Shield size={18} color="#e2e8f0" />} 
-                  label="Admin Panel" 
+               <GridMenuItem 
+                  icon={<ShieldCheck size={22} color="#fbbf24" />} 
+                  label="Admin-Dashboard" 
+                  subLabel="Benutzer & Statistiken..."
                   onPress={() => router.push("/admin")}
                />
              )}
           </View>
           
-          {/* Delete Account */}
           <TouchableOpacity 
-            className="mt-8 bg-slate-800/50 border border-slate-800 rounded-2xl py-4 flex-row items-center justify-center gap-2"
+            className="mt-4 bg-slate-800/30 border border-slate-800 rounded-2xl py-4 flex-row items-center justify-center gap-2"
             activeOpacity={0.7}
+            onPress={handleLogout}
           >
-             <Trash2 size={18} color="#ef4444" />
-             <Text className="text-red-500 font-bold">Delete Account</Text>
+             <LogOut size={18} color="#ef4444" />
+             <Text className="text-red-500 font-bold">Sign Out</Text>
           </TouchableOpacity>
           
           < View className="h-6" />
@@ -240,4 +196,4 @@ export default function ProfileScreen() {
 }
 
 // Quick component for locking icon above since it wasn't imported initially
-import { Lock } from "lucide-react-native";
+// End of ProfileScreen
