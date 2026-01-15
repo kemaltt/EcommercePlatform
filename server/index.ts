@@ -44,6 +44,9 @@ app.use((req, res, next) => {
   // Register all API routes
   app.use("/api", routes);
 
+  // Health check for deployment platforms
+  app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
+
   // Mount verify-email at root level to match existing behavior/links
   // We need to dynamically import it or just import it at top if possible.
   // Dynamic import is fine to avoid circular deps if any, but top level is better.
