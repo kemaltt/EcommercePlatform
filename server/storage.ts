@@ -203,7 +203,21 @@ export class MemStorage implements IStorage {
   async createUser(user: Omit<InsertUser, "confirmPassword">): Promise<User> {
     const id = this.userCurrentId++;
     const now = new Date();
-    const newUser: User = { ...user, id, createdAt: now };
+    const trialExpiresAt = new Date();
+    trialExpiresAt.setDate(trialExpiresAt.getDate() + 30);
+
+    const newUser: User = {
+      ...user,
+      id,
+      isAdmin: false,
+      status: "trial",
+      trialExpiresAt,
+      createdAt: now,
+      emailVerified: false,
+      emailVerificationToken: null,
+      verificationTokenExpiresAt: null,
+      address: user.address || null,
+    };
     this.users.set(id, newUser);
     return newUser;
   }
@@ -247,7 +261,14 @@ export class MemStorage implements IStorage {
   async createProduct(product: InsertProduct): Promise<Product> {
     const id = this.productCurrentId++;
     const now = new Date();
-    const newProduct: Product = { ...product, id, createdAt: now };
+    const newProduct: Product = {
+      ...product,
+      id,
+      createdAt: now,
+      isActive: product.isActive ?? true,
+      rating: product.rating ?? 0,
+      reviews: product.reviews ?? 0,
+    };
     this.products.set(id, newProduct);
     return newProduct;
   }
@@ -522,10 +543,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(user: Omit<InsertUser, "confirmPassword">): Promise<User> {
+    const trialExpiresAt = new Date();
+    trialExpiresAt.setDate(trialExpiresAt.getDate() + 30);
+
     const [newUser] = await db
       .insert(users)
       .values({
         ...user,
+        status: "trial",
+        trialExpiresAt,
         createdAt: new Date(),
       })
       .returning();
@@ -541,18 +567,7 @@ export class DatabaseStorage implements IStorage {
         .update(users)
         .set(userData)
         .where(eq(users.id, id))
-        .returning({
-          id: users.id,
-          username: users.username,
-          email: users.email,
-          fullName: users.fullName,
-          status: users.status,
-          isAdmin: users.isAdmin,
-          trialExpiresAt: users.trialExpiresAt,
-          address: users.address,
-          createdAt: users.createdAt,
-          // password alanını seçmiyoruz
-        });
+        .returning();
 
       return updatedUser;
     } catch (error) {
@@ -571,10 +586,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getProducts(category?: string, search?: string): Promise<Product[]> {
-    let query = db.select().from(products);
+    let query: any = db.select().from(products);
 
     if (category && category !== "all") {
-      query = query.where(eq(products.category, category));
+      query = query.where(eq(products.category, category)) as any;
     }
 
     // Basit arama için içerik araması yaparız
@@ -588,7 +603,9 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
-    return query.orderBy(desc(products.createdAt));
+    return query.orderBy(desc(products.createdAt)) as unknown as Promise<
+      Product[]
+    >;
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {
@@ -746,19 +763,21 @@ export class DatabaseStorage implements IStorage {
         .select({
           id: users.id,
           username: users.username,
+          password: users.password,
           email: users.email,
           fullName: users.fullName,
           status: users.status,
           isAdmin: users.isAdmin,
+          trialExpiresAt: users.trialExpiresAt,
           address: users.address,
           createdAt: users.createdAt,
+          emailVerified: users.emailVerified,
+          emailVerificationToken: users.emailVerificationToken,
+          verificationTokenExpiresAt: users.verificationTokenExpiresAt,
         })
-        .from(users);
+        .from(users as any);
 
-      return result.map((user) => ({
-        ...user,
-        password: undefined,
-      }));
+      return result as User[];
     } catch (error) {
       console.error("DatabaseStorage.getUsers error:", error);
       throw new Error("Failed to fetch users");

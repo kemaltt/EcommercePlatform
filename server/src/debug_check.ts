@@ -1,12 +1,12 @@
-import { db } from "./src/config/db";
-import { users } from "../../shared/schema";
+import { db } from "./config/db";
+import { users, type User } from "../../shared/schema";
 
 async function checkUsers() {
   try {
     console.log("Fetching users from DB...");
     const allUsers = await db.select().from(users);
     console.log("Users in DB:");
-    allUsers.forEach((u) => {
+    allUsers.forEach((u: User) => {
       console.log(
         `- ID: ${u.id}, Email: ${u.email}, FullName: ${u.fullName}, isAdmin: ${
           u.isAdmin

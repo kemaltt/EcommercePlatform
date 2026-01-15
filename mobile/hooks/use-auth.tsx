@@ -33,8 +33,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await api.post("/auth/login", data);
       return res.data;
     },
-    onSuccess: (user) => {
-      queryClient.setQueryData(["/api/auth/me"], user);
+    onSuccess: (data) => {
+      queryClient.setQueryData(["/api/auth/me"], data.user);
     },
   });
 
@@ -43,8 +43,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await api.post("/auth/register", data);
       return res.data;
     },
-    onSuccess: (user) => {
-      queryClient.setQueryData(["/api/auth/me"], user);
+    onSuccess: (data) => {
+      // Register doesn't return user, but if it did, we'd handle it here
+      // For now, it just returns a message, so we don't set user
     },
   });
 
