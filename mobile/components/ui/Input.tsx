@@ -1,5 +1,6 @@
 import { View, TextInput, Text } from "react-native";
 import { ReactNode } from "react";
+import { useTheme } from "../../contexts/theme-context";
 
 interface InputProps {
   label?: string;
@@ -34,6 +35,8 @@ export function Input({
   multiline,
   numberOfLines
 }: InputProps) {
+  const { isDark } = useTheme();
+
   return (
     <View className={`mb-5 ${className.includes('mb-0') ? 'mb-0' : ''} ${className.includes('flex-1') ? 'flex-1' : ''}`} style={style}>
       {label && (
@@ -42,10 +45,10 @@ export function Input({
         </Text>
       )}
       <View 
-        className={`flex-row items-center bg-card rounded-2xl overflow-hidden transition-all duration-200 ${
+        className={`flex-row items-center bg-card rounded-xl overflow-hidden transition-all duration-200 ${
           error 
             ? "border border-destructive/50 bg-destructive/5 " 
-            : className.includes('border-0') ? "" : "border border-border hover:border-primary/50 focus:border-primary focus:bg-primary/5"
+            : className.includes('border-0') ? "" : "border border-border"
         }`}
         style={multiline ? { alignItems: 'flex-start', height: 'auto', minHeight: 100 } : undefined}
       >
@@ -61,7 +64,7 @@ export function Input({
           secureTextEntry={secureTextEntry}
           autoCapitalize={autoCapitalize}
           className={`flex-1 p-4 text-base text-foreground font-medium ${multiline ? 'text-top pt-4' : 'h-14'}`}
-          placeholderTextColor="#64748b"
+          placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
           multiline={multiline}
           numberOfLines={numberOfLines}
         />

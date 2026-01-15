@@ -8,11 +8,13 @@ import { ShoppingCart, Heart, ArrowLeft, ChevronLeft } from "lucide-react-native
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Button } from "../../components/ui/Button";
+import { useTheme } from "../../contexts/theme-context";
 
 export default function SavedScreen() {
   const { favorites, isLoading, toggleFavorite } = useFavorites();
   const { addToCart } = useCart();
   const router = useRouter();
+  const { isDark } = useTheme();
 
   if (isLoading) {
     return (
@@ -47,7 +49,7 @@ export default function SavedScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? "light" : "dark"} />
       <SafeAreaView className="flex-1" edges={['top']}>
         {/* Header */}
         <View className="px-6 py-4 flex-row justify-between items-center bg-background z-10">
@@ -55,13 +57,13 @@ export default function SavedScreen() {
              onPress={() => router.back()}
              className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
            >
-              <ChevronLeft size={20} color="#94a3b8" />
+              <ChevronLeft size={20} color={isDark ? "#94a3b8" : "#52525b"} />
            </TouchableOpacity>
            
            <Text className="text-xl font-bold text-foreground">Your Wishlist</Text>
 
            <View className="w-10 h-10 items-center justify-center">
-              <Heart size={24} color="white" fill="white" />
+              <Heart size={24} color={isDark ? "white" : "black"} fill={isDark ? "white" : "black"} />
               <View className="absolute top-0 right-0 bg-[#6366f1] w-4 h-4 rounded-full items-center justify-center border border-background">
                  <Text className="text-[9px] font-bold text-white">{favorites.length}</Text>
               </View>
@@ -96,7 +98,7 @@ export default function SavedScreen() {
               <View className="flex-1 justify-between py-1">
                  <View>
                      <View className="flex-row justify-between items-start">
-                        <Text className="text-white font-bold text-base flex-1 mr-2" numberOfLines={1}>
+                        <Text className="text-foreground font-bold text-base flex-1 mr-2" numberOfLines={1}>
                           {item.name}
                         </Text>
                         <TouchableOpacity 
@@ -112,12 +114,12 @@ export default function SavedScreen() {
                  </View>
                  
                  <View className="flex-row justify-between items-end mt-2">
-                    <Text className="text-white text-lg font-bold">
+                    <Text className="text-foreground text-lg font-bold">
                        ${Number(item.price).toFixed(2)}
                     </Text>
                     
                     <TouchableOpacity 
-                       className="bg-[#334155] flex-row items-center px-3 py-2 rounded-xl"
+                       className="bg-primary flex-row items-center px-3 py-2 rounded-xl"
                        onPress={() => addToCart(item)}
                     >
                         <ShoppingCart size={14} color="white" className="mr-2" />

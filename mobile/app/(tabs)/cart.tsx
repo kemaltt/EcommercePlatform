@@ -7,11 +7,13 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { Image } from "expo-image";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { useTheme } from "../../contexts/theme-context";
 
 export default function CartScreen() {
   const { cartItems, subtotal, updateQuantity, removeFromCart, isLoading } = useCart();
   const router = useRouter();
   const intl = useIntl();
+  const { isDark } = useTheme();
 
   if (isLoading) {
     return (
@@ -48,7 +50,7 @@ export default function CartScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? "light" : "dark"} />
       <SafeAreaView className="flex-1" edges={['top']}>
         
         {/* Header */}
@@ -57,13 +59,13 @@ export default function CartScreen() {
              onPress={() => router.back()}
              className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
            >
-              <ChevronLeft size={20} color="#94a3b8" />
+              <ChevronLeft size={20} color={isDark ? "#94a3b8" : "#52525b"} />
            </TouchableOpacity>
            
            <Text className="text-xl font-bold text-foreground">Your Cart</Text>
 
            <View className="w-10 h-10 items-center justify-center">
-              <ShoppingBag size={24} color="white" />
+              <ShoppingBag size={24} color={isDark ? "white" : "black"} />
               <View className="absolute top-0 right-0 bg-[#6366f1] w-4 h-4 rounded-full items-center justify-center border border-background">
                  <Text className="text-[9px] font-bold text-white">{cartItems.length}</Text>
               </View>
@@ -109,7 +111,7 @@ export default function CartScreen() {
                  <View className="flex-1 justify-between py-1">
                     <View>
                         <View className="flex-row justify-between items-start">
-                           <Text className="text-white font-bold text-base flex-1 mr-2" numberOfLines={1}>
+                           <Text className="text-foreground font-bold text-base flex-1 mr-2" numberOfLines={1}>
                              {item.product?.name || "Product"}
                            </Text>
                            <TouchableOpacity 
@@ -125,20 +127,20 @@ export default function CartScreen() {
                     </View>
                     
                     <View className="flex-row justify-between items-end mt-2">
-                       <Text className="text-[#6366f1] text-lg font-bold">
+                       <Text className="text-primary text-lg font-bold">
                           ${Number(item.product?.price || 0).toFixed(2)}
                        </Text>
                        
                        {/* Qty Control */}
                        <View className="flex-row items-center bg-[#1e2029] rounded-xl overflow-hidden border border-border/50">
                           <TouchableOpacity 
-                            className="w-8 h-8 items-center justify-center bg-[#2c2e3e]"
+                            className="w-8 h-8 items-center justify-center bg-secondary"
                             onPress={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
                           >
-                             <Minus size={14} color="#94a3b8" />
+                             <Minus size={14} color={isDark ? "#94a3b8" : "#64748b"} />
                           </TouchableOpacity>
                           <View className="w-8 h-8 items-center justify-center">
-                             <Text className="text-white font-bold text-sm">{item.quantity}</Text>
+                             <Text className="text-foreground font-bold text-sm">{item.quantity}</Text>
                           </View>
                           <TouchableOpacity 
                              className="w-8 h-8 items-center justify-center bg-[#6366f1]"
@@ -156,33 +158,28 @@ export default function CartScreen() {
         </ScrollView>
       </SafeAreaView>
 
-      {/* Summary Footer */}
-      <View className="absolute bottom-0 left-0 right-0 bg-[#0f111a] rounded-t-[32px] p-6 pb-10 border-t border-border shadow-2xl">
-         <View className="flex-row justify-between mb-2">
-            <Text className="text-muted-foreground text-sm">Subtotal</Text>
-            <Text className="text-white font-bold text-sm">${subtotal.toFixed(2)}</Text>
-         </View>
+       <View className="absolute bottom-0 left-0 right-0 bg-background rounded-t-[32px] p-6 pb-10 border-t border-border shadow-2xl">
+          <View className="flex-row justify-between mb-2">
+             <Text className="text-muted-foreground text-sm">Subtotal</Text>
+             <Text className="text-foreground font-bold text-sm">${subtotal.toFixed(2)}</Text>
+          </View>
          <View className="flex-row justify-between mb-6">
             <Text className="text-muted-foreground text-sm">Shipping</Text>
             <Text className="text-green-500 font-bold text-sm">FREE</Text>
          </View>
-         
-         <View className="flex-row justify-between items-center mb-6 pt-4 border-t border-border/50">
-             <Text className="text-white text-xl font-bold">Total</Text>
-             <Text className="text-[#6366f1] text-2xl font-black">${subtotal.toFixed(2)}</Text>
-         </View>
+                  <View className="flex-row justify-between items-center mb-6 pt-4 border-t border-border/50">
+              <Text className="text-foreground text-xl font-bold">Total</Text>
+              <Text className="text-primary text-2xl font-black">${subtotal.toFixed(2)}</Text>
+          </View>
 
-         <Button
-           title="Proceed to Checkout"
-           onPress={() => Alert.alert("Checkout", "Process started...")}
-           variant="primary"
-           className="h-14 rounded-2xl bg-[#52525b]" // The screenshot has a muted indigo/gray button
-           // Actually let's stick to our primary or use custom style to match image exact color
-           style={{ backgroundColor: "#4f46e5" }} // Indigo-600
-           icon={<ArrowRight size={20} color="white" />}
-         />
+          <Button
+            title="Proceed to Checkout"
+            onPress={() => Alert.alert("Checkout", "Process started...")}
+            variant="primary"
+            className="h-14 rounded-2xl"
+            icon={<ArrowRight size={20} color="white" />}
+          />
       </View>
     </View>
   );
 }
-

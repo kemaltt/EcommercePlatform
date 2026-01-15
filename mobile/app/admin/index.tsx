@@ -17,12 +17,14 @@ import {
 } from "lucide-react-native";
 import { useAuth } from "../../hooks/use-auth";
 import { LineChart } from "react-native-chart-kit";
+import { useTheme } from "../../contexts/theme-context";
 
 const { width } = Dimensions.get("window");
 
 export default function AdminConsoleScreen() {
   const router = useRouter();
   const { user } = useAuth();
+  const { isDark } = useTheme();
   
   const { data: stats } = useQuery({
     queryKey: ["/api/admin/stats"],
@@ -46,13 +48,13 @@ export default function AdminConsoleScreen() {
   const ManagementCard = ({ title, count, subtitle, icon, onPress }: any) => (
     <TouchableOpacity 
       onPress={onPress}
-      className="bg-[#2A2C39] p-5 rounded-3xl flex-1 border border-white/5"
+      className="bg-card p-5 rounded-3xl flex-1 border border-border/50"
     >
       <View className="w-10 h-10 bg-[#6366f1]/20 rounded-xl items-center justify-center mb-4">
         {icon}
       </View>
-      <Text className="text-white font-bold text-lg mb-1">{title}</Text>
-      <Text className="text-slate-400 text-xs font-bold mb-4">{count} {subtitle}</Text>
+      <Text className="text-foreground font-bold text-lg mb-1">{title}</Text>
+      <Text className="text-muted-foreground text-xs font-bold mb-4">{count} {subtitle}</Text>
       
       <View className="flex-row items-center">
          <Text className="text-[#6366f1] text-xs font-bold mr-1">Manage</Text>
@@ -62,60 +64,60 @@ export default function AdminConsoleScreen() {
   );
 
   const ActiveInventoryItem = ({ image, title, stock, price }: any) => (
-     <View className="bg-[#2A2C39] p-3 rounded-[30px] mb-3 flex-row items-center border border-white/5">
-        <View className="w-16 h-16 bg-white rounded-2xl mr-4 overflow-hidden items-center justify-center p-1">
+     <View className="bg-card p-3 rounded-[30px] mb-3 flex-row items-center border border-border/50">
+        <View className="w-16 h-16 bg-background rounded-2xl mr-4 overflow-hidden items-center justify-center p-1 border border-border/50">
            {/* Placeholder for image - using Box icon since we don't have actual asset here easily */}
            <Package size={30} color="#6366f1" />
         </View>
         <View className="flex-1">
-           <Text className="text-white font-bold text-base mb-1">{title}</Text>
-           <Text className="text-slate-400 text-xs">Stock: {stock} • Ref: #7721</Text>
-           <Text className="text-[#6366f1] font-bold mt-1">${price}</Text>
+           <Text className="text-foreground font-bold text-base mb-1">{title}</Text>
+           <Text className="text-muted-foreground text-xs">Stock: {stock} • Ref: #7721</Text>
+           <Text className="text-primary font-bold mt-1">${price}</Text>
         </View>
         <View className="flex-row gap-4 mr-1">
             <TouchableOpacity hitSlop={10}>
-              <Plus size={20} color="#94a3b8" />
+              <Plus size={20} color={isDark ? "#94a3b8" : "#64748b"} />
             </TouchableOpacity>
             <TouchableOpacity hitSlop={10}>
-              <Box size={20} color="#94a3b8" />
+              <Box size={20} color={isDark ? "#94a3b8" : "#64748b"} />
             </TouchableOpacity>
         </View>
      </View>
   );
 
   return (
-    <View className="flex-1 bg-[#1e2029]">
-      <StatusBar style="light" />
+    <View className="flex-1 bg-background">
+      <StatusBar style={isDark ? "light" : "dark"} />
       <SafeAreaView className="flex-1" edges={['top']}>
         {/* Header */}
-        <View className="px-6 py-4 flex-row justify-between items-center bg-[#1e2029]">
+        <View className="px-6 py-4 flex-row justify-between items-center bg-background">
           <View className="flex-row items-center">
              <TouchableOpacity 
                onPress={() => router.back()}
-               className="w-10 h-10 bg-[#2A2C39] rounded-full items-center justify-center border border-white/10 mr-4"
+               className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border mr-4"
              >
-                <ChevronLeft size={20} color="white" />
+                <ChevronLeft size={20} color={isDark ? "white" : "black"} />
              </TouchableOpacity>
              <View>
-               <Text className="text-white text-lg font-bold">Admin Console</Text>
-               <Text className="text-slate-400 text-xs text-indigo-400">Store Overview • Live</Text>
+               <Text className="text-foreground text-lg font-bold">Admin Console</Text>
+               <Text className="text-primary text-xs font-bold">Store Overview • Live</Text>
              </View>
           </View>
           
           <View className="flex-row gap-3">
             <TouchableOpacity className="w-10 h-10 items-center justify-center relative">
-               <Bell size={20} color="#e2e8f0" />
-               <View className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#1e2029]" />
+               <Bell size={20} color={isDark ? "#e2e8f0" : "#475569"} />
+               <View className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-background" />
             </TouchableOpacity>
             <TouchableOpacity className="w-10 h-10 bg-[#fbbf24] rounded-full items-center justify-center" onPress={() => router.back()}>
-               <User size={20} color="#1e2029" />
+               <User size={20} color="#1e293b" />
             </TouchableOpacity>
           </View>
         </View>
 
         <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
           
-          <Text className="text-white font-bold text-lg mb-4">Management</Text>
+          <Text className="text-foreground font-bold text-lg mb-4">Management</Text>
           <View className="flex-row mb-8">
              <View className="flex-1 mr-4">
                <ManagementCard 
@@ -138,18 +140,18 @@ export default function AdminConsoleScreen() {
           </View>
 
           <View className="flex-row justify-between items-center mb-4">
-             <Text className="text-white font-bold text-lg">Sales Velocity</Text>
-             <View className="flex-row bg-[#2A2C39] rounded-lg p-0.5">
-                <TouchableOpacity className="px-3 py-1 bg-[#2A2C39] rounded-md">
-                   <Text className="text-white text-xs font-bold">WEEK</Text>
+             <Text className="text-foreground font-bold text-lg">Sales Velocity</Text>
+             <View className="flex-row bg-card rounded-lg p-0.5 border border-border/50">
+                <TouchableOpacity className="px-3 py-1 bg-background rounded-md shadow-sm">
+                   <Text className="text-foreground text-xs font-bold">WEEK</Text>
                 </TouchableOpacity>
                 <TouchableOpacity className="px-3 py-1">
-                   <Text className="text-slate-400 text-xs font-bold">MONTH</Text>
+                   <Text className="text-muted-foreground text-xs font-bold">MONTH</Text>
                 </TouchableOpacity>
              </View>
           </View>
 
-          <View className="bg-[#2A2C39] rounded-3xl p-4 mb-8 border border-white/5 items-center">
+          <View className="bg-card rounded-3xl p-4 mb-8 border border-border/50 items-center">
              <LineChart
                 data={lineChartData}
                 width={width - 80}
@@ -157,12 +159,12 @@ export default function AdminConsoleScreen() {
                 yAxisLabel=""
                 yAxisSuffix=""
                 chartConfig={{
-                  backgroundColor: "#2A2C39",
-                  backgroundGradientFrom: "#2A2C39",
-                  backgroundGradientTo: "#2A2C39",
+                  backgroundColor: isDark ? "#1f2937" : "#f8fafc",
+                  backgroundGradientFrom: isDark ? "#1f2937" : "#f8fafc",
+                  backgroundGradientTo: isDark ? "#1f2937" : "#f8fafc",
                   decimalPlaces: 0,
                   color: (opacity = 1) => `rgba(99, 102, 241, ${opacity})`,
-                  labelColor: (opacity = 1) => `rgba(148, 163, 184, ${opacity})`,
+                  labelColor: (opacity = 1) => isDark ? `rgba(148, 163, 184, ${opacity})` : `rgba(71, 85, 105, ${opacity})`,
                   style: {
                     borderRadius: 16,
                   },
@@ -171,7 +173,7 @@ export default function AdminConsoleScreen() {
                   },
                   propsForBackgroundLines: {
                     strokeDasharray: "", // solid lines
-                    stroke: "#334155",
+                    stroke: isDark ? "#334155" : "#e2e8f0",
                     strokeWidth: 1
                   }
                 }}
@@ -185,15 +187,15 @@ export default function AdminConsoleScreen() {
               />
               <View className="flex-row justify-between w-full px-4 mt-2">
                  {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map((day, i) => (
-                    <Text key={i} className="text-slate-500 text-[10px] font-bold">{day}</Text>
+                    <Text key={i} className="text-muted-foreground text-[10px] font-bold">{day}</Text>
                  ))}
               </View>
           </View>
 
           <View className="flex-row justify-between items-center mb-4">
-             <Text className="text-white font-bold text-lg">Active Inventory</Text>
+             <Text className="text-foreground font-bold text-lg">Active Inventory</Text>
              <TouchableOpacity>
-                <Text className="text-slate-400 text-xs flex-row items-center">See All <ChevronRight size={10} /></Text>
+                <Text className="text-muted-foreground text-xs flex-row items-center">See All <ChevronRight size={10} /></Text>
              </TouchableOpacity>
           </View>
 

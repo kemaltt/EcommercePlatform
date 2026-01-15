@@ -14,6 +14,7 @@ import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../hooks/use-auth";
 import { useState } from "react";
 import { useCart } from "@/hooks/use-cart";
+import { useTheme } from "../../contexts/theme-context";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -26,6 +27,7 @@ export default function ProductDetailsScreen() {
   const intl = useIntl();
   const [selectedSize, setSelectedSize] = useState("M");
   const [isAdded, setIsAdded] = useState(false);
+  const { isDark } = useTheme();
 
   // Find if item is in cart
   // id from params is string, productId is number
@@ -82,7 +84,7 @@ export default function ProductDetailsScreen() {
 
   return (
     <View className="flex-1 bg-background relative">
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? "light" : "dark"} />
       <Stack.Screen options={{ headerShown: false }} />
       
       {/* Hero Image - Takes up top portion */}
@@ -117,8 +119,8 @@ export default function ProductDetailsScreen() {
 
       {/* Bottom Sheet Details */}
       <View 
-        className="flex-1 bg-[#1e2029] -mt-10 rounded-t-[40px] px-6 pt-8 pb-8"
-        style={{ shadowColor: "#000", shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.3, shadowRadius: 20 }}
+        className="flex-1 bg-card -mt-10 rounded-t-[40px] px-6 pt-8 pb-8"
+        style={{ shadowColor: "#000", shadowOffset: { width: 0, height: -10 }, shadowOpacity: 0.1, shadowRadius: 20 }}
       >
          <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
             {/* Tag & Rating */}
@@ -137,10 +139,10 @@ export default function ProductDetailsScreen() {
             </View>
 
             {/* Title & Price */}
-            <Text className="text-3xl font-bold text-white mb-2 leading-tight">
+            <Text className="text-3xl font-bold text-foreground mb-2 leading-tight">
               {product.name}
             </Text>
-            <Text className="text-2xl font-bold text-white mb-4">
+            <Text className="text-2xl font-bold text-foreground mb-4">
               ${Number(product.price).toFixed(2)}
             </Text>
 
@@ -174,7 +176,7 @@ export default function ProductDetailsScreen() {
                        : "bg-card border-border"
                    }`}
                  >
-                   <Text className={`font-bold ${selectedSize === size ? "text-white" : "text-white"}`}>
+                   <Text className={`font-bold ${selectedSize === size ? "text-white" : "text-foreground"}`}>
                      {size}
                    </Text>
                  </TouchableOpacity>
@@ -192,23 +194,23 @@ export default function ProductDetailsScreen() {
                
                {cartItem ? (
                  <View className="flex-1 h-14 bg-card border border-border rounded-2xl flex-row items-center justify-between px-2">
-                    <TouchableOpacity 
-                      className="w-10 h-10 bg-[#2c2e3e] rounded-xl items-center justify-center"
-                      onPress={() => cartItem.quantity > 1 ? updateQuantity(cartItem.id, cartItem.quantity - 1) : removeFromCart(cartItem.id)}
-                    >
-                      <Minus size={20} color="#94a3b8" />
-                    </TouchableOpacity>
-                    
-                    <View className="items-center">
-                       <Text className="text-white font-bold text-base">{cartItem.quantity} in Cart</Text>
-                    </View>
-
-                    <TouchableOpacity 
-                      className="w-10 h-10 bg-[#6366f1] rounded-xl items-center justify-center"
-                      onPress={() => updateQuantity(cartItem.id, cartItem.quantity + 1)}
-                    >
-                      <Plus size={20} color="white" />
-                    </TouchableOpacity>
+                     <TouchableOpacity 
+                       className={`w-10 h-10 rounded-xl items-center justify-center ${isDark ? 'bg-[#2c2e3e]' : 'bg-secondary'}`}
+                       onPress={() => cartItem.quantity > 1 ? updateQuantity(cartItem.id, cartItem.quantity - 1) : removeFromCart(cartItem.id)}
+                     >
+                       <Minus size={20} color={isDark ? "#94a3b8" : "#64748b"} />
+                     </TouchableOpacity>
+                     
+                     <View className="items-center">
+                        <Text className="text-foreground font-bold text-base">{cartItem.quantity} in Cart</Text>
+                     </View>
+ 
+                     <TouchableOpacity 
+                       className="w-10 h-10 bg-primary rounded-xl items-center justify-center"
+                       onPress={() => updateQuantity(cartItem.id, cartItem.quantity + 1)}
+                     >
+                       <Plus size={20} color="white" />
+                     </TouchableOpacity>
                  </View>
                ) : (
                  <Button
@@ -228,10 +230,10 @@ export default function ProductDetailsScreen() {
                   <View className="w-8 h-8 bg-[#fbbf24]/20 rounded-full items-center justify-center">
                      <Truck size={16} color="#fbbf24" />
                   </View>
-                  <View>
-                     <Text className="text-white text-[10px] font-bold uppercase">Free 2-Day</Text>
-                     <Text className="text-muted-foreground text-[10px] font-bold uppercase">Shipping</Text>
-                  </View>
+                   <View>
+                      <Text className="text-foreground text-[10px] font-bold uppercase">Free 2-Day</Text>
+                      <Text className="text-muted-foreground text-[10px] font-bold uppercase">Shipping</Text>
+                   </View>
                </View>
                
                <View className="w-px bg-border h-full" />
@@ -240,10 +242,10 @@ export default function ProductDetailsScreen() {
                   <View className="w-8 h-8 bg-[#fbbf24]/20 rounded-full items-center justify-center">
                      <CheckCircle size={16} color="#fbbf24" />
                   </View>
-                   <View>
-                     <Text className="text-white text-[10px] font-bold uppercase">Lifetime</Text>
-                     <Text className="text-muted-foreground text-[10px] font-bold uppercase">Warranty</Text>
-                  </View>
+                    <View>
+                      <Text className="text-foreground text-[10px] font-bold uppercase">Lifetime</Text>
+                      <Text className="text-muted-foreground text-[10px] font-bold uppercase">Warranty</Text>
+                   </View>
                </View>
             </View>
             

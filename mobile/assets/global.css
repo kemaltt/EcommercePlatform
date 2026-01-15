@@ -4,53 +4,34 @@
 
 @layer base {
   :root {
-    /* Midnight Blue Theme - Based on Target Screenshot */
-    
-    /* Background: Deep Indigo/Navy (#1e2029 approx) */
-    --background: 230 25% 14%;
-    --foreground: 210 40% 98%;
-
-    /* Card: Slightly lighter/transparent overlay */
-    --card: 230 25% 18%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 230 25% 18%;
-    --popover-foreground: 210 40% 98%;
-
-    /* Primary: The Button Color (Indigo/Blue #4f46e5 approx) */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 4%;
+    --card: 240 5% 96%;
+    --card-foreground: 240 10% 4%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 4%;
     --primary: 243 75% 59%;
     --primary-foreground: 210 40% 98%;
-
-    /* Secondary */
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    /* Muted: Label colors */
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    /* Accent */
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    /* Destructive */
-    --destructive: 0 62.8% 30.6%;
+    --secondary: 240 5% 90%;
+    --secondary-foreground: 240 10% 4%;
+    --muted: 240 5% 90%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 240 5% 90%;
+    --accent-foreground: 240 10% 4%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-
-    /* Borders: Inputs and lines */
-    --border: 230 25% 25%;
-    --input: 230 25% 20%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
     --ring: 243 75% 59%;
-
-    --radius: 0.75rem;
+    --radius: 1rem;
   }
 
   .dark {
-    --background: 230 25% 14%;
+    --background: 230 25% 12%;
     --foreground: 210 40% 98%;
-    --card: 230 25% 18%;
+    --card: 230 25% 16%;
     --card-foreground: 210 40% 98%;
-    --popover: 230 25% 18%;
+    --popover: 230 25% 16%;
     --popover-foreground: 210 40% 98%;
     --primary: 243 75% 59%;
     --primary-foreground: 210 40% 98%;
@@ -62,8 +43,8 @@
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 230 25% 25%;
-    --input: 230 25% 20%;
+    --border: 230 25% 22%;
+    --input: 230 25% 18%;
     --ring: 243 75% 59%;
   }
 }

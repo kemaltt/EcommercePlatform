@@ -12,6 +12,7 @@ import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../../hooks/use-auth";
 import { useFavorites } from "../../hooks/use-favorites";
 import { useRouter } from "expo-router";
+import { useTheme } from "../../contexts/theme-context";
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = (width - 48) / 2; // px-6 is 24px each side -> 48px total
@@ -31,6 +32,7 @@ export default function HomeScreen() {
   const intl = useIntl();
   const { user } = useAuth();
   const router = useRouter();
+  const { isDark } = useTheme();
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products", selectedCategory, searchQuery],
@@ -107,33 +109,33 @@ export default function HomeScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? "light" : "dark"} />
       <SafeAreaView className="flex-1" edges={['top']}>
         
         {/* Header */}
         <View className="px-6 py-4 flex-row justify-between items-center">
           <View>
-            <Text className="text-white text-3xl font-bold">
+            <Text className="text-foreground text-3xl font-bold">
               Catalog
             </Text>
           </View>
           <TouchableOpacity 
             className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
           >
-             <Bell size={20} color="white" />
+             <Bell size={20} color={isDark ? "white" : "black"} />
           </TouchableOpacity>
         </View>
 
         {/* Search Bar */}
         <View className="px-6 mb-6">
            {/* Custom Search Input Appearance matching Image 1 */}
-           <View className="flex-row items-center bg-[#2A2C39] rounded-2xl px-4 h-14 border border-white/5">
-              <Search size={22} color="#94a3b8" />
+           <View className="flex-row items-center bg-card rounded-2xl px-4 h-14 border border-border/50">
+              <Search size={22} color={isDark ? "#94a3b8" : "#64748b"} />
               <TextInput
                  value={searchQuery}
                  onChangeText={setSearchQuery}
                  placeholder="Search for premium products..."
-                 placeholderTextColor="#64748b"
+                 placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
                  className="flex-1 mx-3 text-base text-foreground font-medium h-full"
               />
               <View className="mr-1">
@@ -170,7 +172,7 @@ export default function HomeScreen() {
         {/* New Arrivals & List */}
         <View className="flex-1 px-6">
            <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-white text-lg font-bold">New Arrivals</Text>
+              <Text className="text-foreground text-lg font-bold">New Arrivals</Text>
               <TouchableOpacity>
                  <Text className="text-[#6366f1] text-xs font-bold">View All</Text>
               </TouchableOpacity>

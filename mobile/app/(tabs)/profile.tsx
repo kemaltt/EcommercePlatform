@@ -17,15 +17,16 @@ import { FormattedMessage, useIntl } from "react-intl";
 import { useI18n } from "../../contexts/i18n-context";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
-import React from 'react';
+import React, { useState } from 'react';
+
+import { useTheme } from "../../contexts/theme-context";
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const intl = useIntl();
   const { locale, setLocale } = useI18n();
-  const [isDarkMode, setIsDarkMode] = useState(true); // Mock state for now
+  const { isDark } = useTheme();
 
   // --- Actions ---
   const handleLogout = () => {
@@ -77,17 +78,17 @@ export default function ProfileScreen() {
       onPress={onPress}
       activeOpacity={0.7}
       style={{ width: isFullWidth ? '100%' : '48%' }}
-      className="bg-slate-800/80 rounded-[28px] p-5 mb-4 aspect-[1.1] justify-between border border-white/5"
+      className="bg-card rounded-[28px] p-5 mb-4 aspect-[1.1] justify-between border border-border"
     >
-      <View className="w-10 h-10 rounded-2xl bg-slate-700/50 items-center justify-center">
+      <View className="w-10 h-10 rounded-2xl bg-secondary items-center justify-center">
         {icon}
       </View>
       <View>
-         <Text className="text-white text-lg font-bold leading-6">
+         <Text className="text-foreground text-lg font-bold leading-6">
            {label}
          </Text>
          {subLabel && (
-           <Text className="text-slate-400 text-xs mt-1" numberOfLines={1}>
+           <Text className="text-muted-foreground text-xs mt-1" numberOfLines={1}>
              {subLabel}
            </Text>
          )}
@@ -96,26 +97,26 @@ export default function ProfileScreen() {
   );
 
   return (
-    <View className="flex-1 bg-slate-900">
-      <StatusBar style="light" />
+    <View className="flex-1 bg-background">
+      <StatusBar style={isDark ? "light" : "dark"} />
       <SafeAreaView className="flex-1" edges={['top']}>
         
         {/* Header */}
         <View className="flex-row justify-between items-center px-6 py-4">
            <TouchableOpacity 
-             className="w-10 h-10 rounded-full bg-slate-800 items-center justify-center"
+             className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border"
              onPress={() => router.back()}
            >
-             <ChevronLeft size={20} color="white" />
+             <ChevronLeft size={20} color={isDark ? "white" : "black"} />
            </TouchableOpacity>
            
-           <Text className="text-lg font-bold text-white">Profile</Text>
+           <Text className="text-lg font-bold text-foreground">Profile</Text>
            
            <TouchableOpacity 
-             className="w-10 h-10 rounded-full bg-slate-800 items-center justify-center"
+             className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border"
              onPress={handleLogout}
            >
-             <LogOut size={18} color="white" />
+             <LogOut size={18} color={isDark ? "white" : "black"} />
            </TouchableOpacity>
         </View>
         
@@ -124,45 +125,45 @@ export default function ProfileScreen() {
           {/* Avatar Section */}
           <View className="items-center mt-4 mb-8">
             <View className="relative">
-              <View className="w-28 h-28 rounded-full bg-slate-800 items-center justify-center border-4 border-slate-800 shadow-xl">
-                 <User size={48} color="#94a3b8" />
+              <View className="w-28 h-28 rounded-full bg-card items-center justify-center border-4 border-card shadow-xl">
+                 <User size={48} color={isDark ? "#94a3b8" : "#64748b"} />
               </View>
               <TouchableOpacity className="absolute bottom-0 right-0 bg-[#fbbf24] w-8 h-8 rounded-full items-center justify-center border-2 border-slate-900">
                  <Edit2 size={14} color="#1e293b" />
               </TouchableOpacity>
             </View>
-            <Text className="text-xl font-bold text-white mt-4">{user.fullName}</Text>
-            <Text className="text-slate-400 text-sm mt-1">{user.email}</Text>
+            <Text className="text-xl font-bold text-foreground mt-4">{user.fullName}</Text>
+            <Text className="text-muted-foreground text-sm mt-1">{user.email}</Text>
           </View>
 
           {/* GRID MENU */}
           <View className="flex-row flex-wrap justify-between mt-4">
              <GridMenuItem 
-                icon={<Bell size={22} color="white" />} 
+                icon={<Bell size={22} color={isDark ? "white" : "black"} />} 
                 label="Mitteilungen" 
                 subLabel="0 neu"
                 onPress={() => {}}
              />
              <GridMenuItem 
-                icon={<User size={22} color="white" />} 
+                icon={<User size={22} color={isDark ? "white" : "black"} />} 
                 label="Profil" 
                 subLabel="Name, Profilbild..."
                 onPress={() => {}}
              />
              <GridMenuItem 
-                icon={<Lock size={22} color="white" />} 
+                icon={<Lock size={22} color={isDark ? "white" : "black"} />} 
                 label="Konto" 
                 subLabel="Daten, Sicherheit, Plus..."
                 onPress={() => {}}
              />
              <GridMenuItem 
-                icon={<Settings size={22} color="white" />} 
+                icon={<Settings size={22} color={isDark ? "white" : "black"} />} 
                 label="Einstellungen" 
                 subLabel="Sprache, Design..."
                 onPress={() => router.push("/settings")}
              />
              <GridMenuItem 
-                icon={<Trophy size={22} color="white" />} 
+                icon={<Trophy size={22} color={isDark ? "white" : "black"} />} 
                 label="Erfolge" 
                 subLabel="Abzeichen"
                 onPress={() => {}}
@@ -179,7 +180,7 @@ export default function ProfileScreen() {
           </View>
           
           <TouchableOpacity 
-            className="mt-4 bg-slate-800/30 border border-slate-800 rounded-2xl py-4 flex-row items-center justify-center gap-2"
+            className="mt-4 bg-card border border-border rounded-2xl py-4 flex-row items-center justify-center gap-2"
             activeOpacity={0.7}
             onPress={handleLogout}
           >
