@@ -54,11 +54,14 @@ export default function AdminUsersScreen() {
           </View>
       </View>
       
-      <View className="flex-row gap-3">
-         <TouchableOpacity className="flex-1 bg-[#2A2C39] border border-white/5 py-3 rounded-xl flex-row items-center justify-center">
-            <Edit2 size={14} color="white" className="mr-2" />
-            <Text className="text-white text-xs font-bold">Edit User</Text>
-         </TouchableOpacity>
+       <View className="flex-row gap-3">
+          <TouchableOpacity 
+            onPress={() => router.push(`/admin/users/${item.id}`)}
+            className="flex-1 bg-[#2A2C39] border border-white/5 py-3 rounded-xl flex-row items-center justify-center"
+          >
+             <Edit2 size={14} color="white" className="mr-2" />
+             <Text className="text-white text-xs font-bold">Edit User</Text>
+          </TouchableOpacity>
          
          <TouchableOpacity className="flex-1 bg-[#6366f1] py-3 rounded-xl flex-row items-center justify-center">
             <ShoppingCart size={14} color="white" className="mr-2" />

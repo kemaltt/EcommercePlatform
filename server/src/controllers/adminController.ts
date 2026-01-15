@@ -35,12 +35,29 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
-export const updateUserStatus = async (req: Request, res: Response) => {
+export const getUser = async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.id);
-    const { status } = req.body;
+    const user = await storage.getUser(userId);
 
-    const updatedUser = await storage.updateUser(userId, { status });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Exclude password
+    const { password, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching user details" });
+  }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+  try {
+    const userId = parseInt(req.params.id);
+    const userData = req.body;
+
+    const updatedUser = await storage.updateUser(userId, userData);
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -48,6 +65,7 @@ export const updateUserStatus = async (req: Request, res: Response) => {
 
     res.json(updatedUser);
   } catch (err) {
-    res.status(500).json({ message: "Error updating user status" });
+    console.error("Error updating user:", err);
+    res.status(500).json({ message: "Error updating user" });
   }
 };
