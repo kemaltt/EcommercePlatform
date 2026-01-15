@@ -16,7 +16,8 @@ const getBaseUrl = () => {
 
   // Production URL (replace with actual when available)
   return (
-    process.env.EXPO_PUBLIC_API_URL || "https://deinshop-api.vercel.app/api"
+    process.env.EXPO_PUBLIC_API_URL ||
+    "https://ecommerceplatform-production.up.railway.app/api"
   );
 };
 
