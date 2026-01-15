@@ -123,21 +123,30 @@ export default function EditUserScreen() {
 
           <View className="mb-6">
             <Text className="text-slate-400 text-xs font-bold mb-2 uppercase tracking-widest">Account Status</Text>
-            <View className="flex-row gap-3">
-              <TouchableOpacity 
-                onPress={() => setStatus("active")}
-                className={`flex-1 py-4 rounded-2xl border ${status === 'active' ? 'bg-[#6366f1]/10 border-[#6366f1]' : 'bg-[#1e2029] border-white/10'} items-center`}
-              >
-                <Text className={`font-bold ${status === 'active' ? 'text-[#6366f1]' : 'text-slate-400'}`}>Active</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                onPress={() => setStatus("suspended")}
-                className={`flex-1 py-4 rounded-2xl border ${status === 'suspended' ? 'bg-red-500/10 border-red-500' : 'bg-[#1e2029] border-white/10'} items-center`}
-              >
-                <Text className={`font-bold ${status === 'suspended' ? 'text-red-500' : 'text-slate-400'}`}>Suspended</Text>
-              </TouchableOpacity>
+            <View className="flex-row flex-wrap gap-2">
+              {["active", "trial", "passive", "cancellation_request", "cancelled", "deleted"].map((s) => (
+                <TouchableOpacity 
+                  key={s}
+                  onPress={() => setStatus(s)}
+                  className={`px-4 py-3 rounded-xl border ${status === s ? 'bg-[#6366f1]/10 border-[#6366f1]' : 'bg-[#1e2029] border-white/10'} items-center mb-2`}
+                  style={{ minWidth: '30%' }}
+                >
+                  <Text className={`font-bold text-[10px] uppercase ${status === s ? 'text-[#6366f1]' : 'text-slate-400'}`}>
+                    {s.replace('_', ' ')}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
+
+          {status === 'trial' && user?.trialExpiresAt && (
+             <View className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 mb-6">
+                <Text className="text-amber-500 font-bold text-xs uppercase tracking-widest mb-1">Trial Expiration</Text>
+                <Text className="text-white font-medium">
+                  {new Date(user.trialExpiresAt).toLocaleDateString()}
+                </Text>
+             </View>
+          )}
 
           <View className="bg-[#1e2029] border border-white/10 rounded-3xl p-5 mb-10">
              <View className="flex-row items-center justify-between">

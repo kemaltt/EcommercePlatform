@@ -1,4 +1,13 @@
-import { pgTable, text, serial, integer, boolean, doublePrecision, timestamp, foreignKey } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  serial,
+  integer,
+  boolean,
+  doublePrecision,
+  timestamp,
+  foreignKey,
+} from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -10,29 +19,34 @@ export const users = pgTable("users", {
   email: text("email").notNull().unique(),
   fullName: text("full_name").notNull(),
   isAdmin: boolean("is_admin").default(false).notNull(),
-  status: text("status").default("active").notNull(),
+  status: text("status").default("trial").notNull(), // active, cancellation_request, cancelled, deleted, passive, trial
+  trialExpiresAt: timestamp("trial_expires_at"),
   address: text("address"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   emailVerificationToken: text("email_verification_token").unique(),
-  verificationTokenExpiresAt: timestamp("verification_token_expires_at", { mode: 'date' }),
+  verificationTokenExpiresAt: timestamp("verification_token_expires_at", {
+    mode: "date",
+  }),
 });
 
 export const insertUserSchema = createInsertSchema(users, {
   username: z.string().min(1, "validation.username.required"),
-  email: z.string().email("validation.email.invalid").min(1, "validation.email.required"),
+  email: z
+    .string()
+    .email("validation.email.invalid")
+    .min(1, "validation.email.required"),
   fullName: z.string().min(1, "validation.fullName.required"),
-  password: z.string()
-    .min(6, "validation.password.minLengthShared")
-})
-.omit({ 
-  id: true, 
-  createdAt: true, 
-  emailVerified: true, 
-  emailVerificationToken: true, 
+  password: z.string().min(6, "validation.password.minLengthShared"),
+}).omit({
+  id: true,
+  createdAt: true,
+  emailVerified: true,
+  emailVerificationToken: true,
   verificationTokenExpiresAt: true,
-  isAdmin: true, 
+  isAdmin: true,
   status: true,
+  trialExpiresAt: true,
 });
 
 // Product schema
@@ -79,21 +93,29 @@ export const insertCartItemSchema = createInsertSchema(cartItems).omit({
 });
 
 // Password Reset schema
-export const passwordResets = pgTable("password_resets", {
-  id: serial("id").primaryKey(),
-  token: text("token").notNull().unique(),
-  userId: integer("user_id").notNull().references(() => users.id, { onDelete: 'cascade' }),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-}, (table) => ({
-  userRelation: foreignKey({
-    columns: [table.userId],
-    foreignColumns: [users.id],
-    name: 'password_resets_user_id_fkey'
-  }),
-}));
+export const passwordResets = pgTable(
+  "password_resets",
+  {
+    id: serial("id").primaryKey(),
+    token: text("token").notNull().unique(),
+    userId: integer("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    userRelation: foreignKey({
+      columns: [table.userId],
+      foreignColumns: [users.id],
+      name: "password_resets_user_id_fkey",
+    }),
+  })
+);
 
-export const insertPasswordResetSchema = createInsertSchema(passwordResets).omit({
+export const insertPasswordResetSchema = createInsertSchema(
+  passwordResets
+).omit({
   id: true,
   createdAt: true,
 });

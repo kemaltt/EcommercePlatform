@@ -548,6 +548,7 @@ export class DatabaseStorage implements IStorage {
           fullName: users.fullName,
           status: users.status,
           isAdmin: users.isAdmin,
+          trialExpiresAt: users.trialExpiresAt,
           address: users.address,
           createdAt: users.createdAt,
           // password alanını seçmiyoruz
