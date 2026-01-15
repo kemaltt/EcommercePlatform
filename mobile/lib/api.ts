@@ -1,8 +1,26 @@
 import axios from "axios";
 
-// Update this with your machine's local IP address for physical device testing
-// Or use localhost for simulator/emulator
-const API_URL = "http://localhost:5002/api";
+import Constants from "expo-constants";
+
+// For development, use the machine's local IP to allow physical devices to connect
+// For production, use the environment variable or fallback URL
+const getBaseUrl = () => {
+  if (__DEV__) {
+    // Machine's local IP detected earlier: 192.168.178.29
+    // Using a more robust way to detect debugger host if possible,
+    // but hardcoding the verified local IP is a safe fallback for this user.
+    const debuggerHost = Constants.expoConfig?.hostUri?.split(":")[0];
+    const devIp = debuggerHost || "192.168.178.29";
+    return `http://${devIp}:5002/api`;
+  }
+
+  // Production URL (replace with actual when available)
+  return (
+    process.env.EXPO_PUBLIC_API_URL || "https://deinshop-api.vercel.app/api"
+  );
+};
+
+const API_URL = getBaseUrl();
 
 export const api = axios.create({
   baseURL: API_URL,

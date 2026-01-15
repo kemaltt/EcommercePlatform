@@ -61,12 +61,15 @@ app.use((req, res, next) => {
   });
 
   // API server - frontend ayrı çalışacak
-  const port = 5002;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    console.log(`API server running on port ${port}`);
-  });
+  const port = process.env.PORT || 5002;
+  server.listen(
+    {
+      port: Number(port),
+      host: "0.0.0.0",
+      reusePort: true,
+    },
+    () => {
+      console.log(`API server running on port ${port}`);
+    }
+  );
 })();

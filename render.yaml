@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: deinshop-backend
+    env: node
+    plan: free
+    buildCommand: cd shared && npm install && cd ../server && npm install && npm run build
+    startCommand: cd server && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ecommerce-db
+          column: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: FRONTEND_URL
+        value: https://deinshop-client.onrender.com
