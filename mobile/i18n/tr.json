@@ -142,5 +142,21 @@
   "favorites.empty.title": "İstek Listeniz Boş",
   "favorites.empty.subtitle": "Keşfetmeye başlayın ve istek listenize ürünler ekleyin.",
   "favorites.startExploring": "Keşfetmeye Başla",
-  "favorites.itemsCount": "İstek listesinde {count} ürün"
+  "favorites.itemsCount": "İstek listesinde {count} ürün",
+  "forgotPassword.title": "Şifremi Unuttum?",
+  "forgotPassword.subtitle": "E-postanızı girin, size şifre sıfırlama kodu gönderelim",
+  "forgotPassword.emailLabel": "E-posta Adresi",
+  "forgotPassword.sendCode": "Kod Gönder",
+  "forgotPassword.codeLabel": "Doğrulama Kodu",
+  "forgotPassword.codePlaceholder": "6 haneli kod",
+  "forgotPassword.verifyCode": "Kodu Doğrula",
+  "forgotPassword.newPassword": "Yeni Şifre",
+  "forgotPassword.confirmPassword": "Şifreyi Onayla",
+  "forgotPassword.resetPassword": "Şifreyi Sıfırla",
+  "forgotPassword.success": "Şifre başarıyla sıfırlandı!",
+  "forgotPassword.codeSent": "Kod e-postanıza gönderildi",
+  "forgotPassword.invalidCode": "Geçersiz veya süresi dolmuş kod",
+  "forgotPassword.passwordMismatch": "Şifreler eşleşmiyor",
+  "forgotPassword.backToLogin": "Girişe Dön",
+  "auth.error.required": "Gerekli"
 }

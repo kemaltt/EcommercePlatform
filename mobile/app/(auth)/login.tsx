@@ -20,6 +20,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [showVerification, setShowVerification] = useState(false);
 
   const [biometricLoading, setBiometricLoading] = useState(false);
@@ -93,15 +94,16 @@ export default function LoginScreen() {
   };
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      setStatusModal({
-        visible: true,
-        type: 'error',
-        title: intl.formatMessage({ id: 'auth.error.input' }),
-        message: intl.formatMessage({ id: 'auth.error.fillAll' }),
-      });
+    const newErrors: { email?: string; password?: string } = {};
+    if (!email) newErrors.email = intl.formatMessage({ id: 'auth.error.required' });
+    if (!password) newErrors.password = intl.formatMessage({ id: 'auth.error.required' });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      HapticService.error();
       return;
     }
+    setErrors({});
 
     setLoading(true);
     try {
@@ -178,19 +180,27 @@ export default function LoginScreen() {
                   <Input
                     label={intl.formatMessage({ id: 'auth.login.email.label' })}
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={(text) => {
+                      setEmail(text);
+                      if (errors.email) setErrors({ ...errors, email: undefined });
+                    }}
                     placeholder={intl.formatMessage({ id: 'auth.login.email.placeholder' })}
                     autoCapitalize="none"
                     icon={<Mail size={18} color="#64748b" />}
                     className="mb-4"
+                    error={errors.email}
                   />
                   <Input
                     label={intl.formatMessage({ id: 'auth.login.password.label' })}
                     value={password}
-                    onChangeText={setPassword}
+                    onChangeText={(text) => {
+                      setPassword(text);
+                      if (errors.password) setErrors({ ...errors, password: undefined });
+                    }}
                     placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
                     secureTextEntry={!showPassword}
                     icon={<Lock size={18} color="#64748b" />}
+                    error={errors.password}
                     rightIcon={
                       <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                         {showPassword ? (
@@ -203,11 +213,13 @@ export default function LoginScreen() {
                   />
                 </View>
 
-                <TouchableOpacity className="self-end mt-2 mb-6">
-                  <Text className="text-[#fbbf24] font-semibold text-xs">
-                    {intl.formatMessage({ id: 'auth.login.forgot' })}
-                  </Text>
-                </TouchableOpacity>
+                <Link href="/(auth)/forgot-password" asChild>
+                  <TouchableOpacity className="self-end mt-2 mb-6">
+                    <Text className="text-[#fbbf24] font-semibold text-xs">
+                      {intl.formatMessage({ id: 'auth.login.forgot' })}
+                    </Text>
+                  </TouchableOpacity>
+                </Link>
 
                 <View className="space-y-4">
                   <Button

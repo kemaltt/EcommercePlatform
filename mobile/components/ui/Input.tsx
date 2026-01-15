@@ -1,22 +1,17 @@
-import { View, TextInput, Text } from "react-native";
+import { View, TextInput, Text, TextInputProps } from "react-native";
 import { ReactNode } from "react";
 import { useTheme } from "../../contexts/theme-context";
 
-interface InputProps {
+interface InputProps extends TextInputProps {
   label?: string;
   value: string;
   onChangeText: (text: string) => void;
-  placeholder?: string;
-  secureTextEntry?: boolean;
   error?: string;
   className?: string;
-  autoCapitalize?: "none" | "sentences" | "words" | "characters";
   icon?: ReactNode;
   rightIcon?: ReactNode;
   style?: any;
   labelStyle?: any;
-  multiline?: boolean;
-  numberOfLines?: number;
 }
 
 export function Input({ 
@@ -33,7 +28,8 @@ export function Input({
   style,
   labelStyle,
   multiline,
-  numberOfLines
+  numberOfLines,
+  ...props
 }: InputProps) {
   const { isDark } = useTheme();
 
@@ -68,6 +64,7 @@ export function Input({
           multiline={multiline}
           numberOfLines={numberOfLines}
           textAlignVertical={multiline ? "top" : "center"}
+          {...props}
           style={{ 
             paddingVertical: multiline ? 16 : 12,
             minHeight: multiline ? 100 : 56,

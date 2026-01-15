@@ -7,6 +7,7 @@ import {
   type User,
 } from "@shared/schema";
 import { sendVerificationEmail, sendEmail } from "../services/email";
+import { generatePasswordResetEmail } from "../templates/passwordResetEmail";
 import crypto from "crypto";
 import { db } from "../config/db";
 import { eq, and, gt } from "drizzle-orm";
@@ -30,12 +31,10 @@ export const register = async (
   try {
     const validationResult = insertUserSchema.safeParse(req.body);
     if (!validationResult.success) {
-      return res
-        .status(400)
-        .json({
-          message: "Validation failed",
-          errors: validationResult.error.flatten().fieldErrors,
-        });
+      return res.status(400).json({
+        message: "Validation failed",
+        errors: validationResult.error.flatten().fieldErrors,
+      });
     }
     const { username, email, password, fullName, address } =
       validationResult.data;
@@ -74,12 +73,10 @@ export const register = async (
       console.error("Failed to send verification email:", emailError);
     }
 
-    return res
-      .status(201)
-      .json({
-        message:
-          "Registration successful! Please check your email to verify your account.",
-      });
+    return res.status(201).json({
+      message:
+        "Registration successful! Please check your email to verify your account.",
+    });
   } catch (error) {
     console.error("Registration process error:", error);
     next(error);
@@ -100,17 +97,13 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
       }
       if (!user) {
         if (info && info.message === "EMAIL_NOT_VERIFIED") {
-          return res
-            .status(403)
-            .json({
-              message: "Please verify your email address before logging in.",
-            });
-        }
-        return res
-          .status(401)
-          .json({
-            message: info?.message || "Incorrect username or password.",
+          return res.status(403).json({
+            message: "Please verify your email address before logging in.",
           });
+        }
+        return res.status(401).json({
+          message: info?.message || "Incorrect username or password.",
+        });
       }
 
       req.login(user, (loginErr) => {
@@ -224,34 +217,38 @@ export const forgotPassword = async (req: Request, res: Response) => {
     const user = await storage.getUserByEmail(email);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      // Don't reveal if email exists for security
+      return res.json({
+        message: "If the email exists, a reset code has been sent",
+      });
     }
 
-    const resetToken = crypto.randomBytes(32).toString("hex");
+    // Generate 6-digit code
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
     const tokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 
     await db.insert(passwordResets).values({
-      token: resetToken,
+      token: resetCode, // Store code as token
       userId: user.id,
       expiresAt: tokenExpiry,
       createdAt: new Date(),
     });
 
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    // Generate modern email template
+    const { html, text } = generatePasswordResetEmail({
+      userEmail: user.email,
+      resetCode,
+      expiryMinutes: 60,
+    });
 
     await sendEmail({
       to: user.email,
-      subject: "Password Reset Request",
-      text: `Click the link below to reset your password: ${resetLink}`,
-      html: `
-        <h1>Password Reset Request</h1>
-        <p>Click the link below to reset your password:</p>
-        <a href="${resetLink}">${resetLink}</a>
-        <p>This link will expire in 1 hour.</p>
-      `,
+      subject: "Passwort zurücksetzen - DeinShop",
+      text,
+      html,
     });
 
-    res.json({ message: "Password reset email sent" });
+    res.json({ message: "Password reset code sent to your email" });
   } catch (error) {
     console.error("Forgot password error:", error);
     res
@@ -355,12 +352,10 @@ export const verifyEmailCode = async (req: Request, res: Response) => {
 
     req.login(user, (err) => {
       if (err) {
-        return res
-          .status(200)
-          .json({
-            message:
-              "Email verified, but auto-login failed. Please login manually.",
-          });
+        return res.status(200).json({
+          message:
+            "Email verified, but auto-login failed. Please login manually.",
+        });
       }
       const userResponse = {
         id: user.id,

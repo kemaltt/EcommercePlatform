@@ -19,6 +19,8 @@ export default function RegisterScreen() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
+  const [errors, setErrors] = useState<{ fullName?: string; email?: string; password?: string; confirmPassword?: string }>({});
+  
   const [statusModal, setStatusModal] = useState<{ 
     visible: boolean; 
     type: 'success' | 'error'; 
@@ -36,15 +38,18 @@ export default function RegisterScreen() {
   const intl = useIntl();
 
   const handleRegister = async () => {
-    if (!fullName || !email || !password || !confirmPassword) {
-      setStatusModal({
-        visible: true,
-        type: 'error',
-        title: intl.formatMessage({ id: 'auth.error.input' }),
-        message: intl.formatMessage({ id: 'auth.error.fillAll' }),
-      });
+    const newErrors: { fullName?: string; email?: string; password?: string; confirmPassword?: string } = {};
+    if (!fullName) newErrors.fullName = intl.formatMessage({ id: 'auth.error.required' });
+    if (!email) newErrors.email = intl.formatMessage({ id: 'auth.error.required' });
+    if (!password) newErrors.password = intl.formatMessage({ id: 'auth.error.required' });
+    if (!confirmPassword) newErrors.confirmPassword = intl.formatMessage({ id: 'auth.error.required' });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      // HapticService.error() would be good here if imported, likely need to import it
       return;
     }
+    setErrors({});
 
     if (password !== confirmPassword) {
        setStatusModal({
@@ -137,26 +142,38 @@ export default function RegisterScreen() {
                   <Input
                     label={intl.formatMessage({ id: 'auth.register.fullName.label' })}
                     value={fullName}
-                    onChangeText={setFullName}
+                    onChangeText={(text) => {
+                      setFullName(text);
+                      if (errors.fullName) setErrors({ ...errors, fullName: undefined });
+                    }}
                     placeholder={intl.formatMessage({ id: 'auth.register.fullName.placeholder' })}
                     autoCapitalize="words"
                     icon={<User size={18} color="#64748b" />}
+                    error={errors.fullName}
                   />
                   <Input
                     label={intl.formatMessage({ id: 'auth.register.email.label' })}
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={(text) => {
+                      setEmail(text);
+                      if (errors.email) setErrors({ ...errors, email: undefined });
+                    }}
                     placeholder={intl.formatMessage({ id: 'auth.login.email.placeholder' })}
                     autoCapitalize="none"
                     icon={<Mail size={18} color="#64748b" />}
+                    error={errors.email}
                   />
                   <Input
                     label={intl.formatMessage({ id: 'auth.register.password.label' })}
                     value={password}
-                    onChangeText={setPassword}
+                    onChangeText={(text) => {
+                      setPassword(text);
+                      if (errors.password) setErrors({ ...errors, password: undefined });
+                    }}
                     placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
                     secureTextEntry={!showPassword}
                     icon={<Lock size={18} color="#64748b" />}
+                    error={errors.password}
                     rightIcon={
                       <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
                         {showPassword ? (
@@ -170,10 +187,14 @@ export default function RegisterScreen() {
                   <Input
                     label={intl.formatMessage({ id: 'auth.register.confirmPassword.label' })}
                     value={confirmPassword}
-                    onChangeText={setConfirmPassword}
+                    onChangeText={(text) => {
+                      setConfirmPassword(text);
+                      if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: undefined });
+                    }}
                     placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
                     secureTextEntry
                     icon={<RefreshCw size={18} color="#64748b" />}
+                    error={errors.confirmPassword}
                   />
                 </View>
 

@@ -136,5 +136,21 @@
   "admin.period.month": "MONAT",
   "admin.activeInventory": "Aktiver Bestand",
   "admin.seeAll": "Alle anzeigen",
-  "admin.stock": "Lager"
+  "admin.stock": "Lager",
+  "forgotPassword.title": "Passwort vergessen?",
+  "forgotPassword.subtitle": "Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Code zum Zurücksetzen",
+  "forgotPassword.emailLabel": "E-Mail-Adresse",
+  "forgotPassword.sendCode": "Code senden",
+  "forgotPassword.codeLabel": "Bestätigungscode",
+  "forgotPassword.codePlaceholder": "6-stelliger Code",
+  "forgotPassword.verifyCode": "Code bestätigen",
+  "forgotPassword.newPassword": "Neues Passwort",
+  "forgotPassword.confirmPassword": "Passwort bestätigen",
+  "forgotPassword.resetPassword": "Passwort zurücksetzen",
+  "forgotPassword.success": "Passwort erfolgreich zurückgesetzt!",
+  "forgotPassword.codeSent": "Code an Ihre E-Mail gesendet",
+  "forgotPassword.invalidCode": "Ungültiger oder abgelaufener Code",
+  "forgotPassword.passwordMismatch": "Passwörter stimmen nicht überein",
+  "forgotPassword.backToLogin": "Zurück zur Anmeldung",
+  "auth.error.required": "Erforderlich"
 }

@@ -9,6 +9,9 @@ interface AuthContextType {
   login: (data: any) => Promise<void>;
   register: (data: InsertUser) => Promise<void>;
   logout: () => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
+  verifyResetCode: (token: string) => Promise<void>;
+  resetPassword: (token: string, password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -58,6 +61,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const forgotPasswordMutation = useMutation({
+    mutationFn: async (email: string) => {
+      await api.post("/auth/forgot-password", { email });
+    },
+  });
+
+  const verifyResetCodeMutation = useMutation({
+    mutationFn: async (token: string) => {
+      const res = await api.post("/auth/verify-reset-token", { token });
+      return res.data;
+    },
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: async ({ token, password }: { token: string; password: string }) => {
+      await api.post("/auth/reset-password", { token, password });
+    },
+  });
+
   return (
     <AuthContext.Provider
       value={{
@@ -71,6 +93,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
         logout: async () => {
           await logoutMutation.mutateAsync();
+        },
+        forgotPassword: async (email) => {
+          await forgotPasswordMutation.mutateAsync(email);
+        },
+        verifyResetCode: async (token) => {
+          await verifyResetCodeMutation.mutateAsync(token);
+        },
+        resetPassword: async (token, password) => {
+          await resetPasswordMutation.mutateAsync({ token, password });
         },
       }}
     >
