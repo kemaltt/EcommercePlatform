@@ -11,6 +11,7 @@ import { VerificationModal } from "../../components/VerificationModal";
 import { BiometricService } from "../../lib/biometric";
 import { useEffect } from "react";
 import { ActivityIndicator } from "react-native";
+import { useTheme } from "../../contexts/theme-context";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -23,6 +24,7 @@ export default function LoginScreen() {
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
 
   const { login } = useAuth();
+  const { isDark } = useTheme();
   const router = useRouter();
   const intl = useIntl();
 
@@ -93,7 +95,7 @@ export default function LoginScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? "light" : "dark"} />
       <SafeAreaView className="flex-1">
         <KeyboardAvoidingView 
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -166,32 +168,36 @@ export default function LoginScreen() {
                   </Text>
                 </TouchableOpacity>
 
-                <View className="flex-row gap-3">
+                <View className="space-y-4">
                   <Button
                     title="Sign In"
                     onPress={handleLogin}
                     loading={loading}
                     variant="primary"
-                    className="flex-1 rounded-2xl h-14"
+                    className="rounded-2xl h-14"
                     icon={<ArrowRight size={18} color="white" />}
                   />
                   
-                  {isBiometricEnabled && (
+                  {(isBiometricEnabled || __DEV__) && (
                     <TouchableOpacity 
                       onPress={handleBiometricLogin}
                       disabled={loading || biometricLoading}
-                      className="w-14 h-14 bg-primary/10 rounded-2xl items-center justify-center border border-primary/20"
+                      activeOpacity={0.7}
+                      className="flex-row items-center justify-center py-3 bg-secondary/20 rounded-2xl border border-secondary/30"
                     >
                       {biometricLoading ? (
                         <ActivityIndicator size="small" color="#6366f1" />
                       ) : (
-                        <ScanFace size={28} color="#6366f1" />
+                        <>
+                          <ScanFace size={20} color="#6366f1" className="mr-2" />
+                          <Text className="text-primary font-semibold text-sm">Sign in with Face ID</Text>
+                        </>
                       )}
                     </TouchableOpacity>
                   )}
                 </View>
 
-                <View className="flex-row items-center mb-6 gap-4 opacity-50">
+                <View className="flex-row items-center mb-6 mt-10 gap-4 opacity-50">
                   <View className="flex-1 h-[1px] bg-border" />
                   <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">Or connect with</Text>
                   <View className="flex-1 h-[1px] bg-border" />

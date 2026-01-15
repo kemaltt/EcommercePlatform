@@ -10,7 +10,11 @@ const getBaseUrl = () => {
     // Using a more robust way to detect debugger host if possible,
     // but hardcoding the verified local IP is a safe fallback for this user.
     const debuggerHost = Constants.expoConfig?.hostUri?.split(":")[0];
-    const devIp = debuggerHost || "192.168.178.29";
+    const devIp = debuggerHost;
+    if (!devIp) {
+      console.warn("Dev IP not detected. Using localhost as fallback.");
+      return "http://localhost:5002/api";
+    }
     return `http://${devIp}:5002/api`;
   }
 
