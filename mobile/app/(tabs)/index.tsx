@@ -71,9 +71,23 @@ export default function HomeScreen() {
     >
       <View className="h-48 bg-muted relative">
         <Image
-          source={item.imageUrl ? { uri: item.imageUrl } : { uri: "https://images.unsplash.com/photo-1523275335684-37898b6baf30" }}
+          source={item.imageUrl}
+          placeholder={{ uri: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=10&w=200" }} // Low-res blur placeholder
           style={{ width: "100%", height: "100%" }}
           contentFit="cover"
+          transition={300}
+          recyclingKey={item.id.toString()}
+          priority="high"
+          onLoad={() => {
+            if (__DEV__ && !item.imageUrl) {
+              console.warn(`[ImageLoad] Missing imageUrl for product: ${item.name}`);
+            }
+          }}
+          onError={() => {
+            if (__DEV__) {
+              console.warn(`[ImageLoad] Failed to load image for: ${item.name}, URL: ${item.imageUrl}`);
+            }
+          }}
         />
         <TouchableOpacity 
           className="absolute top-3 right-3 w-8 h-8 bg-black/20 backdrop-blur-md rounded-full items-center justify-center"

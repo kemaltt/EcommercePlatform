@@ -603,9 +603,25 @@ export class DatabaseStorage implements IStorage {
       );
     }
 
-    return query.orderBy(desc(products.createdAt)) as unknown as Promise<
-      Product[]
-    >;
+    const results = (await query.orderBy(
+      desc(products.createdAt)
+    )) as unknown as Product[];
+
+    // Debug logging to verify imageUrl consistency
+    if (results.length > 0) {
+      console.log(
+        `[Storage] getProducts returned ${results.length} items. First item imageUrl: ${results[0].imageUrl}`
+      );
+      const missingImages = results.filter((p) => !p.imageUrl);
+      if (missingImages.length > 0) {
+        console.warn(
+          `[Storage] Warning: ${missingImages.length} products have missing imageUrls:`,
+          missingImages.map((p) => p.name)
+        );
+      }
+    }
+
+    return results;
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {

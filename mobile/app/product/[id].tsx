@@ -90,9 +90,17 @@ export default function ProductDetailsScreen() {
       {/* Hero Image - Takes up top portion */}
       <View className="relative w-full" style={{ height: SCREEN_HEIGHT * 0.55 }}>
         <Image
-          source={product.imageUrl ? { uri: product.imageUrl } : { uri: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1000&auto=format&fit=crop" }}
+          source={product.imageUrl}
+          placeholder={{ uri: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=30&w=500" }}
           style={{ width: "100%", height: "100%" }}
           contentFit="cover"
+          transition={400}
+          recyclingKey={product.id.toString()}
+          onError={() => {
+            if (__DEV__) {
+              console.warn(`[DetailImageLoad] Failed to load image for: ${product.name}, URL: ${product.imageUrl}`);
+            }
+          }}
         />
         
         {/* Navigation Overlays */}

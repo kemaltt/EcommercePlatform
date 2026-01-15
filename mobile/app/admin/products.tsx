@@ -64,9 +64,16 @@ export default function AdminProductsScreen() {
       >
         <Image
           source={item.imageUrl}
+          placeholder={{ uri: "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=10&w=100" }}
           style={{ width: '100%', height: '100%' }}
           contentFit="contain"
           transition={300}
+          recyclingKey={item.id.toString()}
+          onError={() => {
+            if (__DEV__) {
+              console.warn(`[AdminImageLoad] Failed to load image for: ${item.name}, URL: ${item.imageUrl}`);
+            }
+          }}
         />
       </View>
       
