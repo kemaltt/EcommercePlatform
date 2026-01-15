@@ -54,6 +54,7 @@
   "profile.settings": "Account Settings",
   "profile.admin": "Admin Panel",
   "profile.signOut": "Sign Out",
+  "profile.logout.error": "Logout failed. Please try again.",
   "admin.dashboard.title": "Admin Dashboard",
   "admin.delete.title": "Delete Product",
   "admin.delete.confirm": "Are you sure you want to delete this product?",

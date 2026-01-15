@@ -35,7 +35,10 @@ export default function ProfileScreen() {
       router.replace("/(auth)/login");
     } catch (error) {
       console.error("Logout failed:", error);
-      Alert.alert("Error", "Logout failed. Please try again.");
+      Alert.alert(
+        intl.formatMessage({ id: 'common.error' }),
+        intl.formatMessage({ id: 'profile.logout.error' })
+      );
     }
   };
 

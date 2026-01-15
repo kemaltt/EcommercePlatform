@@ -54,6 +54,7 @@
   "profile.settings": "Hesap Ayarları",
   "profile.admin": "Yönetici Paneli",
   "profile.signOut": "Çıkış Yap",
+  "profile.logout.error": "Çıkış yapılamadı. Lütfen tekrar deneyin.",
   "admin.dashboard.title": "Yönetici Paneli",
   "admin.delete.title": "Ürünü Sil",
   "admin.delete.confirm": "Bu ürünü silmek istediğinizden emin misiniz?",

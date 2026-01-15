@@ -101,6 +101,7 @@
   "profile.adminDashboard": "Admin-Dashboard",
   "profile.adminDashboard.sub": "Benutzer & Statistiken...",
   "profile.signOut": "Abmelden",
+  "profile.logout.error": "Abmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
   "product.notFound": "Produkt nicht gefunden",
   "product.goBack": "Zurück",
   "product.limitedEdition": "Limitierte Auflage",
