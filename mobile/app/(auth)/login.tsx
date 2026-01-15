@@ -13,6 +13,7 @@ import { BiometricService } from "../../lib/biometric";
 import { useEffect } from "react";
 import { ActivityIndicator } from "react-native";
 import { useTheme } from "../../contexts/theme-context";
+import { HapticService } from "../../services/haptic";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -44,6 +45,14 @@ export default function LoginScreen() {
     (async () => {
       const enabled = await BiometricService.isEnabled();
       setIsBiometricEnabled(enabled);
+      
+      // // Auto-trigger Face ID if enabled
+      // if (enabled) {
+      //   // Small delay to let UI render first
+      //   setTimeout(() => {
+      //     handleBiometricLogin();
+      //   }, 500);
+      // }
     })();
   }, []);
 
@@ -64,9 +73,13 @@ export default function LoginScreen() {
       const success = await BiometricService.authenticate(intl.formatMessage({ id: 'auth.login.biometric' }));
       if (success) {
         await login({ username: credentials.username, password: credentials.password });
+        HapticService.success(); // Success haptic
         router.replace("/(tabs)");
+      } else {
+        HapticService.error(); // Error haptic on cancel/fail
       }
     } catch (error: any) {
+      HapticService.error(); // Error haptic
       const message = error?.response?.data?.message || intl.formatMessage({ id: 'auth.error.loginFailed' });
       setStatusModal({
         visible: true,
@@ -93,6 +106,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await login({ username: email, password });
+      HapticService.success(); // Success haptic
       router.replace("/(tabs)");
     } catch (error: any) {
       const message = error?.response?.data?.message || "Invalid credentials";
@@ -101,6 +115,7 @@ export default function LoginScreen() {
          // Show verification modal instead of alert
          setShowVerification(true);
       } else {
+        HapticService.error(); // Error haptic
         setStatusModal({
           visible: true,
           type: 'error',
