@@ -101,6 +101,8 @@ export default function AdminUsersScreen() {
                  placeholder="Search users by name or email..." 
                  placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
                  className="flex-1 ml-3 px-2 text-foreground"
+                 style={{ height: '100%' }}
+                 textAlignVertical="center"
               />
            </View>
         </View>

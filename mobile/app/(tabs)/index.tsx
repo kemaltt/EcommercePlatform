@@ -143,14 +143,16 @@ export default function HomeScreen() {
         {/* Search Bar */}
         <View className="px-6 mb-6">
            {/* Custom Search Input Appearance matching Image 1 */}
-           <View className="flex-row items-center bg-card rounded-2xl px-4 h-14 border border-border/50">
+           <View className="flex-row items-center bg-card rounded-2xl px-4 border border-border/50" style={{ height: 56 }}>
               <Search size={22} color={isDark ? "#94a3b8" : "#64748b"} />
               <TextInput
                  value={searchQuery}
                  onChangeText={setSearchQuery}
                  placeholder="Search for premium products..."
                  placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
-                 className="flex-1 ml-3 px-2 text-base text-foreground font-medium h-full"
+                 className="flex-1 ml-3 px-2 text-base text-foreground font-medium"
+                 style={{ paddingVertical: 12 }}
+                 textAlignVertical="center"
               />
               <View className="mr-1">
                 <SlidersHorizontal size={22} color="#6366f1" />

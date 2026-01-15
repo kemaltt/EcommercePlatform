@@ -131,20 +131,24 @@ export default function CartScreen() {
                           ${Number(item.product?.price || 0).toFixed(2)}
                        </Text>
                        
-                       {/* Qty Control */}
-                       <View className="flex-row items-center bg-[#1e2029] rounded-xl overflow-hidden border border-border/50">
+                       {/* Qty Control - Modern Pill Shape */}
+                       <View className="flex-row items-center bg-secondary/50 rounded-full p-1 border border-border/50">
                           <TouchableOpacity 
-                            className="w-8 h-8 items-center justify-center bg-secondary"
+                            className="w-8 h-8 items-center justify-center rounded-full bg-background/80 shadow-sm"
                             onPress={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                            activeOpacity={0.6}
                           >
                              <Minus size={14} color={isDark ? "#94a3b8" : "#64748b"} />
                           </TouchableOpacity>
-                          <View className="w-8 h-8 items-center justify-center">
+                          
+                          <View className="px-3 min-w-[32px] items-center">
                              <Text className="text-foreground font-bold text-sm">{item.quantity}</Text>
                           </View>
+                          
                           <TouchableOpacity 
-                             className="w-8 h-8 items-center justify-center bg-[#6366f1]"
+                             className="w-8 h-8 items-center justify-center rounded-full bg-[#6366f1] shadow-md shadow-indigo-500/30"
                              onPress={() => updateQuantity(item.id, item.quantity + 1)}
+                             activeOpacity={0.7}
                           >
                              <Plus size={14} color="white" />
                           </TouchableOpacity>

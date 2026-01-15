@@ -29,22 +29,14 @@ export default function ProfileScreen() {
   const { isDark } = useTheme();
 
   // --- Actions ---
-  const handleLogout = () => {
-    Alert.alert(
-      intl.formatMessage({ id: "profile.signOut" }),
-      "Are you sure you want to logout?",
-      [
-        { text: intl.formatMessage({ id: "common.cancel" }), style: "cancel" },
-        {
-          text: intl.formatMessage({ id: "profile.signOut" }),
-          style: "destructive",
-          onPress: async () => {
-            await logout();
-            router.replace("/(auth)/login");
-          },
-        },
-      ]
-    );
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.replace("/(auth)/login");
+    } catch (error) {
+      console.error("Logout failed:", error);
+      Alert.alert("Error", "Logout failed. Please try again.");
+    }
   };
 
   const toggleLanguage = () => {

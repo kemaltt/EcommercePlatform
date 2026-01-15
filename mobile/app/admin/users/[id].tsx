@@ -103,6 +103,8 @@ export default function EditUserScreen() {
                 placeholder="Full Name"
                 placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
                 className="flex-1 ml-3 px-2 text-foreground font-medium"
+                style={{ height: '100%' }}
+                textAlignVertical="center"
               />
             </View>
           </View>
@@ -119,6 +121,8 @@ export default function EditUserScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 className="flex-1 ml-3 px-2 text-foreground font-medium"
+                style={{ height: '100%' }}
+                textAlignVertical="center"
               />
             </View>
           </View>
