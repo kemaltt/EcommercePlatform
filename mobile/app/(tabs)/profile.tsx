@@ -159,7 +159,7 @@ export default function ProfileScreen() {
                 icon={<Settings size={22} color="white" />} 
                 label="Einstellungen" 
                 subLabel="Sprache, Design..."
-                onPress={() => {}}
+                onPress={() => router.push("/settings")}
              />
              <GridMenuItem 
                 icon={<Trophy size={22} color="white" />} 
