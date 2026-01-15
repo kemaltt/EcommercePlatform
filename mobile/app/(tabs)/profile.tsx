@@ -102,7 +102,7 @@ export default function ProfileScreen() {
              <ChevronLeft size={20} color={isDark ? "white" : "black"} />
            </TouchableOpacity>
            
-           <Text className="text-lg font-bold text-foreground">Profile</Text>
+           <Text className="text-lg font-bold text-foreground">{intl.formatMessage({ id: 'profile.title' })}</Text>
            
            <TouchableOpacity 
              className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border"
@@ -132,40 +132,40 @@ export default function ProfileScreen() {
           <View className="flex-row flex-wrap justify-between mt-4">
              <GridMenuItem 
                 icon={<Bell size={22} color={isDark ? "white" : "black"} />} 
-                label="Mitteilungen" 
-                subLabel="0 neu"
+                label={intl.formatMessage({ id: 'profile.general' })} 
+                subLabel={intl.formatMessage({ id: 'profile.notifications.sub' })}
                 onPress={() => {}}
              />
              <GridMenuItem 
                 icon={<User size={22} color={isDark ? "white" : "black"} />} 
-                label="Profil" 
-                subLabel="Name, Profilbild..."
+                label={intl.formatMessage({ id: 'profile.myProfile' })} 
+                subLabel={intl.formatMessage({ id: 'profile.myProfile.sub' })}
                 onPress={() => {}}
              />
              <GridMenuItem 
                 icon={<Lock size={22} color={isDark ? "white" : "black"} />} 
-                label="Konto" 
-                subLabel="Daten, Sicherheit, Plus..."
+                label={intl.formatMessage({ id: 'profile.account' })} 
+                subLabel={intl.formatMessage({ id: 'profile.account.sub' })}
                 onPress={() => router.push("/account")}
              />
              <GridMenuItem 
                 icon={<Settings size={22} color={isDark ? "white" : "black"} />} 
-                label="Einstellungen" 
-                subLabel="Sprache, Design..."
+                label={intl.formatMessage({ id: 'profile.settings' })} 
+                subLabel={intl.formatMessage({ id: 'profile.settings.sub' })}
                 onPress={() => router.push("/settings")}
              />
              <GridMenuItem 
                 icon={<Trophy size={22} color={isDark ? "white" : "black"} />} 
-                label="Erfolge" 
-                subLabel="Abzeichen"
+                label={intl.formatMessage({ id: 'profile.achievements' })} 
+                subLabel={intl.formatMessage({ id: 'profile.achievements.sub' })}
                 onPress={() => {}}
              />
              
              {user.isAdmin && (
                <GridMenuItem 
                   icon={<ShieldCheck size={22} color="#fbbf24" />} 
-                  label="Admin-Dashboard" 
-                  subLabel="Benutzer & Statistiken..."
+                  label={intl.formatMessage({ id: 'profile.adminDashboard' })} 
+                  subLabel={intl.formatMessage({ id: 'profile.adminDashboard.sub' })}
                   onPress={() => router.push("/admin")}
                />
              )}
@@ -177,7 +177,7 @@ export default function ProfileScreen() {
             onPress={handleLogout}
           >
              <LogOut size={18} color="#ef4444" />
-             <Text className="text-red-500 font-bold">Sign Out</Text>
+             <Text className="text-red-500 font-bold">{intl.formatMessage({ id: 'profile.signOut' })}</Text>
           </TouchableOpacity>
           
           < View className="h-6" />

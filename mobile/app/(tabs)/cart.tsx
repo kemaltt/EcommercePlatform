@@ -30,13 +30,13 @@ export default function CartScreen() {
           <ShoppingBag size={40} color="#6366f1" />
         </View>
         <Text className="text-2xl font-bold text-foreground mb-2">
-          Your Cart is Empty
+          {intl.formatMessage({ id: 'cart.empty.title' })}
         </Text>
         <Text className="text-muted-foreground text-center mb-8 max-w-[250px]">
-          Looks like you haven't added anything to your cart yet.
+          {intl.formatMessage({ id: 'cart.empty.subtitle' })}
         </Text>
         <Button 
-          title="Start Shopping"
+          title={intl.formatMessage({ id: 'cart.startShopping' })}
           onPress={() => router.push("/(tabs)")} 
           className="w-full max-w-xs h-14 rounded-2xl"
           icon={<ArrowRight size={20} color="white" />}
@@ -62,7 +62,7 @@ export default function CartScreen() {
               <ChevronLeft size={20} color={isDark ? "#94a3b8" : "#52525b"} />
            </TouchableOpacity>
            
-           <Text className="text-xl font-bold text-foreground">Your Cart</Text>
+           <Text className="text-xl font-bold text-foreground">{intl.formatMessage({ id: 'cart.title' })}</Text>
 
            <View className="w-10 h-10 items-center justify-center">
               <ShoppingBag size={24} color={isDark ? "white" : "black"} />
@@ -82,14 +82,14 @@ export default function CartScreen() {
              <View className="bg-card border border-[#fbbf24]/30 rounded-2xl p-4 mb-6 flex-row items-center justify-center gap-3">
                <Sparkles size={18} color="#fbbf24" fill="#fbbf24" />
                <Text className="text-[#fbbf24] font-bold text-xs uppercase tracking-wider">
-                 You're ${remainingForFreeShipping.toFixed(2)} away from free shipping
+                 {intl.formatMessage({ id: 'cart.freeShipping.away' }, { amount: `$${remainingForFreeShipping.toFixed(2)}` })}
                </Text>
              </View>
            ) : (
               <View className="bg-green-500/10 border border-green-500/30 rounded-2xl p-4 mb-6 flex-row items-center justify-center gap-3">
                <Sparkles size={18} color="#22c55e" fill="#22c55e" />
                <Text className="text-green-500 font-bold text-xs uppercase tracking-wider">
-                 You've unlocked free shipping!
+                 {intl.formatMessage({ id: 'cart.freeShipping.unlocked' })}
                </Text>
              </View>
            )}
@@ -164,21 +164,21 @@ export default function CartScreen() {
 
        <View className="absolute bottom-0 left-0 right-0 bg-background rounded-t-[32px] p-6 pb-10 border-t border-border shadow-2xl">
           <View className="flex-row justify-between mb-2">
-             <Text className="text-muted-foreground text-sm">Subtotal</Text>
+             <Text className="text-muted-foreground text-sm">{intl.formatMessage({ id: 'cart.subtotal' })}</Text>
              <Text className="text-foreground font-bold text-sm">${subtotal.toFixed(2)}</Text>
           </View>
          <View className="flex-row justify-between mb-6">
-            <Text className="text-muted-foreground text-sm">Shipping</Text>
-            <Text className="text-green-500 font-bold text-sm">FREE</Text>
+            <Text className="text-muted-foreground text-sm">{intl.formatMessage({ id: 'cart.shipping' })}</Text>
+            <Text className="text-green-500 font-bold text-sm">{intl.formatMessage({ id: 'cart.shipping.free' })}</Text>
          </View>
                   <View className="flex-row justify-between items-center mb-6 pt-4 border-t border-border/50">
-              <Text className="text-foreground text-xl font-bold">Total</Text>
+              <Text className="text-foreground text-xl font-bold">{intl.formatMessage({ id: 'cart.total' })}</Text>
               <Text className="text-primary text-2xl font-black">${subtotal.toFixed(2)}</Text>
           </View>
 
           <Button
-            title="Proceed to Checkout"
-            onPress={() => Alert.alert("Checkout", "Process started...")}
+            title={intl.formatMessage({ id: 'cart.checkout' })}
+            onPress={() => Alert.alert(intl.formatMessage({ id: 'cart.checkout' }), intl.formatMessage({ id: 'cart.checkout.processing' }))}
             variant="primary"
             className="h-14 rounded-2xl"
             icon={<ArrowRight size={20} color="white" />}

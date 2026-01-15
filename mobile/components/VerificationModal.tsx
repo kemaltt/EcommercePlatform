@@ -4,6 +4,7 @@ import { Button } from './ui/Button';
 import { X, Lock } from 'lucide-react-native';
 import { api } from '../lib/api';
 import { useAuth } from '../hooks/use-auth';
+import { SuccessModal } from './SuccessModal';
 
 interface VerificationModalProps {
   visible: boolean;
@@ -15,6 +16,7 @@ interface VerificationModalProps {
 export function VerificationModal({ visible, email, onClose, onSuccess }: VerificationModalProps) {
   const [code, setCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const { login } = useAuth(); // We might need this to refetch user or auto-login if manual
 
   const handleVerify = async () => {
@@ -28,8 +30,7 @@ export function VerificationModal({ visible, email, onClose, onSuccess }: Verifi
       // Direct API call
       await api.post('/auth/verify-email-code', { email, code });
       
-      Alert.alert("Success", "Email verified successfully!");
-      onSuccess();
+      setShowSuccessModal(true);
     } catch (error: any) {
       console.error("Verification error:", error);
       const msg = error.response?.data?.message || "Failed to verify email.";
@@ -114,6 +115,16 @@ export function VerificationModal({ visible, email, onClose, onSuccess }: Verifi
           </TouchableOpacity>
         </View>
       </View>
+
+      <SuccessModal 
+        visible={showSuccessModal}
+        title="Verified!"
+        message="Your email has been successfully verified. You can now access all features."
+        onClose={() => {
+          setShowSuccessModal(false);
+          onSuccess();
+        }}
+      />
     </Modal>
   );
 }

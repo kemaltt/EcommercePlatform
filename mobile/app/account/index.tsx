@@ -28,6 +28,7 @@ import { useTheme } from "../../contexts/theme-context";
 import { BiometricService } from "../../lib/biometric";
 import { useAuth } from "../../hooks/use-auth";
 import { PasswordConfirmModal } from "../../components/PasswordConfirmModal";
+import { SuccessModal } from "../../components/SuccessModal";
 import { api } from "../../lib/api";
 
 export default function AccountScreen() {
@@ -39,6 +40,17 @@ export default function AccountScreen() {
   const [isFaceIdEnabled, setIsFaceIdEnabled] = React.useState(false);
   const [isBiometricAvailable, setIsBiometricAvailable] = React.useState(false);
   const [showPasswordModal, setShowPasswordModal] = React.useState(false);
+  const [statusModal, setStatusModal] = React.useState<{ 
+    visible: boolean; 
+    type: 'success' | 'error'; 
+    title: string; 
+    message: string; 
+  }>({
+    visible: false,
+    type: 'success',
+    title: '',
+    message: '',
+  });
   const [confirmingPassword, setConfirmingPassword] = React.useState(false);
 
   React.useEffect(() => {
@@ -53,7 +65,7 @@ export default function AccountScreen() {
 
   const toggleFaceId = async (value: boolean) => {
     if (value) {
-      const authSuccess = await BiometricService.authenticate('Enable FaceID Login');
+      const authSuccess = await BiometricService.authenticate(intl.formatMessage({ id: 'account.biometric' }));
       if (authSuccess) {
         setShowPasswordModal(true);
       }
@@ -68,16 +80,28 @@ export default function AccountScreen() {
     
     setConfirmingPassword(true);
     try {
-      await api.post("/auth/login", { username: user.username, password });
+      await api.post("/auth/login", { username: user.email, password });
       
       await BiometricService.setEnabled(true);
-      await BiometricService.storeCredentials({ username: user.username, password });
+      await BiometricService.storeCredentials({ username: user.email, password });
       setIsFaceIdEnabled(true);
       setShowPasswordModal(false);
       
-      Alert.alert("Success", "FaceID login enabled successfully!");
+      setTimeout(() => {
+        setStatusModal({
+          visible: true,
+          type: 'success',
+          title: intl.formatMessage({ id: 'account.biometric.success.title' }),
+          message: intl.formatMessage({ id: 'account.biometric.success.message' }),
+        });
+      }, 500);
     } catch (error: any) {
-      Alert.alert("Error", "Incorrect password. Please try again.");
+      setStatusModal({
+        visible: true,
+        type: 'error',
+        title: intl.formatMessage({ id: 'common.error' }),
+        message: intl.formatMessage({ id: 'account.biometric.error.message' }),
+      });
     } finally {
       setConfirmingPassword(false);
     }
@@ -143,17 +167,17 @@ export default function AccountScreen() {
           >
             <ChevronLeft size={24} color={isDark ? "white" : "black"} />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-foreground">Konto</Text>
+          <Text className="text-xl font-bold text-foreground">{intl.formatMessage({ id: 'account.title' })}</Text>
         </View>
 
         <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
           <View className="mb-10">
-            <SectionHeader title="SICHERHEIT" />
+            <SectionHeader title={intl.formatMessage({ id: 'account.security' })} />
             
             {(isBiometricAvailable || __DEV__) && (
               <AccountItem 
                 icon={<ScanFace size={22} />} 
-                label="Biyometrik Giriş (FaceID)" 
+                label={intl.formatMessage({ id: 'account.biometric' })} 
                 showSwitch
                 switchValue={isFaceIdEnabled}
                 onSwitchChange={toggleFaceId}
@@ -162,32 +186,32 @@ export default function AccountScreen() {
 
             <AccountItem 
               icon={<Shield size={22} />} 
-              label="Passwort ändern" 
+              label={intl.formatMessage({ id: 'account.changePassword' })} 
               onPress={() => {}}
             />
 
-            <SectionHeader title="PERSÖNLICHE DATEN" />
+            <SectionHeader title={intl.formatMessage({ id: 'account.personalData' })} />
             
             <AccountItem 
               icon={<User size={22} />} 
-              label="Profil bearbeiten" 
+              label={intl.formatMessage({ id: 'account.editProfile' })} 
               onPress={() => {}}
             />
             <AccountItem 
               icon={<CreditCard size={22} />} 
-              label="Zahlungsmethoden" 
+              label={intl.formatMessage({ id: 'account.paymentMethods' })} 
               onPress={() => {}}
             />
             <AccountItem 
               icon={<History size={22} />} 
-              label="Bestellverlauf" 
+              label={intl.formatMessage({ id: 'account.orderHistory' })} 
               onPress={() => {}}
             />
 
-            <SectionHeader title="GEFAHRENZONE" />
+            <SectionHeader title={intl.formatMessage({ id: 'account.dangerZone' })} />
             <AccountItem 
               icon={<Trash2 size={22} />} 
-              label="Konto löschen" 
+              label={intl.formatMessage({ id: 'account.deleteAccount' })} 
               isDestructive
               onPress={() => {}}
             />
@@ -199,6 +223,14 @@ export default function AccountScreen() {
           loading={confirmingPassword}
           onClose={() => setShowPasswordModal(false)}
           onConfirm={handlePasswordConfirm}
+        />
+
+        <SuccessModal 
+          visible={statusModal.visible}
+          type={statusModal.type}
+          title={statusModal.title}
+          message={statusModal.message}
+          onClose={() => setStatusModal(prev => ({ ...prev, visible: false }))}
         />
 
       </SafeAreaView>

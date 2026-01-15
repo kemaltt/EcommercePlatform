@@ -9,12 +9,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { Button } from "../../components/ui/Button";
 import { useTheme } from "../../contexts/theme-context";
+import { useIntl } from "react-intl";
 
 export default function SavedScreen() {
   const { favorites, isLoading, toggleFavorite } = useFavorites();
   const { addToCart } = useCart();
   const router = useRouter();
   const { isDark } = useTheme();
+  const intl = useIntl();
 
   if (isLoading) {
     return (
@@ -32,13 +34,13 @@ export default function SavedScreen() {
             <Heart size={40} color="#6366f1" />
             </View>
             <Text className="text-2xl font-bold text-foreground mb-2">
-            Your Wishlist is Empty
+            {intl.formatMessage({ id: 'favorites.empty.title' })}
             </Text>
             <Text className="text-muted-foreground text-center mb-8 max-w-[250px]">
-            Start exploring and add items to your wishlist.
+            {intl.formatMessage({ id: 'favorites.empty.subtitle' })}
             </Text>
             <Button 
-            title="Start Exploring"
+            title={intl.formatMessage({ id: 'favorites.startExploring' })}
             onPress={() => router.push("/(tabs)")} 
             className="w-full max-w-xs h-14 rounded-2xl"
             />
@@ -60,7 +62,7 @@ export default function SavedScreen() {
               <ChevronLeft size={20} color={isDark ? "#94a3b8" : "#52525b"} />
            </TouchableOpacity>
            
-           <Text className="text-xl font-bold text-foreground">Your Wishlist</Text>
+           <Text className="text-xl font-bold text-foreground">{intl.formatMessage({ id: 'favorites.title' })}</Text>
 
            <View className="w-10 h-10 items-center justify-center">
               <Heart size={24} color={isDark ? "white" : "black"} fill={isDark ? "white" : "black"} />
@@ -71,7 +73,7 @@ export default function SavedScreen() {
         </View>
 
         <View className="px-6 py-2 flex-row justify-between items-center">
-           <Text className="text-muted-foreground text-sm">{favorites.length} Items in Wishlist</Text>
+           <Text className="text-muted-foreground text-sm">{intl.formatMessage({ id: 'favorites.itemsCount' }, { count: favorites.length })}</Text>
            {/* "Move all to cart" button explicitly removed as per request */}
         </View>
 

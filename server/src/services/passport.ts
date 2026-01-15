@@ -23,11 +23,11 @@ export function setupPassport(app: Express) {
     cookie: {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       secure: process.env.NODE_ENV === "production",
-    }
+    },
   };
 
-  if (process.env.NODE_ENV === 'production') {
-      app.set('trust proxy', 1);
+  if (process.env.NODE_ENV === "production") {
+    app.set("trust proxy", 1);
   }
 
   app.use(session(sessionSettings));
@@ -35,48 +35,53 @@ export function setupPassport(app: Express) {
   app.use(passport.session());
 
   passport.use(
-    new LocalStrategy(
-      { usernameField: 'username' }, // Frontend sends 'username' field name, but we treat it as email or username
-      async (email, password, done) => {
-        try {
-          // Try to find by email first (as per recent change)
-          const user = await storage.getUserByEmail(email);
+    new LocalStrategy(async (identifier, password, done) => {
+      try {
+        // Try to find by email first
+        let user = await storage.getUserByEmail(identifier);
 
-          if (!user) {
-            return done(null, false, { message: 'Incorrect email or password.' });
-          }
-
-          const isMatch = await comparePasswords(user.password, password);
-          if (!isMatch) {
-            return done(null, false, { message: 'Incorrect email or password.' });
-          }
-
-          if (!user.emailVerified) {
-            return done(null, false, { message: 'EMAIL_NOT_VERIFIED' });
-          }
-
-          return done(null, user as Express.User);
-        } catch (err) {
-          console.error("LocalStrategy error:", err);
-          return done(err);
+        // Fallback to username if not found by email
+        if (!user) {
+          user = await storage.getUserByUsername(identifier);
         }
+
+        if (!user) {
+          return done(null, false, { message: "Incorrect email or password." });
+        }
+
+        const isMatch = await comparePasswords(user.password, password);
+        if (!isMatch) {
+          return done(null, false, { message: "Incorrect email or password." });
+        }
+
+        if (!user.emailVerified) {
+          return done(null, false, { message: "EMAIL_NOT_VERIFIED" });
+        }
+
+        return done(null, user as Express.User);
+      } catch (err) {
+        console.error("LocalStrategy error:", err);
+        return done(err);
       }
-    ),
+    })
   );
 
   passport.serializeUser((user, done) => {
-    if (user && 'id' in user) {
+    if (user && "id" in user) {
       done(null, user.id);
     } else {
       console.error("Serialization error: User object missing id", user);
-      done(new Error('User object missing id for serialization'));
+      done(new Error("User object missing id for serialization"));
     }
   });
 
   passport.deserializeUser(async (id: unknown, done) => {
-    if (typeof id !== 'number') {
-        console.error(`Deserialization error: Expected ID to be a number, but received ${typeof id}`, id);
-        return done(new Error('Invalid user ID type in session'));
+    if (typeof id !== "number") {
+      console.error(
+        `Deserialization error: Expected ID to be a number, but received ${typeof id}`,
+        id
+      );
+      return done(new Error("Invalid user ID type in session"));
     }
 
     try {

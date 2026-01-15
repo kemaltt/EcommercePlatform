@@ -3,8 +3,9 @@ import { IntlProvider } from "react-intl";
 import * as Localization from "expo-localization";
 import en from "../i18n/en.json";
 import tr from "../i18n/tr.json";
+import de from "../i18n/de.json";
 
-const messages: Record<string, any> = { en, tr };
+const messages: Record<string, any> = { en, tr, de };
 
 interface I18nContextType {
   locale: string;
@@ -14,7 +15,7 @@ interface I18nContextType {
 const I18nContext = createContext<I18nContextType | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<string>("en");
+  const [locale, setLocale] = useState<string>("de");
 
   useEffect(() => {
     const deviceLanguage = Localization.getLocales()[0].languageCode;
@@ -25,7 +26,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   return (
     <I18nContext.Provider value={{ locale, setLocale }}>
-      <IntlProvider locale={locale} messages={messages[locale]} defaultLocale="en">
+      <IntlProvider locale={locale} messages={messages[locale]} defaultLocale="de">
         {children}
       </IntlProvider>
     </I18nContext.Provider>

@@ -9,6 +9,7 @@ import { api } from "../../../lib/api";
 import { User as UserType } from "@shared/schema";
 import { useState, useEffect } from "react";
 import { useTheme } from "../../../contexts/theme-context";
+import { SuccessModal } from "../../../components/SuccessModal";
 
 export default function EditUserScreen() {
   const { id } = useLocalSearchParams();
@@ -20,6 +21,7 @@ export default function EditUserScreen() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("active");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const { data: user, isLoading } = useQuery<UserType>({
     queryKey: [`/api/admin/users/${id}`],
@@ -46,8 +48,7 @@ export default function EditUserScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       queryClient.invalidateQueries({ queryKey: [`/api/admin/users/${id}`] });
-      Alert.alert("Success", "User updated successfully");
-      router.back();
+      setShowSuccessModal(true);
     },
     onError: (error: any) => {
       Alert.alert("Error", error.response?.data?.message || "Failed to update user");
@@ -191,6 +192,16 @@ export default function EditUserScreen() {
 
         </ScrollView>
       </SafeAreaView>
+
+      <SuccessModal 
+        visible={showSuccessModal}
+        title="User Updated"
+        message="The user account has been successfully updated."
+        onClose={() => {
+          setShowSuccessModal(false);
+          router.back();
+        }}
+      />
     </View>
   );
 }

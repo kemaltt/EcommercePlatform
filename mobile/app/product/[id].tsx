@@ -44,11 +44,11 @@ export default function ProductDetailsScreen() {
   const handleAddToCart = async () => {
      if (!user) {
         Alert.alert(
-          "Login Required",
-          "Please login to add items to your cart",
+          intl.formatMessage({ id: 'product.loginRequired.title' }),
+          intl.formatMessage({ id: 'product.loginRequired.message' }),
           [
-            { text: "Cancel", style: "cancel" },
-            { text: "Login", onPress: () => router.push("/(auth)/login") }
+            { text: intl.formatMessage({ id: 'common.cancel' }), style: "cancel" },
+            { text: intl.formatMessage({ id: 'auth.register.login' }), onPress: () => router.push("/(auth)/login") }
           ]
         );
         return;
@@ -72,9 +72,9 @@ export default function ProductDetailsScreen() {
   if (!product) {
     return (
       <View className="flex-1 justify-center items-center bg-background">
-        <Text className="text-xl text-foreground">Product not found</Text>
+        <Text className="text-xl text-foreground">{intl.formatMessage({ id: 'product.notFound' })}</Text>
         <Button 
-          title="Go Back" 
+          title={intl.formatMessage({ id: 'product.goBack' })} 
           onPress={() => router.back()} 
           className="mt-4" 
         />
@@ -135,13 +135,13 @@ export default function ProductDetailsScreen() {
             <View className="flex-row justify-between items-center mb-4">
                <View className="bg-[#fbbf24]/20 px-3 py-1.5 rounded-lg border border-[#fbbf24]/30">
                  <Text className="text-[#fbbf24] font-bold text-[10px] tracking-widest uppercase">
-                    Limited Edition
+                    {intl.formatMessage({ id: 'product.limitedEdition' })}
                  </Text>
                </View>
                <View className="flex-row items-center gap-1">
                   <Star size={16} color="#fbbf24" fill="#fbbf24" />
                   <Text className="text-muted-foreground text-sm font-medium">
-                     4.9 <Text className="text-muted-foreground/50">(124 reviews)</Text>
+                     4.9 <Text className="text-muted-foreground/50">(124 {intl.formatMessage({ id: 'product.reviews' })})</Text>
                   </Text>
                </View>
             </View>
@@ -171,7 +171,7 @@ export default function ProductDetailsScreen() {
 
             {/* Size Selector */}
             <Text className="text-muted-foreground font-bold text-xs uppercase tracking-widest mb-3 mt-2">
-               Select Size
+               {intl.formatMessage({ id: 'product.selectSize' })}
             </Text>
             <View className="flex-row gap-3 mb-8">
                {["S", "M", "L", "XL"].map((size) => (
@@ -222,7 +222,7 @@ export default function ProductDetailsScreen() {
                  </View>
                ) : (
                  <Button
-                   title={isAdded ? "Added to Cart!" : "Add to Cart"}
+                   title={isAdded ? intl.formatMessage({ id: 'product.addedToCart' }) : intl.formatMessage({ id: 'product.addToCart' })}
                    onPress={handleAddToCart}
                    variant={isAdded ? "success" : "primary"}
                    className={`flex-1 h-14 rounded-2xl ${isAdded ? "bg-green-500" : ""}`}

@@ -13,6 +13,7 @@ import { ChevronLeft, Image as ImageIcon, Save, X } from "lucide-react-native";
 import { StatusBar } from "expo-status-bar";
 import { Image } from "expo-image";
 import { useTheme } from "../../contexts/theme-context";
+import { SuccessModal } from "../../components/SuccessModal";
 
 export default function ManageProductScreen() {
   const { id } = useLocalSearchParams();
@@ -30,6 +31,7 @@ export default function ManageProductScreen() {
     imageUrl: "",
     stock: 10,
   });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: ["/api/products", id],
@@ -63,11 +65,7 @@ export default function ManageProductScreen() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      Alert.alert(
-        intl.formatMessage({ id: "common.success" }),
-        `Product ${isEditing ? "updated" : "created"} successfully`
-      );
-      router.back();
+      setShowSuccessModal(true);
     },
   });
 
@@ -221,6 +219,16 @@ export default function ManageProductScreen() {
                 />
             </View>
         </SafeAreaView>
+
+        <SuccessModal 
+            visible={showSuccessModal}
+            title={isEditing ? "Product Updated" : "Product Created"}
+            message={`The product has been successfully ${isEditing ? "updated" : "added to the inventory"}.`}
+            onClose={() => {
+                setShowSuccessModal(false);
+                router.back();
+            }}
+        />
     </View>
   );
 }

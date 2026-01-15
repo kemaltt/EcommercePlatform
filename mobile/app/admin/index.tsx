@@ -18,6 +18,7 @@ import {
 import { useAuth } from "../../hooks/use-auth";
 import { LineChart } from "react-native-chart-kit";
 import { useTheme } from "../../contexts/theme-context";
+import { useIntl } from "react-intl";
 
 const { width } = Dimensions.get("window");
 
@@ -25,6 +26,7 @@ export default function AdminConsoleScreen() {
   const router = useRouter();
   const { user } = useAuth();
   const { isDark } = useTheme();
+  const intl = useIntl();
   
   const { data: stats } = useQuery({
     queryKey: ["/api/admin/stats"],
@@ -57,7 +59,7 @@ export default function AdminConsoleScreen() {
       <Text className="text-muted-foreground text-xs font-bold mb-4">{count} {subtitle}</Text>
       
       <View className="flex-row items-center">
-         <Text className="text-[#6366f1] text-xs font-bold mr-1">Manage</Text>
+         <Text className="text-[#6366f1] text-xs font-bold mr-1">{intl.formatMessage({ id: 'admin.manage' })}</Text>
          <ChevronRight size={12} color="#6366f1" />
       </View>
     </TouchableOpacity>
@@ -71,7 +73,7 @@ export default function AdminConsoleScreen() {
         </View>
         <View className="flex-1">
            <Text className="text-foreground font-bold text-base mb-1">{title}</Text>
-           <Text className="text-muted-foreground text-xs">Stock: {stock} • Ref: #7721</Text>
+           <Text className="text-muted-foreground text-xs">{intl.formatMessage({ id: 'admin.stock' })}: {stock} • Ref: #7721</Text>
            <Text className="text-primary font-bold mt-1">${price}</Text>
         </View>
         <View className="flex-row gap-4 mr-1">
@@ -99,8 +101,8 @@ export default function AdminConsoleScreen() {
                 <ChevronLeft size={20} color={isDark ? "white" : "black"} />
              </TouchableOpacity>
              <View>
-               <Text className="text-foreground text-lg font-bold">Admin Console</Text>
-               <Text className="text-primary text-xs font-bold">Store Overview • Live</Text>
+               <Text className="text-foreground text-lg font-bold">{intl.formatMessage({ id: 'admin.console.title' })}</Text>
+               <Text className="text-primary text-xs font-bold">{intl.formatMessage({ id: 'admin.console.overview' })}</Text>
              </View>
           </View>
           
@@ -117,22 +119,22 @@ export default function AdminConsoleScreen() {
 
         <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
           
-          <Text className="text-foreground font-bold text-lg mb-4">Management</Text>
+          <Text className="text-foreground font-bold text-lg mb-4">{intl.formatMessage({ id: 'admin.management' })}</Text>
           <View className="flex-row mb-8">
              <View className="flex-1 mr-4">
                <ManagementCard 
-                 title="Products" 
+                 title={intl.formatMessage({ id: 'admin.products' })} 
                  count={stats?.totalProducts || "0"} 
-                 subtitle="TOTAL" 
+                 subtitle={intl.formatMessage({ id: 'admin.products.total' })} 
                  icon={<Package size={20} color="#6366f1" />} 
                  onPress={() => router.push("/admin/products")}
                />
              </View>
              <View className="flex-1">
                <ManagementCard 
-                 title="Users" 
+                 title={intl.formatMessage({ id: 'admin.users' })} 
                  count={stats?.totalUsers || "0"} 
-                 subtitle="USERS" 
+                 subtitle={intl.formatMessage({ id: 'admin.users.count' })} 
                  icon={<Users size={20} color="#6366f1" />} 
                  onPress={() => router.push("/admin/users")}
                />
@@ -140,13 +142,13 @@ export default function AdminConsoleScreen() {
           </View>
 
           <View className="flex-row justify-between items-center mb-4">
-             <Text className="text-foreground font-bold text-lg">Sales Velocity</Text>
+             <Text className="text-foreground font-bold text-lg">{intl.formatMessage({ id: 'admin.salesVelocity' })}</Text>
              <View className="flex-row bg-card rounded-lg p-0.5 border border-border/50">
                 <TouchableOpacity className="px-3 py-1 bg-background rounded-md shadow-sm">
-                   <Text className="text-foreground text-xs font-bold">WEEK</Text>
+                   <Text className="text-foreground text-xs font-bold">{intl.formatMessage({ id: 'admin.period.week' })}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity className="px-3 py-1">
-                   <Text className="text-muted-foreground text-xs font-bold">MONTH</Text>
+                   <Text className="text-muted-foreground text-xs font-bold">{intl.formatMessage({ id: 'admin.period.month' })}</Text>
                 </TouchableOpacity>
              </View>
           </View>
@@ -193,9 +195,9 @@ export default function AdminConsoleScreen() {
           </View>
 
           <View className="flex-row justify-between items-center mb-4">
-             <Text className="text-foreground font-bold text-lg">Active Inventory</Text>
+             <Text className="text-foreground font-bold text-lg">{intl.formatMessage({ id: 'admin.activeInventory' })}</Text>
              <TouchableOpacity>
-                <Text className="text-muted-foreground text-xs flex-row items-center">See All <ChevronRight size={10} /></Text>
+                <Text className="text-muted-foreground text-xs flex-row items-center">{intl.formatMessage({ id: 'admin.seeAll' })} <ChevronRight size={10} /></Text>
              </TouchableOpacity>
           </View>
 

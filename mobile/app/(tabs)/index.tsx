@@ -17,14 +17,7 @@ import { useTheme } from "../../contexts/theme-context";
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = (width - 48) / 2; // px-6 is 24px each side -> 48px total
 
-// Dummy Categories based on screenshot
-const CATEGORIES = [
-  { id: "all", label: "All" },
-  { id: "electronics", label: "Electronics" },
-  { id: "fashion", label: "Fashion" },
-  { id: "home", label: "Home" },
-  { id: "books", label: "Books" },
-];
+// Categories will be localized dynamically
 
 export default function HomeScreen() {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -51,11 +44,11 @@ export default function HomeScreen() {
   const handleAuthProtectedAction = (product: Product) => {
     if (!user) {
       Alert.alert(
-        "Login Required",
-        "Please login to add to wishlist",
+        intl.formatMessage({ id: 'home.loginRequired.title' }),
+        intl.formatMessage({ id: 'home.loginRequired.message' }),
         [
-          { text: "Cancel", style: "cancel" },
-          { text: "Login", onPress: () => router.push("/(auth)/login") }
+          { text: intl.formatMessage({ id: 'common.cancel' }), style: "cancel" },
+          { text: intl.formatMessage({ id: 'auth.register.login' }), onPress: () => router.push("/(auth)/login") }
         ]
       );
     } else {
@@ -102,7 +95,7 @@ export default function HomeScreen() {
         {/* NEW Badge Logic - Optional */}
         {index % 3 === 0 && (
           <View className="absolute bottom-3 left-3 bg-[#6366f1] px-2 py-1 rounded-md">
-            <Text className="text-white text-[10px] font-bold">NEW</Text>
+            <Text className="text-white text-[10px] font-bold">{intl.formatMessage({ id: 'home.newBadge' })}</Text>
           </View>
         )}
       </View>
@@ -130,7 +123,7 @@ export default function HomeScreen() {
         <View className="px-6 py-4 flex-row justify-between items-center">
           <View>
             <Text className="text-foreground text-3xl font-bold">
-              Catalog
+              {intl.formatMessage({ id: 'home.catalog' })}
             </Text>
           </View>
           <TouchableOpacity 
@@ -148,7 +141,7 @@ export default function HomeScreen() {
               <TextInput
                  value={searchQuery}
                  onChangeText={setSearchQuery}
-                 placeholder="Search for premium products..."
+                 placeholder={intl.formatMessage({ id: 'home.search.placeholder' })}
                  placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
                  className="flex-1 ml-3 px-2 text-base text-foreground font-medium"
                  style={{ paddingVertical: 12 }}
@@ -163,22 +156,22 @@ export default function HomeScreen() {
         {/* Categories */}
         <View className="mb-6">
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24 }}>
-            {CATEGORIES.map((category) => (
+            {['all', 'electronics', 'fashion', 'home', 'books'].map((categoryId) => (
               <TouchableOpacity
-                key={category.id}
-                onPress={() => setSelectedCategory(category.id)}
+                key={categoryId}
+                onPress={() => setSelectedCategory(categoryId)}
                 className={`mr-3 px-5 py-2.5 rounded-full ${
-                  selectedCategory === category.id
+                  selectedCategory === categoryId
                     ? "bg-[#6366f1]" // Indigo-500
                     : "bg-card border border-border"
                 }`}
               >
                 <Text
                   className={`text-xs font-bold ${
-                    selectedCategory === category.id ? "text-white" : "text-muted-foreground"
+                    selectedCategory === categoryId ? "text-white" : "text-muted-foreground"
                   }`}
                 >
-                  {category.label}
+                  {intl.formatMessage({ id: `category.${categoryId}` })}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -188,9 +181,9 @@ export default function HomeScreen() {
         {/* New Arrivals & List */}
         <View className="flex-1 px-6">
            <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-foreground text-lg font-bold">New Arrivals</Text>
+              <Text className="text-foreground text-lg font-bold">{intl.formatMessage({ id: 'home.section.newArrivals' })}</Text>
               <TouchableOpacity>
-                 <Text className="text-[#6366f1] text-xs font-bold">View All</Text>
+                 <Text className="text-[#6366f1] text-xs font-bold">{intl.formatMessage({ id: 'home.viewAll' })}</Text>
               </TouchableOpacity>
            </View>
 
@@ -209,7 +202,7 @@ export default function HomeScreen() {
               ListFooterComponent={<View className="h-20" />}
               ListEmptyComponent={
                 <View className="mt-10 items-center">
-                  <Text className="text-muted-foreground">No products found</Text>
+                  <Text className="text-muted-foreground">{intl.formatMessage({ id: 'home.noProducts' })}</Text>
                 </View>
               }
             />

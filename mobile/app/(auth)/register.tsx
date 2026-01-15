@@ -8,6 +8,7 @@ import { useIntl } from "react-intl";
 import { StatusBar } from "expo-status-bar";
 import { User, Mail, Lock, Eye, EyeOff, ChevronLeft, RefreshCw } from "lucide-react-native";
 import { VerificationModal } from "../../components/VerificationModal";
+import { SuccessModal } from "../../components/SuccessModal";
 
 export default function RegisterScreen() {
   const [fullName, setFullName] = useState("");
@@ -18,6 +19,17 @@ export default function RegisterScreen() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
+  const [statusModal, setStatusModal] = useState<{ 
+    visible: boolean; 
+    type: 'success' | 'error'; 
+    title: string; 
+    message: string; 
+  }>({
+    visible: false,
+    type: 'success',
+    title: '',
+    message: '',
+  });
   
   const { register, login } = useAuth();
   const router = useRouter();
@@ -25,15 +37,22 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     if (!fullName || !email || !password || !confirmPassword) {
-      Alert.alert(
-        intl.formatMessage({ id: "common.error" }),
-        "Please fill in all fields"
-      );
+      setStatusModal({
+        visible: true,
+        type: 'error',
+        title: intl.formatMessage({ id: 'auth.error.input' }),
+        message: intl.formatMessage({ id: 'auth.error.fillAll' }),
+      });
       return;
     }
 
     if (password !== confirmPassword) {
-       Alert.alert("Error", "Passwords do not match");
+       setStatusModal({
+         visible: true,
+         type: 'error',
+         title: intl.formatMessage({ id: 'auth.error.input' }),
+         message: intl.formatMessage({ id: 'auth.error.passwordMismatch' }),
+       });
        return;
     }
 
@@ -50,10 +69,12 @@ export default function RegisterScreen() {
       // Show Verification Modal
       setShowVerification(true);
     } catch (error: any) {
-      Alert.alert(
-        intl.formatMessage({ id: "common.error" }),
-        error?.response?.data?.message || "Something went wrong"
-      );
+      setStatusModal({
+        visible: true,
+        type: 'error',
+        title: intl.formatMessage({ id: 'auth.error.registrationFailed' }),
+        message: error?.response?.data?.message || intl.formatMessage({ id: 'auth.error.registrationFailed' }),
+      });
     } finally {
       setLoading(false);
     }
@@ -103,10 +124,10 @@ export default function RegisterScreen() {
               {/* Header */}
               <View className="items-center mb-8">
                 <Text className="text-3xl font-extrabold text-foreground mb-2 text-center">
-                  Create Account
+                  {intl.formatMessage({ id: 'auth.register.title' })}
                 </Text>
                 <Text className="text-muted-foreground text-center text-sm">
-                  Join our exclusive community
+                  {intl.formatMessage({ id: 'auth.register.subtitle' })}
                 </Text>
               </View>
 
@@ -114,26 +135,26 @@ export default function RegisterScreen() {
               <View className="bg-card border border-border rounded-[32px] p-6 shadow-2xl mb-8">
                 <View className="space-y-4">
                   <Input
-                    label="FULL NAME"
+                    label={intl.formatMessage({ id: 'auth.register.fullName.label' })}
                     value={fullName}
                     onChangeText={setFullName}
-                    placeholder="John Doe"
+                    placeholder={intl.formatMessage({ id: 'auth.register.fullName.placeholder' })}
                     autoCapitalize="words"
                     icon={<User size={18} color="#64748b" />}
                   />
                   <Input
-                    label="EMAIL ADDRESS"
+                    label={intl.formatMessage({ id: 'auth.register.email.label' })}
                     value={email}
                     onChangeText={setEmail}
-                    placeholder="hello@example.com"
+                    placeholder={intl.formatMessage({ id: 'auth.login.email.placeholder' })}
                     autoCapitalize="none"
                     icon={<Mail size={18} color="#64748b" />}
                   />
                   <Input
-                    label="PASSWORD"
+                    label={intl.formatMessage({ id: 'auth.register.password.label' })}
                     value={password}
                     onChangeText={setPassword}
-                    placeholder="••••••••"
+                    placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
                     secureTextEntry={!showPassword}
                     icon={<Lock size={18} color="#64748b" />}
                     rightIcon={
@@ -147,17 +168,17 @@ export default function RegisterScreen() {
                     }
                   />
                   <Input
-                    label="CONFIRM PASSWORD"
+                    label={intl.formatMessage({ id: 'auth.register.confirmPassword.label' })}
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
-                    placeholder="••••••••"
+                    placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
                     secureTextEntry
                     icon={<RefreshCw size={18} color="#64748b" />}
                   />
                 </View>
 
                 <Button
-                  title="Create Account"
+                  title={intl.formatMessage({ id: 'auth.register.button' })}
                   onPress={handleRegister}
                   loading={loading}
                   variant="primary"
@@ -168,12 +189,12 @@ export default function RegisterScreen() {
               {/* Footer */}
               <View className="flex-row justify-center mb-6 gap-1">
                 <Text className="text-muted-foreground font-medium text-sm">
-                  Already have an account?
+                  {intl.formatMessage({ id: 'auth.register.hasAccount' })}
                 </Text>
                 <Link href="/(auth)/login" asChild>
                   <TouchableOpacity>
                     <Text className="text-[#6366f1] font-bold text-sm">
-                      Login
+                      {intl.formatMessage({ id: 'auth.register.login' })}
                     </Text>
                   </TouchableOpacity>
                 </Link>
@@ -189,6 +210,14 @@ export default function RegisterScreen() {
          email={email} 
          onClose={() => setShowVerification(false)}
          onSuccess={handleVerificationSuccess}
+      />
+
+      <SuccessModal 
+        visible={statusModal.visible}
+        type={statusModal.type}
+        title={statusModal.title}
+        message={statusModal.message}
+        onClose={() => setStatusModal(prev => ({ ...prev, visible: false }))}
       />
     </View>
   );

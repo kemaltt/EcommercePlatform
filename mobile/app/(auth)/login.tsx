@@ -8,6 +8,7 @@ import { useIntl } from "react-intl";
 import { StatusBar } from "expo-status-bar";
 import { ShoppingBag, Mail, Lock, Eye, EyeOff, ArrowRight, ChevronLeft, ScanFace } from "lucide-react-native";
 import { VerificationModal } from "../../components/VerificationModal";
+import { SuccessModal } from "../../components/SuccessModal";
 import { BiometricService } from "../../lib/biometric";
 import { useEffect } from "react";
 import { ActivityIndicator } from "react-native";
@@ -22,6 +23,17 @@ export default function LoginScreen() {
 
   const [biometricLoading, setBiometricLoading] = useState(false);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
+  const [statusModal, setStatusModal] = useState<{ 
+    visible: boolean; 
+    type: 'success' | 'error'; 
+    title: string; 
+    message: string; 
+  }>({
+    visible: false,
+    type: 'success',
+    title: '',
+    message: '',
+  });
 
   const { login } = useAuth();
   const { isDark } = useTheme();
@@ -40,18 +52,28 @@ export default function LoginScreen() {
     try {
       const credentials = await BiometricService.getCredentials();
       if (!credentials) {
-        Alert.alert("Error", "Biometric credentials not found. Please login manually first.");
+        setStatusModal({
+          visible: true,
+          type: 'error',
+          title: intl.formatMessage({ id: 'auth.error.input' }),
+          message: intl.formatMessage({ id: 'auth.error.biometricNotFound' }),
+        });
         return;
       }
 
-      const success = await BiometricService.authenticate('Login with FaceID');
+      const success = await BiometricService.authenticate(intl.formatMessage({ id: 'auth.login.biometric' }));
       if (success) {
         await login({ username: credentials.username, password: credentials.password });
         router.replace("/(tabs)");
       }
     } catch (error: any) {
-      const message = error?.response?.data?.message || "Biometric login failed";
-      Alert.alert("Error", message);
+      const message = error?.response?.data?.message || intl.formatMessage({ id: 'auth.error.loginFailed' });
+      setStatusModal({
+        visible: true,
+        type: 'error',
+        title: intl.formatMessage({ id: 'auth.error.loginFailed' }),
+        message: message,
+      });
     } finally {
       setBiometricLoading(false);
     }
@@ -59,10 +81,12 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert(
-        intl.formatMessage({ id: "common.error" }),
-        intl.formatMessage({ id: "auth.login.subtitle" })
-      );
+      setStatusModal({
+        visible: true,
+        type: 'error',
+        title: intl.formatMessage({ id: 'auth.error.input' }),
+        message: intl.formatMessage({ id: 'auth.error.fillAll' }),
+      });
       return;
     }
 
@@ -77,10 +101,12 @@ export default function LoginScreen() {
          // Show verification modal instead of alert
          setShowVerification(true);
       } else {
-        Alert.alert(
-          intl.formatMessage({ id: "common.error" }),
-          message
-        );
+        setStatusModal({
+          visible: true,
+          type: 'error',
+          title: intl.formatMessage({ id: 'common.error' }),
+          message: message,
+        });
       }
     } finally {
       setLoading(false);
@@ -124,10 +150,10 @@ export default function LoginScreen() {
                    <ShoppingBag size={40} color="#fbbf24" strokeWidth={2.5} />
                 </View>
                 <Text className="text-3xl font-extrabold text-foreground mb-2">
-                  Welcome Back
+                  {intl.formatMessage({ id: 'auth.login.title' })}
                 </Text>
                 <Text className="text-muted-foreground text-center text-sm leading-5 max-w-[260px]">
-                  Sign in to continue your curated shopping experience.
+                  {intl.formatMessage({ id: 'auth.login.subtitle' })}
                 </Text>
               </View>
 
@@ -135,19 +161,19 @@ export default function LoginScreen() {
               <View className="bg-card border border-border rounded-[32px] p-6 shadow-2xl">
                 <View className="space-y-4">
                   <Input
-                    label="EMAIL ADDRESS"
+                    label={intl.formatMessage({ id: 'auth.login.email.label' })}
                     value={email}
                     onChangeText={setEmail}
-                    placeholder="name@example.com"
+                    placeholder={intl.formatMessage({ id: 'auth.login.email.placeholder' })}
                     autoCapitalize="none"
                     icon={<Mail size={18} color="#64748b" />}
                     className="mb-4"
                   />
                   <Input
-                    label="PASSWORD"
+                    label={intl.formatMessage({ id: 'auth.login.password.label' })}
                     value={password}
                     onChangeText={setPassword}
-                    placeholder="••••••••"
+                    placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
                     secureTextEntry={!showPassword}
                     icon={<Lock size={18} color="#64748b" />}
                     rightIcon={
@@ -164,13 +190,13 @@ export default function LoginScreen() {
 
                 <TouchableOpacity className="self-end mt-2 mb-6">
                   <Text className="text-[#fbbf24] font-semibold text-xs">
-                    Forgot Password?
+                    {intl.formatMessage({ id: 'auth.login.forgot' })}
                   </Text>
                 </TouchableOpacity>
 
                 <View className="space-y-4">
                   <Button
-                    title="Sign In"
+                    title={intl.formatMessage({ id: 'auth.login.button' })}
                     onPress={handleLogin}
                     loading={loading}
                     variant="primary"
@@ -190,7 +216,7 @@ export default function LoginScreen() {
                       ) : (
                         <>
                           <ScanFace size={20} color="#6366f1" className="mr-2" />
-                          <Text className="text-primary font-semibold text-sm">Sign in with Face ID</Text>
+                          <Text className="text-primary font-semibold text-sm">{intl.formatMessage({ id: 'auth.login.biometric' })}</Text>
                         </>
                       )}
                     </TouchableOpacity>
@@ -199,19 +225,19 @@ export default function LoginScreen() {
 
                 <View className="flex-row items-center mb-6 mt-10 gap-4 opacity-50">
                   <View className="flex-1 h-[1px] bg-border" />
-                  <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">Or connect with</Text>
+                  <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">{intl.formatMessage({ id: 'auth.login.orConnect' })}</Text>
                   <View className="flex-1 h-[1px] bg-border" />
                 </View>
 
                 <View className="flex-row gap-4 mb-4">
                    {/* Google Button */}
                   <TouchableOpacity className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2">
-                    <Text className="text-black font-bold text-sm">Google</Text>
+                    <Text className="text-black font-bold text-sm">{intl.formatMessage({ id: 'auth.login.google' })}</Text>
                   </TouchableOpacity>
                   
                   {/* Apple Button */}
                   <TouchableOpacity className="flex-1 bg-[#3f3f46] h-12 rounded-xl flex-row items-center justify-center gap-2">
-                    <Text className="text-white font-bold text-sm">Apple</Text>
+                    <Text className="text-white font-bold text-sm">{intl.formatMessage({ id: 'auth.login.apple' })}</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -220,12 +246,12 @@ export default function LoginScreen() {
               {/* Footer */}
               <View className="flex-row justify-center mt-8 mb-4 gap-1">
                 <Text className="text-muted-foreground font-medium text-sm">
-                  Don't have an account?
+                  {intl.formatMessage({ id: 'auth.login.noAccount' })}
                 </Text>
                 <Link href="/(auth)/register" asChild>
                   <TouchableOpacity>
                     <Text className="text-[#fbbf24] font-bold text-sm">
-                      Sign Up
+                      {intl.formatMessage({ id: 'auth.login.signUp' })}
                     </Text>
                   </TouchableOpacity>
                 </Link>
@@ -241,6 +267,14 @@ export default function LoginScreen() {
          email={email} 
          onClose={() => setShowVerification(false)}
          onSuccess={handleVerificationSuccess}
+      />
+
+      <SuccessModal 
+        visible={statusModal.visible}
+        type={statusModal.type}
+        title={statusModal.title}
+        message={statusModal.message}
+        onClose={() => setStatusModal(prev => ({ ...prev, visible: false }))}
       />
     </View>
   );
