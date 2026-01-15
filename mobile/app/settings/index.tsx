@@ -16,11 +16,6 @@ import {
   Bell,
   Languages,
   Moon,
-  Shield,
-  Info,
-  LifeBuoy,
-  FileText,
-  ScanFace,
   LayoutGrid,
   Sun,
   Smartphone,
@@ -28,8 +23,7 @@ import {
 } from "lucide-react-native";
 import { StatusBar } from "expo-status-bar";
 import { useI18n } from "../../contexts/i18n-context";
-import { FormattedMessage, useIntl } from "react-intl";
-import * as LocalAuthentication from 'expo-local-authentication';
+import { useIntl } from "react-intl";
 
 import { useTheme } from "../../contexts/theme-context";
 
@@ -39,30 +33,7 @@ export default function SettingsScreen() {
   const { themeMode, setThemeMode, isDark } = useTheme();
   const intl = useIntl();
   
-  const [isFaceIdEnabled, setIsFaceIdEnabled] = React.useState(false);
-  const [isBiometricAvailable, setIsBiometricAvailable] = React.useState(false);
   const [showThemeModal, setShowThemeModal] = React.useState(false);
-
-  React.useEffect(() => {
-    (async () => {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      setIsBiometricAvailable(compatible);
-    })();
-  }, []);
-
-  const toggleFaceId = async (value: boolean) => {
-    if (value) {
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Enable FaceID Login',
-        fallbackLabel: 'Enter Password',
-      });
-      if (result.success) {
-        setIsFaceIdEnabled(true);
-      }
-    } else {
-      setIsFaceIdEnabled(false);
-    }
-  };
 
   const SettingItem = ({ 
     icon, 
@@ -157,8 +128,8 @@ export default function SettingsScreen() {
           <Text className="text-xl font-bold text-foreground">Einstellungen</Text>
         </View>
 
-        <ScrollView className="flex-1 px-6">
-          <View className="mt-4">
+        <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+          <View className="mb-10 mt-4">
             <SettingItem 
               icon={<Bell size={22} color={isDark ? "white" : "black"} />} 
               label="Mitteilungen" 
@@ -176,32 +147,19 @@ export default function SettingsScreen() {
               subLabel={locale === 'en' ? 'English' : 'Deutsch'}
               onPress={() => setLocale(locale === 'en' ? 'tr' : 'en')}
             />
-            
-            {isBiometricAvailable && (
-              <SettingItem 
-                icon={<ScanFace size={22} color={isDark ? "white" : "black"} />} 
-                label="Mit FaceID anmelden" 
-                showSwitch
-                switchValue={isFaceIdEnabled}
-                onSwitchChange={toggleFaceId}
-              />
-            )}
-
             <SettingItem 
               icon={<LayoutGrid size={22} color={isDark ? "white" : "black"} />} 
-              label="Sonstiges" 
+              label="Standardansicht" 
               onPress={() => {}}
             />
-          </View>
 
-          {/* Legal / Info Section */}
-          <View className="mt-8 mb-10">
-            <LegalItem label="Impressum" onPress={() => {}} />
-            <LegalItem label="Barrierefreiheit" onPress={() => {}} />
-            <LegalItem label="Infos zum Tracking" onPress={() => {}} />
-            <LegalItem label="Datenschutz" onPress={() => {}} />
+            <View className="mt-8">
+              <LegalItem label="Impressum" onPress={() => {}} />
+              <LegalItem label="Barrierefreiheit" onPress={() => {}} />
+              <LegalItem label="Infos zum Tracking" onPress={() => {}} />
+              <LegalItem label="Datenschutz" onPress={() => {}} />
+            </View>
           </View>
-
         </ScrollView>
 
         {/* Theme Selection Modal */}

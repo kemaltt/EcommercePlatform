@@ -6,8 +6,11 @@ import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { useIntl } from "react-intl";
 import { StatusBar } from "expo-status-bar";
-import { ShoppingBag, Mail, Lock, Eye, EyeOff, ArrowRight, ChevronLeft } from "lucide-react-native";
+import { ShoppingBag, Mail, Lock, Eye, EyeOff, ArrowRight, ChevronLeft, ScanFace } from "lucide-react-native";
 import { VerificationModal } from "../../components/VerificationModal";
+import { BiometricService } from "../../lib/biometric";
+import { useEffect } from "react";
+import { ActivityIndicator } from "react-native";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -16,9 +19,41 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
 
+  const [biometricLoading, setBiometricLoading] = useState(false);
+  const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
+
   const { login } = useAuth();
   const router = useRouter();
   const intl = useIntl();
+
+  useEffect(() => {
+    (async () => {
+      const enabled = await BiometricService.isEnabled();
+      setIsBiometricEnabled(enabled);
+    })();
+  }, []);
+
+  const handleBiometricLogin = async () => {
+    setBiometricLoading(true);
+    try {
+      const credentials = await BiometricService.getCredentials();
+      if (!credentials) {
+        Alert.alert("Error", "Biometric credentials not found. Please login manually first.");
+        return;
+      }
+
+      const success = await BiometricService.authenticate('Login with FaceID');
+      if (success) {
+        await login({ username: credentials.username, password: credentials.password });
+        router.replace("/(tabs)");
+      }
+    } catch (error: any) {
+      const message = error?.response?.data?.message || "Biometric login failed";
+      Alert.alert("Error", message);
+    } finally {
+      setBiometricLoading(false);
+    }
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -131,14 +166,30 @@ export default function LoginScreen() {
                   </Text>
                 </TouchableOpacity>
 
-                <Button
-                  title="Sign In"
-                  onPress={handleLogin}
-                  loading={loading}
-                  variant="primary"
-                  className="mb-8 rounded-2xl h-14"
-                  icon={<ArrowRight size={18} color="white" />}
-                />
+                <View className="flex-row gap-3">
+                  <Button
+                    title="Sign In"
+                    onPress={handleLogin}
+                    loading={loading}
+                    variant="primary"
+                    className="flex-1 rounded-2xl h-14"
+                    icon={<ArrowRight size={18} color="white" />}
+                  />
+                  
+                  {isBiometricEnabled && (
+                    <TouchableOpacity 
+                      onPress={handleBiometricLogin}
+                      disabled={loading || biometricLoading}
+                      className="w-14 h-14 bg-primary/10 rounded-2xl items-center justify-center border border-primary/20"
+                    >
+                      {biometricLoading ? (
+                        <ActivityIndicator size="small" color="#6366f1" />
+                      ) : (
+                        <ScanFace size={28} color="#6366f1" />
+                      )}
+                    </TouchableOpacity>
+                  )}
+                </View>
 
                 <View className="flex-row items-center mb-6 gap-4 opacity-50">
                   <View className="flex-1 h-[1px] bg-border" />

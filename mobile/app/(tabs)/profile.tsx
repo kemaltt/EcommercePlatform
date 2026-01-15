@@ -146,7 +146,7 @@ export default function ProfileScreen() {
                 icon={<Lock size={22} color={isDark ? "white" : "black"} />} 
                 label="Konto" 
                 subLabel="Daten, Sicherheit, Plus..."
-                onPress={() => {}}
+                onPress={() => router.push("/account")}
              />
              <GridMenuItem 
                 icon={<Settings size={22} color={isDark ? "white" : "black"} />} 
