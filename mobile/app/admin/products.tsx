@@ -9,6 +9,7 @@ import { useRouter } from "expo-router";
 import { FormattedMessage, useIntl } from "react-intl";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { useTheme } from "../../contexts/theme-context";
 
 const { width } = Dimensions.get("window");
 
@@ -16,6 +17,7 @@ export default function AdminProductsScreen() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const intl = useIntl();
+  const { isDark } = useTheme();
 
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
@@ -54,11 +56,11 @@ export default function AdminProductsScreen() {
   };
 
   const renderProduct = ({ item }: { item: Product }) => (
-    <View className="bg-[#1e2029] border border-white/5 rounded-[30px] p-3 flex-row items-center mb-4 min-h-[100px]">
+    <View className="bg-card border border-border/50 rounded-[30px] p-3 flex-row items-center mb-4 min-h-[100px]">
       {/* Image Wrapper with explicit style for expo-image compatibility */}
       <View 
         style={{ width: 80, height: 80 }} 
-        className="bg-white rounded-[22px] mr-4 overflow-hidden items-center justify-center p-1.5"
+        className="bg-background rounded-[22px] mr-4 overflow-hidden items-center justify-center p-1.5 border border-border/50"
       >
         <Image
           source={item.imageUrl}
@@ -71,7 +73,7 @@ export default function AdminProductsScreen() {
       <View className="flex-1 justify-center py-1">
         <View className="flex-row items-center justify-between pr-1">
           <View className="flex-1 flex-row items-center">
-            <Text className="font-bold text-white text-base mr-2 flex-shrink" numberOfLines={1}>{item.name}</Text>
+            <Text className="font-bold text-foreground text-base mr-2 flex-shrink" numberOfLines={1}>{item.name}</Text>
             {item.price > 100 && (
               <View className="bg-orange-500/10 px-2 py-0.5 rounded-lg border border-orange-500/20">
                 <Text className="text-orange-400 text-[8px] font-bold uppercase tracking-widest">Premium</Text>
@@ -95,11 +97,11 @@ export default function AdminProductsScreen() {
           </View>
         </View>
         
-        <Text className="text-slate-500 text-xs font-medium mt-1">
+        <Text className="text-muted-foreground text-xs font-medium mt-1">
           Stock: {item.stock} • Ref: #{item.id}
         </Text>
         
-        <Text className="text-[#6366f1] text-lg font-bold mt-2">
+        <Text className="text-primary text-lg font-bold mt-2">
           ${Number(item.price).toFixed(2)}
         </Text>
       </View>
@@ -107,36 +109,36 @@ export default function AdminProductsScreen() {
   );
 
   return (
-    <View className="flex-1 bg-[#121212]">
-      <StatusBar style="light" />
+    <View className="flex-1 bg-background">
+      <StatusBar style={isDark ? "light" : "dark"} />
       <SafeAreaView className="flex-1" edges={['top']}>
         {/* Header */}
          <View className="px-6 py-4 flex-row items-center mb-2">
             <TouchableOpacity 
               onPress={() => router.back()}
-              className="w-10 h-10 bg-[#1e2029] rounded-full items-center justify-center border border-white/10"
+              className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
             >
-               <ChevronLeft size={20} color="white" />
+               <ChevronLeft size={20} color={isDark ? "white" : "black"} />
             </TouchableOpacity>
             <View className="flex-1 items-center">
-               <Text className="text-white text-lg font-bold">Product Management</Text>
+               <Text className="text-foreground text-lg font-bold">Product Management</Text>
             </View>
             <TouchableOpacity 
-              className="w-10 h-10 bg-[#1e2029] rounded-full items-center justify-center border border-white/10"
+              className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
               onPress={() => router.push("/admin/manage-product")}
             >
-               <Plus size={20} color="white" />
+               <Plus size={20} color={isDark ? "white" : "black"} />
             </TouchableOpacity>
          </View>
 
         {/* Search */}
         <View className="px-6 mb-6">
-           <View className="bg-[#1e2029] h-12 rounded-xl flex-row items-center px-4 border border-white/10">
-              <Search size={20} color="#94a3b8" />
+           <View className="bg-card h-12 rounded-xl flex-row items-center px-4 border border-border">
+              <Search size={20} color={isDark ? "#94a3b8" : "#64748b"} />
               <TextInput 
                  placeholder="Search products..." 
-                 placeholderTextColor="#64748b"
-                 className="flex-1 ml-3 text-white"
+                 placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
+                 className="flex-1 ml-3 text-foreground"
               />
            </View>
         </View>

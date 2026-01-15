@@ -12,12 +12,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeft, Image as ImageIcon, Save, X } from "lucide-react-native";
 import { StatusBar } from "expo-status-bar";
 import { Image } from "expo-image";
+import { useTheme } from "../../contexts/theme-context";
 
 export default function ManageProductScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const queryClient = useQueryClient();
   const intl = useIntl();
+  const { isDark } = useTheme();
   const isEditing = !!id;
 
   const [formData, setFormData] = useState<Partial<InsertProduct>>({
@@ -82,26 +84,26 @@ export default function ManageProductScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 justify-center items-center bg-[#121212]">
+      <View className="flex-1 justify-center items-center bg-background">
         <ActivityIndicator size="large" color="#6366f1" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-[#121212]">
-        <StatusBar style="light" />
+    <View className="flex-1 bg-background">
+        <StatusBar style={isDark ? "light" : "dark"} />
         <SafeAreaView className="flex-1" edges={['top']}>
             {/* Header */}
-            <View className="px-6 py-4 flex-row items-center border-b border-white/5 bg-[#1e2029]">
+            <View className="px-6 py-4 flex-row items-center border-b border-border/50 bg-background">
                 <TouchableOpacity 
                     onPress={() => router.back()}
-                    className="w-10 h-10 bg-[#2A2C39] rounded-full items-center justify-center border border-white/10"
+                    className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
                 >
-                    <ChevronLeft size={20} color="white" />
+                    <ChevronLeft size={20} color={isDark ? "white" : "black"} />
                 </TouchableOpacity>
                 <View className="flex-1 items-center">
-                    <Text className="text-white text-lg font-bold">
+                    <Text className="text-foreground text-lg font-bold">
                         {isEditing ? "Edit Product" : "Add New Product"}
                     </Text>
                 </View>
@@ -111,7 +113,7 @@ export default function ManageProductScreen() {
             <ScrollView className="flex-1 p-6" showsVerticalScrollIndicator={false}>
                 
                 {/* Image Upload Placeholder */}
-                <View className="border-2 border-dashed border-[#6366f1]/30 bg-[#6366f1]/5 rounded-3xl h-64 items-center justify-center mb-8 relative overflow-hidden">
+                <View className="border-2 border-dashed border-primary/30 bg-primary/5 rounded-3xl h-64 items-center justify-center mb-8 relative overflow-hidden">
                     {formData.imageUrl ? (
                         <>
                             <Image 
@@ -128,11 +130,11 @@ export default function ManageProductScreen() {
                         </>
                     ) : (
                         <View className="items-center">
-                            <View className="w-16 h-16 bg-[#6366f1]/20 rounded-full items-center justify-center mb-4">
-                                <ImageIcon size={32} color="#6366f1" />
+                            <View className="w-16 h-16 bg-primary/10 rounded-full items-center justify-center mb-4">
+                                <ImageIcon size={32} color={isDark ? "#818cf8" : "#4f46e5"} />
                             </View>
-                            <Text className="text-white font-bold text-lg mb-1">Add Product Images</Text>
-                            <Text className="text-slate-400 text-sm">Enter URL below</Text>
+                            <Text className="text-foreground font-bold text-lg mb-1">Add Product Images</Text>
+                            <Text className="text-muted-foreground text-sm">Enter URL below</Text>
                         </View>
                     )}
                 </View>
@@ -140,15 +142,13 @@ export default function ManageProductScreen() {
                 {/* Form Fields */}
                 <View className="gap-4 mb-8">
                      <View>
-                        <Text className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2 ml-1">Basic Information</Text>
-                        <View className="bg-[#1e2029] p-4 rounded-3xl border border-white/5 space-y-4">
+                        <Text className="text-muted-foreground text-xs font-bold uppercase tracking-widest mb-2 ml-1">Basic Information</Text>
+                        <View className="bg-card p-4 rounded-3xl border border-border space-y-4">
                             <Input
                                 label="Product Name"
                                 value={formData.name || ""}
                                 onChangeText={(text) => setFormData({ ...formData, name: text })}
                                 placeholder="e.g. Lunar Gravity Sneakers"
-                                style={{ backgroundColor: '#2A2C39', borderColor: '#334155', color: 'white' }}
-                                labelStyle={{ color: '#94a3b8' }}
                             />
                             
                             <View className="flex-row gap-4">
@@ -158,8 +158,6 @@ export default function ManageProductScreen() {
                                         value={formData.price?.toString() || "0"}
                                         onChangeText={(text) => setFormData({ ...formData, price: parseFloat(text) || 0 })}
                                         placeholder="0.00"
-                                        style={{ backgroundColor: '#2A2C39', borderColor: '#334155', color: 'white' }}
-                                        labelStyle={{ color: '#94a3b8' }}
                                     />
                                 </View>
                                 <View className="flex-1">
@@ -168,8 +166,6 @@ export default function ManageProductScreen() {
                                         value={formData.stock?.toString() || "0"}
                                         onChangeText={(text) => setFormData({ ...formData, stock: parseInt(text) || 0 })}
                                         placeholder="0"
-                                        style={{ backgroundColor: '#2A2C39', borderColor: '#334155', color: 'white' }}
-                                        labelStyle={{ color: '#94a3b8' }}
                                     />
                                 </View>
                             </View>
@@ -179,8 +175,6 @@ export default function ManageProductScreen() {
                                 value={formData.category || ""}
                                 onChangeText={(text) => setFormData({ ...formData, category: text })}
                                 placeholder="electronics, clothing, etc."
-                                style={{ backgroundColor: '#2A2C39', borderColor: '#334155', color: 'white' }}
-                                labelStyle={{ color: '#94a3b8' }}
                             />
                             
                             <Input
@@ -188,22 +182,20 @@ export default function ManageProductScreen() {
                                 value={formData.imageUrl || ""}
                                 onChangeText={(text) => setFormData({ ...formData, imageUrl: text })}
                                 placeholder="https://..."
-                                style={{ backgroundColor: '#2A2C39', borderColor: '#334155', color: 'white' }}
-                                labelStyle={{ color: '#94a3b8' }}
                             />
                         </View>
                      </View>
 
                      <View>
-                        <Text className="text-slate-400 text-xs font-bold uppercase tracking-widest mb-2 ml-1">Description</Text>
-                        <View className="bg-[#1e2029] p-4 rounded-3xl border border-white/5">
+                        <Text className="text-muted-foreground text-xs font-bold uppercase tracking-widest mb-2 ml-1">Description</Text>
+                        <View className="bg-card p-4 rounded-3xl border border-border">
                             <Input
                                 value={formData.description || ""}
                                 onChangeText={(text) => setFormData({ ...formData, description: text })}
                                 placeholder="Product Story..."
                                 multiline
                                 numberOfLines={4}
-                                style={{ backgroundColor: '#2A2C39', borderColor: '#334155', color: 'white', height: 100, textAlignVertical: 'top' }}
+                                style={{ height: 100, textAlignVertical: 'top' }}
                             />
                         </View>
                      </View>
@@ -212,17 +204,16 @@ export default function ManageProductScreen() {
             </ScrollView>
 
             {/* Footer Actions */}
-            <View className="bg-[#1e2029] p-4 border-t border-white/5 flex-row gap-4 shadow-2xl pb-8">
+            <View className="bg-card p-4 border-t border-border flex-row gap-4 shadow-2xl pb-8">
                 <Button 
                    title="Discard" 
                    onPress={() => router.back()} 
                    variant="outline"
-                   className="flex-1 bg-[#2A2C39] border-white/10"
-                   textStyle={{ color: 'white' }}
-                   icon={<X size={18} color="white" />}
+                   className="flex-1 bg-secondary border-border"
+                   icon={<X size={18} color={isDark ? "white" : "black"} />}
                 />
                 <Button 
-                   title={isEditing ? "Update Product" : "Save Product"}
+                   title={isEditing ? "Update" : "Save"}
                    onPress={handleSubmit} 
                    loading={mutation.isPending}
                    className="flex-1"

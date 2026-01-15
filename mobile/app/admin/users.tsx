@@ -8,9 +8,11 @@ import { Edit2, Search, Filter, ShieldCheck, Mail, ShoppingCart, Lock, ChevronLe
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
+import { useTheme } from "../../contexts/theme-context";
 
 export default function AdminUsersScreen() {
   const router = useRouter();
+  const { isDark } = useTheme();
 
   // We need to fetch users. Assuming an endpoint /api/users exists or we need to add one.
   // Ideally, the backend should expose GET /api/users for admins.
@@ -26,9 +28,9 @@ export default function AdminUsersScreen() {
   });
 
   const renderUser = ({ item }: { item: User }) => (
-    <View className="bg-[#1e2029] border border-white/10 rounded-3xl p-4 mb-4">
+    <View className="bg-card border border-border/50 rounded-3xl p-4 mb-4 shadow-sm">
       <View className="flex-row items-center mb-4">
-          <View className="w-12 h-12 bg-[#2A2C39] rounded-full items-center justify-center mr-4 overflow-hidden border border-white/10">
+          <View className="w-12 h-12 bg-background rounded-full items-center justify-center mr-4 overflow-hidden border border-border/50">
               {/* Avatar placeholder */}
               <Image 
                  source={`https://ui-avatars.com/api/?name=${item.fullName}&background=6366f1&color=fff`} 
@@ -38,16 +40,16 @@ export default function AdminUsersScreen() {
           </View>
           <View className="flex-1">
              <View className="flex-row items-center">
-               <Text className="text-white font-bold text-lg mr-2">{item.fullName}</Text>
-               {item.isAdmin && (
-                 <View className="bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30">
-                    <Text className="text-amber-500 text-[8px] font-bold uppercase tracking-tighter">Admin</Text>
-                 </View>
-               )}
-             </View>
-             <Text className="text-slate-400 text-sm">{item.email}</Text>
-          </View>
-          <View className={`px-2 py-1 rounded-md ${item.status === 'active' || !item.status ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
+                <Text className="text-foreground font-bold text-lg mr-2">{item.fullName}</Text>
+                {item.isAdmin && (
+                  <View className="bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30">
+                     <Text className="text-amber-500 text-[8px] font-bold uppercase tracking-tighter">Admin</Text>
+                  </View>
+                )}
+              </View>
+              <Text className="text-muted-foreground text-sm">{item.email}</Text>
+           </View>
+           <View className={`px-2 py-1 rounded-md ${item.status === 'active' || !item.status ? (isDark ? 'bg-green-500/20' : 'bg-green-100') : (isDark ? 'bg-red-500/20' : 'bg-red-100')}`}>
               <Text className={`text-[10px] font-bold uppercase ${item.status === 'active' || !item.status ? 'text-green-500' : 'text-red-500'}`}>
                  {item.status || 'ACTIVE'}
               </Text>
@@ -57,10 +59,10 @@ export default function AdminUsersScreen() {
        <View className="flex-row gap-3">
           <TouchableOpacity 
             onPress={() => router.push(`/admin/users/${item.id}`)}
-            className="flex-1 bg-[#2A2C39] border border-white/5 py-3 rounded-xl flex-row items-center justify-center"
+            className="flex-1 bg-secondary border border-border/50 py-3 rounded-xl flex-row items-center justify-center"
           >
-             <Edit2 size={14} color="white" className="mr-2" />
-             <Text className="text-white text-xs font-bold">Edit User</Text>
+             <Edit2 size={14} color={isDark ? "white" : "black"} className="mr-2" />
+             <Text className="text-foreground text-xs font-bold">Edit User</Text>
           </TouchableOpacity>
          
          <TouchableOpacity className="flex-1 bg-[#6366f1] py-3 rounded-xl flex-row items-center justify-center">
@@ -72,33 +74,33 @@ export default function AdminUsersScreen() {
   );
 
   return (
-    <View className="flex-1 bg-[#121212]">
-      <StatusBar style="light" />
+    <View className="flex-1 bg-background">
+      <StatusBar style={isDark ? "light" : "dark"} />
       <SafeAreaView className="flex-1" edges={['top']}>
         {/* Header */}
          <View className="px-6 py-4 flex-row items-center mb-2">
             <TouchableOpacity 
               onPress={() => router.back()}
-              className="w-10 h-10 bg-[#1e2029] rounded-full items-center justify-center border border-white/10"
+              className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
             >
-               <ChevronLeft size={20} color="white" />
+               <ChevronLeft size={20} color={isDark ? "white" : "black"} />
             </TouchableOpacity>
             <View className="flex-1 items-center">
-               <Text className="text-white text-lg font-bold">User Management</Text>
+               <Text className="text-foreground text-lg font-bold">User Management</Text>
             </View>
-            <TouchableOpacity className="w-10 h-10 bg-[#1e2029] rounded-full items-center justify-center border border-white/10">
-               <Filter size={20} color="white" />
+            <TouchableOpacity className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border">
+               <Filter size={20} color={isDark ? "white" : "black"} />
             </TouchableOpacity>
          </View>
 
         {/* Search */}
         <View className="px-6 mb-6">
-           <View className="bg-[#1e2029] h-12 rounded-xl flex-row items-center px-4 border border-white/10">
-              <Search size={20} color="#94a3b8" />
+           <View className="bg-card h-12 rounded-xl flex-row items-center px-4 border border-border">
+              <Search size={20} color={isDark ? "#94a3b8" : "#64748b"} />
               <TextInput 
                  placeholder="Search users by name or email..." 
-                 placeholderTextColor="#64748b"
-                 className="flex-1 ml-3 text-white"
+                 placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
+                 className="flex-1 ml-3 text-foreground"
               />
            </View>
         </View>

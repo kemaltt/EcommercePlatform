@@ -217,7 +217,7 @@ export default function AdminConsoleScreen() {
         {/* Floating Add Button */}
         <TouchableOpacity 
           className="absolute bottom-8 right-6 w-14 h-14 bg-[#6366f1] rounded-full items-center justify-center shadow-lg shadow-indigo-500/50 z-50"
-          onPress={() => router.push("/admin/products/new")}
+          onPress={() => router.push("/admin/manage-product")}
         >
            <Plus size={24} color="white" />
         </TouchableOpacity>
