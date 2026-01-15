@@ -39,6 +39,7 @@ export default function TabsLayout() {
       screenOptions={{
         tabBarActiveTintColor: isDark ? "#fbbf24" : "#4f46e5",
         tabBarInactiveTintColor: isDark ? "#94a3b8" : "#64748b",
+        tabBarShowLabel: false,
         tabBarStyle: {
           backgroundColor: isDark ? "#1e2029" : "#ffffff",
           borderTopWidth: 1,
@@ -50,12 +51,6 @@ export default function TabsLayout() {
           shadowOpacity: isDark ? 0 : 0.05,
           shadowOffset: { width: 0, height: -4 },
           shadowRadius: 10,
-        },
-        tabBarLabelStyle: {
-          fontSize: 10,
-          fontWeight: "600",
-          marginTop: 4,
-          letterSpacing: 0.5,
         },
         headerShown: false,
       }}
