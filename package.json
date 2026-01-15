@@ -1,5 +1,6 @@
 {
   "name": "ecommerce-platform",
+  "type": "module",
   "private": true,
   "scripts": {
     "install:shared": "cd shared && npm install",
