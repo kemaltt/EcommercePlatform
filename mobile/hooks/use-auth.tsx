@@ -60,6 +60,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: () => {
       queryClient.setQueryData(["/api/auth/me"], null);
+      queryClient.setQueryData(["/api/cart"], []);
+      queryClient.setQueryData(["/favorites"], []);
+      // Optional: Invalidate to ensure fresh fetch on next login, though setQueryData handles the UI reset
+      queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+      queryClient.invalidateQueries({ queryKey: ["/favorites"] });
     },
   });
 
