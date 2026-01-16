@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
+import * as AuthSession from "expo-auth-session";
 import { useIntl } from "react-intl";
 import { useAuth } from "./use-auth";
 import { Alert } from "react-native";
@@ -21,8 +22,15 @@ export function useGoogleAuth() {
     iosClientId: IOS_CLIENT_ID,
     androidClientId: ANDROID_CLIENT_ID,
     webClientId: WEB_CLIENT_ID,
+    // Brute force: Hardcode the Expo Proxy URI
+    redirectUri: "https://auth.expo.io/@kemaltt/DeinShop-Mobile",
   });
 
+  React.useEffect(() => {
+    if (request) {
+      console.log("Google Auth Redirect URI:", request.redirectUri);
+    }
+  }, [request]);
   React.useEffect(() => {
     if (response?.type === "success") {
       const { id_token } = response.params;
