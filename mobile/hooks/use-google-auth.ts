@@ -23,8 +23,10 @@ export function useGoogleAuth(options?: GoogleAuthOptions) {
   const [loading, setLoading] = React.useState(false);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    iosClientId: IOS_CLIENT_ID,
-    androidClientId: ANDROID_CLIENT_ID,
+    // When using the proxy, we MUST use the Web Client ID even on iOS/Android
+    // because that's where the Redirect URIs are configured in the console.
+    iosClientId: WEB_CLIENT_ID,
+    androidClientId: WEB_CLIENT_ID,
     webClientId: WEB_CLIENT_ID,
     // Brute force: Hardcode the Expo Proxy URI
     redirectUri: "https://auth.expo.io/@kemaltt/DeinShop-Mobile",
