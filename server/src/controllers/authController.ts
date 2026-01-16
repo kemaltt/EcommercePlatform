@@ -118,15 +118,16 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
           return next(loginErr);
         }
 
+        const userObj = user as any;
         const userResponse = {
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          isAdmin: user.isAdmin,
-          fullName: user.fullName,
-          address: user.address,
-          emailVerified: user.emailVerified,
-          createdAt: user.createdAt,
+          id: userObj.id,
+          username: userObj.username,
+          email: userObj.email,
+          isAdmin: userObj.isAdmin,
+          fullName: userObj.fullName,
+          address: userObj.address,
+          emailVerified: userObj.emailVerified,
+          createdAt: userObj.createdAt,
         };
         return res
           .status(200)

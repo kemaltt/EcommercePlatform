@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const getCart = async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = (req.user as any).id;
     console.log(`[getCart] Fetching cart for userId: ${userId}`);
     const cartItems = await storage.getCartItems(userId);
     console.log(`[getCart] Found ${cartItems.length} items`);
@@ -18,7 +18,7 @@ export const getCart = async (req: Request, res: Response) => {
 
 export const addToCart = async (req: Request, res: Response) => {
   try {
-    const userId = req.user!.id;
+    const userId = (req.user as any).id;
     const { productId, quantity } = req.body;
     console.log(
       `[addToCart] Adding product ${productId} (qty: ${quantity}) for userId: ${userId}`
