@@ -41,12 +41,12 @@ export function Input({
         </Text>
       )}
       <View 
-        className={`flex-row items-center bg-card rounded-2xl overflow-hidden transition-all duration-200 ${
+        className={`flex-row bg-card rounded-2xl overflow-hidden transition-all duration-200 ${
           error 
             ? "border border-destructive/50 bg-destructive/5 " 
             : className.includes('border-0') ? "" : "border border-border"
         }`}
-        style={multiline ? { alignItems: 'flex-start', height: 'auto', minHeight: 100 } : { height: 56 }}
+        style={multiline ? { alignItems: 'flex-start', height: 'auto', minHeight: 100 } : { height: 56, alignItems: 'center' }}
       >
         {icon && (
           <View className="pl-5">
@@ -63,12 +63,14 @@ export function Input({
           placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
           multiline={multiline}
           numberOfLines={numberOfLines}
-          textAlignVertical={multiline ? "top" : "center"}
           {...props}
-          style={{ 
-            paddingVertical: multiline ? 16 : 0,
-            minHeight: multiline ? 100 : 56,
-            textAlignVertical: multiline ? 'top' : 'center'
+          style={multiline ? { 
+            paddingVertical: 16,
+            textAlignVertical: 'top'
+          } : {
+            lineHeight: 18,
+            paddingTop: 0,
+            paddingBottom: 0
           }}
         />
         {rightIcon && (
