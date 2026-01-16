@@ -1,19 +1,19 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "server/index.ts",
-      "use": "@vercel/node"
+  "functions": {
+    "server/index.ts": {
+      "runtime": "@vercel/node",
+      "includeFiles": "shared/**"
     }
-  ],
-  "routes": [
+  },
+  "rewrites": [
     {
-      "src": "/api/(.*)",
-      "dest": "server/index.ts"
+      "source": "/api/(.*)",
+      "destination": "server/index.ts"
     },
     {
-      "src": "/verify-email",
-      "dest": "server/index.ts"
+      "source": "/verify-email",
+      "destination": "server/index.ts"
     }
   ]
 }
