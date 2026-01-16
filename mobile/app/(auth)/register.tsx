@@ -36,8 +36,12 @@ export default function RegisterScreen() {
   });
   
   const { register, login } = useAuth();
-  const { signIn: googleSignIn, loading: googleLoading } = useGoogleAuth();
-  const { signIn: appleSignIn, loading: appleLoading, isAvailable: appleAvailable } = useAppleAuth();
+  const { signIn: googleSignIn, loading: googleLoading } = useGoogleAuth({
+    onSuccess: () => router.replace("/(tabs)")
+  });
+  const { signIn: appleSignIn, loading: appleLoading, isAvailable: appleAvailable } = useAppleAuth({
+    onSuccess: () => router.replace("/(tabs)")
+  });
   const router = useRouter();
   const intl = useIntl();
 
@@ -94,24 +98,6 @@ export default function RegisterScreen() {
      }
   };
 
-  const handleGoogleSignIn = async () => {
-    try {
-      await googleSignIn();
-      router.replace("/(tabs)");
-    } catch (err) {
-      console.error("Google sign in error:", err);
-    }
-  };
-
-  const handleAppleSignIn = async () => {
-    try {
-      await appleSignIn();
-      router.replace("/(tabs)");
-    } catch (err) {
-      console.error("Apple sign in error:", err);
-    }
-  };
-
   return (
     <View className="flex-1 bg-background">
       <StatusBar style="light" />
@@ -130,7 +116,7 @@ export default function RegisterScreen() {
                {/* Top Navigation */}
               <View className="mt-2 mb-4">
                  <TouchableOpacity 
-                   onPress={() => router.back()}
+                   onPress={() => router.navigate("/")}
                    className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border"
                  >
                     <ChevronLeft size={20} color="#94a3b8" />
@@ -220,7 +206,7 @@ export default function RegisterScreen() {
                 <View className="flex-row gap-4 mb-2">
                    {/* Google Button */}
                   <TouchableOpacity 
-                    onPress={handleGoogleSignIn}
+                    onPress={googleSignIn}
                     disabled={loading || googleLoading}
                     className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2 border border-border/10"
                   >
@@ -241,7 +227,7 @@ export default function RegisterScreen() {
                   {/* Apple Button */}
                   {appleAvailable && (
                     <TouchableOpacity 
-                      onPress={handleAppleSignIn}
+                      onPress={appleSignIn}
                       disabled={loading || appleLoading}
                       className="flex-1 bg-[#3f3f46] h-12 rounded-xl flex-row items-center justify-center gap-2"
                     >

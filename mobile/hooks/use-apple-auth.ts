@@ -4,7 +4,11 @@ import { Platform, Alert } from "react-native";
 import { useIntl } from "react-intl";
 import { useAuth } from "./use-auth";
 
-export function useAppleAuth() {
+export interface AppleAuthOptions {
+  onSuccess?: () => void;
+}
+
+export function useAppleAuth(options?: AppleAuthOptions) {
   const intl = useIntl();
   const { appleLogin } = useAuth();
   const [loading, setLoading] = React.useState(false);
@@ -37,6 +41,10 @@ export function useAppleAuth() {
               }
             : null,
         });
+
+        if (options?.onSuccess) {
+          options.onSuccess();
+        }
       } else {
         throw new Error("No identity token returned");
       }

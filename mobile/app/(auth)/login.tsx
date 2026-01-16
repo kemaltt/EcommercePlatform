@@ -39,8 +39,18 @@ export default function LoginScreen() {
   });
 
   const { login } = useAuth();
-  const { signIn: googleSignIn, loading: googleLoading } = useGoogleAuth();
-  const { signIn: appleSignIn, loading: appleLoading, isAvailable: appleAvailable } = useAppleAuth();
+  const { signIn: googleSignIn, loading: googleLoading } = useGoogleAuth({
+    onSuccess: () => {
+      HapticService.success();
+      router.replace("/(tabs)");
+    }
+  });
+  const { signIn: appleSignIn, loading: appleLoading, isAvailable: appleAvailable } = useAppleAuth({
+    onSuccess: () => {
+      HapticService.success();
+      router.replace("/(tabs)");
+    }
+  });
   const { isDark } = useTheme();
   const router = useRouter();
   const intl = useIntl();
@@ -49,14 +59,6 @@ export default function LoginScreen() {
     (async () => {
       const enabled = await BiometricService.isEnabled();
       setIsBiometricEnabled(enabled);
-      
-      // // Auto-trigger Face ID if enabled
-      // if (enabled) {
-      //   // Small delay to let UI render first
-      //   setTimeout(() => {
-      //     handleBiometricLogin();
-      //   }, 500);
-      // }
     })();
   }, []);
 
@@ -137,26 +139,6 @@ export default function LoginScreen() {
      setShowVerification(false);
      // Retry login automatically
      handleLogin();
-  };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      await googleSignIn();
-      HapticService.success();
-      router.replace("/(tabs)");
-    } catch (err) {
-      console.error("Google sign in error:", err);
-    }
-  };
-
-  const handleAppleSignIn = async () => {
-    try {
-      await appleSignIn();
-      HapticService.success();
-      router.replace("/(tabs)");
-    } catch (err) {
-      console.error("Apple sign in error:", err);
-    }
   };
 
   return (
@@ -287,7 +269,7 @@ export default function LoginScreen() {
                 <View className="flex-row gap-4 mb-4">
                    {/* Google Button */}
                   <TouchableOpacity 
-                    onPress={handleGoogleSignIn}
+                    onPress={googleSignIn}
                     disabled={loading || googleLoading}
                     className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2 border border-border/10"
                   >
@@ -308,7 +290,7 @@ export default function LoginScreen() {
                   {/* Apple Button */}
                   {appleAvailable && (
                     <TouchableOpacity 
-                      onPress={handleAppleSignIn}
+                      onPress={appleSignIn}
                       disabled={loading || appleLoading}
                       className="flex-1 bg-[#3f3f46] h-12 rounded-xl flex-row items-center justify-center gap-2"
                     >

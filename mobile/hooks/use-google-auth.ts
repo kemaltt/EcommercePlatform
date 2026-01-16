@@ -13,7 +13,11 @@ const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
 const ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID;
 const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
 
-export function useGoogleAuth() {
+export interface GoogleAuthOptions {
+  onSuccess?: () => void;
+}
+
+export function useGoogleAuth(options?: GoogleAuthOptions) {
   const intl = useIntl();
   const { googleLogin } = useAuth();
   const [loading, setLoading] = React.useState(false);
@@ -31,6 +35,7 @@ export function useGoogleAuth() {
       console.log("Google Auth Redirect URI:", request.redirectUri);
     }
   }, [request]);
+
   React.useEffect(() => {
     if (response?.type === "success") {
       const { id_token } = response.params;
@@ -42,6 +47,9 @@ export function useGoogleAuth() {
     setLoading(true);
     try {
       await googleLogin(idToken);
+      if (options?.onSuccess) {
+        options.onSuccess();
+      }
     } catch (error: any) {
       console.error("Google login error:", error);
       Alert.alert(
