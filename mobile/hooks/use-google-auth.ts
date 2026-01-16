@@ -7,11 +7,10 @@ import { Alert } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession();
 
-// REPLACE THESE WITH YOUR ACTUAL CLIENT IDs FROM GOOGLE CLOUD CONSOLE
-// You can also move these to an environment variable config
-const IOS_CLIENT_ID = "YOUR_IOS_CLIENT_ID.apps.googleusercontent.com";
-const ANDROID_CLIENT_ID = "YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com";
-const WEB_CLIENT_ID = "YOUR_WEB_CLIENT_ID.apps.googleusercontent.com";
+// Client IDs are now loaded from mobile/.env using EXPO_PUBLIC_ prefix
+const IOS_CLIENT_ID = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
+const ANDROID_CLIENT_ID = process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID;
+const WEB_CLIENT_ID = process.env.EXPO_PUBLIC_WEB_CLIENT_ID;
 
 export function useGoogleAuth() {
   const intl = useIntl();
