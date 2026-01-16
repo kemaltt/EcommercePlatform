@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, SafeAreaView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, SafeAreaView, Image } from "react-native";
 import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { useAuth } from "../../hooks/use-auth";
@@ -263,12 +263,22 @@ export default function LoginScreen() {
 
                 <View className="flex-row gap-4 mb-4">
                    {/* Google Button */}
-                  <TouchableOpacity className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2">
+                  <TouchableOpacity className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2 border border-border/10">
+                    <Image 
+                      source={{ uri: "https://img.icons8.com/color/48/google-logo.png" }} 
+                      style={{ width: 20, height: 20 }} 
+                      resizeMode="contain"
+                    />
                     <Text className="text-black font-bold text-sm">{intl.formatMessage({ id: 'auth.login.google' })}</Text>
                   </TouchableOpacity>
                   
                   {/* Apple Button */}
                   <TouchableOpacity className="flex-1 bg-[#3f3f46] h-12 rounded-xl flex-row items-center justify-center gap-2">
+                    <Image 
+                      source={{ uri: "https://img.icons8.com/ios-filled/50/ffffff/mac-os.png" }} 
+                      style={{ width: 20, height: 20 }} 
+                      resizeMode="contain"
+                    />
                     <Text className="text-white font-bold text-sm">{intl.formatMessage({ id: 'auth.login.apple' })}</Text>
                   </TouchableOpacity>
                 </View>
