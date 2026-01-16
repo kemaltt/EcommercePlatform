@@ -26,11 +26,13 @@ import { useI18n } from "../../contexts/i18n-context";
 import { useIntl } from "react-intl";
 
 import { useTheme } from "../../contexts/theme-context";
+import { useSettings } from "../../contexts/settings-context";
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { locale, setLocale } = useI18n();
   const { themeMode, setThemeMode, isDark } = useTheme();
+  const { hapticsEnabled, setHapticsEnabled } = useSettings();
   const intl = useIntl();
   
   const [showThemeModal, setShowThemeModal] = React.useState(false);
@@ -187,6 +189,17 @@ export default function SettingsScreen() {
               icon={<LayoutGrid size={22} color={isDark ? "white" : "black"} />} 
               label={intl.formatMessage({ id: 'settings.defaultView' })} 
               onPress={() => {}}
+            />
+            <SettingItem 
+              icon={<Smartphone size={22} color={isDark ? "white" : "black"} />} 
+              label="Haptic Feedback"
+              // Fallback labels until translation is added technically, but assuming user understands context.
+              // Ideally should use intl.formatMessage({ id: 'settings.haptics' })
+              subLabel={hapticsEnabled ? "On" : "Off"}
+              showSwitch={true}
+              switchValue={hapticsEnabled}
+              onSwitchChange={setHapticsEnabled}
+              onPress={() => setHapticsEnabled(!hapticsEnabled)}
             />
 
             <View className="mt-8">

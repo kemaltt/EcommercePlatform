@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import { Stack } from "expo-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, MutationCache, QueryCache } from "@tanstack/react-query";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import "../assets/global.css";
@@ -11,8 +11,27 @@ import { CartProvider } from "../hooks/use-cart";
 import { I18nProvider } from "../contexts/i18n-context";
 import { FavoritesProvider } from "../hooks/use-favorites";
 import { ThemeProvider, useTheme } from "../contexts/theme-context";
+import { SettingsProvider } from "../contexts/settings-context";
+import { hapticSuccess, hapticError } from "../lib/haptics";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  mutationCache: new MutationCache({
+    onSuccess: () => {
+      hapticSuccess();
+    },
+    onError: () => {
+      hapticError();
+    },
+  }),
+  queryCache: new QueryCache({
+    onError: () => {
+      // Optional: trigger error haptic on query failure? 
+      // Often too noisy, maybe only for specific high-value queries.
+      // Keeping it off by default for queries to avoid vibration loops on retries.
+      // hapticError();
+    },
+  }),
+});
 
 import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from "@react-navigation/native";
 
@@ -46,17 +65,19 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <I18nProvider>
-        <ThemeProvider>
-          <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <CartProvider>
-                <FavoritesProvider>
-                  <ThemedNavigationRoot />
-                </FavoritesProvider>
-              </CartProvider>
-            </AuthProvider>
-          </QueryClientProvider>
-        </ThemeProvider>
+        <SettingsProvider>
+          <ThemeProvider>
+            <QueryClientProvider client={queryClient}>
+              <AuthProvider>
+                <CartProvider>
+                  <FavoritesProvider>
+                    <ThemedNavigationRoot />
+                  </FavoritesProvider>
+                </CartProvider>
+              </AuthProvider>
+            </QueryClientProvider>
+          </ThemeProvider>
+        </SettingsProvider>
       </I18nProvider>
     </SafeAreaProvider>
   );
