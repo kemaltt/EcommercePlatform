@@ -139,6 +139,26 @@ export default function LoginScreen() {
      handleLogin();
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleSignIn();
+      HapticService.success();
+      router.replace("/(tabs)");
+    } catch (err) {
+      console.error("Google sign in error:", err);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    try {
+      await appleSignIn();
+      HapticService.success();
+      router.replace("/(tabs)");
+    } catch (err) {
+      console.error("Apple sign in error:", err);
+    }
+  };
+
   return (
     <View className="flex-1 bg-background">
       <StatusBar style={isDark ? "light" : "dark"} />
@@ -267,7 +287,7 @@ export default function LoginScreen() {
                 <View className="flex-row gap-4 mb-4">
                    {/* Google Button */}
                   <TouchableOpacity 
-                    onPress={googleSignIn}
+                    onPress={handleGoogleSignIn}
                     disabled={loading || googleLoading}
                     className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2 border border-border/10"
                   >
@@ -288,7 +308,7 @@ export default function LoginScreen() {
                   {/* Apple Button */}
                   {appleAvailable && (
                     <TouchableOpacity 
-                      onPress={appleSignIn}
+                      onPress={handleAppleSignIn}
                       disabled={loading || appleLoading}
                       className="flex-1 bg-[#3f3f46] h-12 rounded-xl flex-row items-center justify-center gap-2"
                     >

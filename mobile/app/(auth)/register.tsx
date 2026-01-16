@@ -94,6 +94,24 @@ export default function RegisterScreen() {
      }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+      await googleSignIn();
+      router.replace("/(tabs)");
+    } catch (err) {
+      console.error("Google sign in error:", err);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    try {
+      await appleSignIn();
+      router.replace("/(tabs)");
+    } catch (err) {
+      console.error("Apple sign in error:", err);
+    }
+  };
+
   return (
     <View className="flex-1 bg-background">
       <StatusBar style="light" />
@@ -202,7 +220,7 @@ export default function RegisterScreen() {
                 <View className="flex-row gap-4 mb-2">
                    {/* Google Button */}
                   <TouchableOpacity 
-                    onPress={googleSignIn}
+                    onPress={handleGoogleSignIn}
                     disabled={loading || googleLoading}
                     className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2 border border-border/10"
                   >
@@ -223,7 +241,7 @@ export default function RegisterScreen() {
                   {/* Apple Button */}
                   {appleAvailable && (
                     <TouchableOpacity 
-                      onPress={appleSignIn}
+                      onPress={handleAppleSignIn}
                       disabled={loading || appleLoading}
                       className="flex-1 bg-[#3f3f46] h-12 rounded-xl flex-row items-center justify-center gap-2"
                     >

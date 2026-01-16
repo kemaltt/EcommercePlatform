@@ -247,12 +247,14 @@ export const appleLogin = async (
       return res.status(400).json({ message: "Identity Token is required" });
     }
 
-    // You should use your App ID here (e.g., com.yourcompany.app)
+    // For Expo Go development, we need to allow 'host.exp.Exponent'
+    // For standalone builds, we need to allow the actual Bundle ID
     const APPLE_BUNDLE_ID =
-      process.env.APPLE_BUNDLE_ID || "com.kemaltt.ecommerce-app";
+      process.env.APPLE_BUNDLE_ID || "com.kemaltt.DeinShop";
+    const allowedAudiences = [APPLE_BUNDLE_ID, "host.exp.Exponent"];
 
     const ticket = await appleSignin.verifyIdToken(identityToken, {
-      audience: APPLE_BUNDLE_ID,
+      audience: allowedAudiences,
       ignoreExpiration: false,
     });
 
