@@ -21,7 +21,7 @@ export function PasswordStrengthIndicator({ password = '' }: PasswordStrengthInd
   ];
 
   return (
-    <View className="mt-2 mb-4">
+    <View className="mt-2 mb-0">
       {requirements.map((req, index) => (
         <View key={index} className="flex-row items-center mb-1">
           {req.valid ? (

@@ -1,11 +1,11 @@
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, TextInput } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../hooks/use-auth";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { useIntl } from "react-intl";
-import { ChevronLeft, Mail, KeyRound, Lock, CheckCircle2, ShieldCheck, ArrowRight } from "lucide-react-native";
+import { ChevronLeft, Mail, KeyRound, Lock, CheckCircle2, ShieldCheck, ArrowRight, Eye, EyeOff } from "lucide-react-native";
 import { useTheme } from "../../contexts/theme-context";
 import { HapticService } from "../../services/haptic";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -21,6 +21,8 @@ export default function ForgotPasswordScreen() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { forgotPassword, verifyResetCode, resetPassword } = useAuth();
   const { isDark } = useTheme();
@@ -206,8 +208,8 @@ export default function ForgotPasswordScreen() {
 
       case 'PASSWORD':
         return (
-          <View className="space-y-8">
-            <View className="items-center mb-4">
+          <View>
+            <View className="items-center mb-8">
                <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-6">
                 <Lock size={40} color={isDark ? "#818cf8" : "#4f46e5"} />
               </View>
@@ -219,26 +221,73 @@ export default function ForgotPasswordScreen() {
               </Text>
             </View>
 
-            <View className="space-y-4">
-              <Input
-                label={intl.formatMessage({ id: 'forgotPassword.newPassword' })}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-                icon={<Lock size={20} color={isDark ? "#9ca3af" : "#6b7280"} />}
-                className="bg-card/50"
-              />
-              <PasswordStrengthIndicator password={password} />
+            <View>
+              {/* New Password */}
+              <View className="mb-5">
+                <Text className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 ml-1">
+                  {intl.formatMessage({ id: 'forgotPassword.newPassword' })}
+                </Text>
+                <View className="flex-row items-center bg-card rounded-2xl border border-border h-14">
+                  <View className="pl-5">
+                    <Lock size={18} color="#64748b" />
+                  </View>
+                  <TextInput
+                    value={password}
+                    onChangeText={(text) => {
+                      setPassword(text);
+                      if (error) setError('');
+                    }}
+                    placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
+                    placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
+                    secureTextEntry={!showPassword}
+                    autoCapitalize="none"
+                    className="flex-1 px-5 text-base text-foreground font-medium"
+                    style={{ height: 56 }}
+                  />
+                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} className="pr-5">
+                    {showPassword ? (
+                      <EyeOff size={18} color="#64748b" />
+                    ) : (
+                      <Eye size={18} color="#64748b" />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              </View>
+              {password.length > 0 && <PasswordStrengthIndicator password={password} />}
 
-              <Input
-                label={intl.formatMessage({ id: 'forgotPassword.confirmPassword' })}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-                icon={<Lock size={20} color={isDark ? "#9ca3af" : "#6b7280"} />}
-                error={error}
-                className="bg-card/50"
-              />
+              {/* Confirm Password */}
+              <View className="mb-5">
+                <Text className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 ml-1">
+                  {intl.formatMessage({ id: 'forgotPassword.confirmPassword' })}
+                </Text>
+                <View className={`flex-row items-center bg-card rounded-2xl border h-14 ${error ? 'border-destructive/50 bg-destructive/5' : 'border-border'}`}>
+                  <View className="pl-5">
+                    <Lock size={18} color="#64748b" />
+                  </View>
+                  <TextInput
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
+                    placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
+                    secureTextEntry={!showConfirmPassword}
+                    autoCapitalize="none"
+                    className="flex-1 px-5 text-base text-foreground font-medium"
+                    style={{ height: 56 }}
+                  />
+                  <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} className="pr-5">
+                    {showConfirmPassword ? (
+                      <EyeOff size={18} color="#64748b" />
+                    ) : (
+                      <Eye size={18} color="#64748b" />
+                    )}
+                  </TouchableOpacity>
+                </View>
+                {error && (
+                  <Text className="text-xs text-destructive font-medium mt-1.5 ml-1">
+                    {error}
+                  </Text>
+                )}
+              </View>
 
               <Button
                 title={intl.formatMessage({ id: 'forgotPassword.resetPassword' })}

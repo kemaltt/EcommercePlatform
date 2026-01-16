@@ -66,7 +66,7 @@ export function Input({
           textAlignVertical={multiline ? "top" : "center"}
           {...props}
           style={{ 
-            paddingVertical: multiline ? 16 : 12,
+            paddingVertical: multiline ? 16 : 0,
             minHeight: multiline ? 100 : 56,
             textAlignVertical: multiline ? 'top' : 'center'
           }}
