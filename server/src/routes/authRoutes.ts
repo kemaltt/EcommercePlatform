@@ -13,6 +13,7 @@ router.post("/verify-reset-token", authController.verifyResetToken);
 router.post("/reset-password", authController.resetPassword);
 router.post("/verify-email-code", authController.verifyEmailCode);
 router.post("/resend-verification-code", authController.resendVerificationCode);
+router.post("/change-password-request", authController.requestPasswordChange);
 
 // Note: /verify-email is a GET request usually handled at root or specific path,
 // but here it was mounted on app directly. Let's keep it here but route path might need adjustment if mounted under /api/auth

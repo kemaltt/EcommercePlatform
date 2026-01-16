@@ -8,6 +8,7 @@ import {
 } from "@shared/schema";
 import { sendVerificationEmail, sendEmail } from "../services/email";
 import { generatePasswordResetEmail } from "../templates/passwordResetEmail";
+import { generateChangePasswordEmail } from "../templates/changePasswordEmail";
 import crypto from "crypto";
 import { db } from "../config/db";
 import { eq, and, gt } from "drizzle-orm";
@@ -53,7 +54,7 @@ export const register = async (
     const verificationToken = Math.floor(
       100000 + Math.random() * 900000
     ).toString();
-    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const tokenExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     await db.insert(users).values({
       username,
@@ -225,7 +226,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     // Generate 6-digit code
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
-    const tokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    const tokenExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     await db.insert(passwordResets).values({
       token: resetCode, // Store code as token
@@ -238,7 +239,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     const { html, text } = generatePasswordResetEmail({
       userEmail: user.email,
       resetCode,
-      expiryMinutes: 60,
+      expiryMinutes: 5,
     });
 
     await sendEmail({
@@ -394,7 +395,7 @@ export const resendVerificationCode = async (req: Request, res: Response) => {
     const verificationToken = Math.floor(
       100000 + Math.random() * 900000
     ).toString();
-    const tokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const tokenExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     await db
       .update(users)
@@ -417,5 +418,55 @@ export const resendVerificationCode = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Resend verification code error:", error);
     res.status(500).json({ message: "Failed to resend verification code" });
+  }
+};
+
+export const requestPasswordChange = async (req: Request, res: Response) => {
+  try {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const userId = (req.user as User).id;
+    const user = await storage.getUser(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate 6-digit code
+    const verificationCode = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
+    const tokenExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+    // We can reuse the passwordResets table for this purpose as it stores a token (code) linked to a user
+    await db.insert(passwordResets).values({
+      token: verificationCode,
+      userId: user.id,
+      expiresAt: tokenExpiry,
+      createdAt: new Date(),
+    });
+
+    // Generate email
+    const { html, text } = generateChangePasswordEmail({
+      userEmail: user.email,
+      verificationCode,
+      expiryMinutes: 5,
+    });
+
+    await sendEmail({
+      to: user.email,
+      subject: "Passwort ändern - DeinShop",
+      text,
+      html,
+    });
+
+    res.json({ message: "Verification code sent to your email" });
+  } catch (error) {
+    console.error("Request password change error:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to process password change request" });
   }
 };

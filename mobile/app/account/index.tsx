@@ -187,7 +187,7 @@ export default function AccountScreen() {
             <AccountItem 
               icon={<Shield size={22} />} 
               label={intl.formatMessage({ id: 'account.changePassword' })} 
-              onPress={() => {}}
+              onPress={() => router.push("/account/change-password")}
             />
 
             <SectionHeader title={intl.formatMessage({ id: 'account.personalData' })} />
