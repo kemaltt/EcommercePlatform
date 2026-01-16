@@ -16,9 +16,12 @@ import { z } from "zod";
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"), // Nullable for social users
   email: text("email").notNull().unique(),
   fullName: text("full_name").notNull(),
+  avatarUrl: text("avatar_url"),
+  googleId: text("google_id").unique(),
+  appleId: text("apple_id").unique(),
   isAdmin: boolean("is_admin").default(false).notNull(),
   status: text("status").default("trial").notNull(), // active, cancellation_request, cancelled, deleted, passive, trial
   trialExpiresAt: timestamp("trial_expires_at"),

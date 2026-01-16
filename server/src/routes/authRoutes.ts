@@ -5,6 +5,8 @@ const router = Router();
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
+router.post("/google", authController.googleLogin);
+router.post("/apple", authController.appleLogin);
 router.post("/logout", authController.logout);
 router.get("/user", authController.getCurrentUser);
 router.get("/me", authController.getCurrentUser); // Frontend uses /me

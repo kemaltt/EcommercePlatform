@@ -15,6 +15,11 @@ import { eq, and, gt } from "drizzle-orm";
 import { randomBytes, scrypt } from "crypto";
 import { promisify } from "util";
 import passport from "passport";
+import { OAuth2Client } from "google-auth-library";
+import appleSignin from "apple-signin-auth";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 
 const scryptAsync = promisify(scrypt);
 
@@ -129,6 +134,207 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
       });
     }
   )(req, res, next);
+};
+
+export const googleLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { idToken } = req.body;
+
+    if (!idToken) {
+      return res.status(400).json({ message: "ID Token is required" });
+    }
+
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return res.status(400).json({ message: "Invalid ID Token" });
+    }
+
+    const { sub: googleId, email, name, picture } = payload;
+
+    // Check if user exists with this googleId
+    let user = await db.query.users.findFirst({
+      where: eq(users.googleId, googleId),
+    });
+
+    if (!user) {
+      // Check if user exists with this email
+      user = await storage.getUserByEmail(email);
+
+      if (user) {
+        // Link googleId to existing user
+        await db
+          .update(users)
+          .set({ googleId, avatarUrl: picture || user.avatarUrl })
+          .where(eq(users.id, user.id));
+
+        // Refresh user object
+        user = await storage.getUser(user.id);
+      } else {
+        // Create new user
+        let username = email.split("@")[0];
+        const existingUsername = await storage.getUserByUsername(username);
+        if (existingUsername) {
+          username = `${username}_${Math.floor(Math.random() * 1000)}`;
+        }
+
+        const [newUser] = await db
+          .insert(users)
+          .values({
+            username,
+            email,
+            fullName: name || username,
+            googleId,
+            avatarUrl: picture,
+            emailVerified: true,
+            password: null, // Allow login without password
+          })
+          .returning();
+
+        user = newUser;
+      }
+    }
+
+    if (!user) {
+      return res.status(500).json({ message: "Failed to create or find user" });
+    }
+
+    req.login(user, (err) => {
+      if (err) {
+        console.error("Google login session error:", err);
+        return next(err);
+      }
+
+      const userResponse = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        fullName: user.fullName,
+        avatarUrl: user.avatarUrl,
+        address: user.address,
+        emailVerified: user.emailVerified,
+        createdAt: user.createdAt,
+      };
+
+      return res
+        .status(200)
+        .json({ message: "Login successful", user: userResponse });
+    });
+  } catch (error) {
+    console.error("Google login error:", error);
+    res.status(401).json({ message: "Invalid Google credentials" });
+  }
+};
+
+export const appleLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { identityToken, fullName } = req.body;
+
+    if (!identityToken) {
+      return res.status(400).json({ message: "Identity Token is required" });
+    }
+
+    // You should use your App ID here (e.g., com.yourcompany.app)
+    const APPLE_BUNDLE_ID =
+      process.env.APPLE_BUNDLE_ID || "com.kemaltt.ecommerce-app";
+
+    const ticket = await appleSignin.verifyIdToken(identityToken, {
+      audience: APPLE_BUNDLE_ID,
+      ignoreExpiration: false,
+    });
+
+    if (!ticket || !ticket.email) {
+      return res.status(400).json({ message: "Invalid Apple Token" });
+    }
+
+    const { sub: appleId, email } = ticket;
+
+    // Check if user exists with this appleId
+    let user = await db.query.users.findFirst({
+      where: eq(users.appleId, appleId),
+    });
+
+    if (!user) {
+      // Check if user exists with this email
+      user = await storage.getUserByEmail(email);
+
+      if (user) {
+        // Link appleId to existing user
+        await db.update(users).set({ appleId }).where(eq(users.id, user.id));
+
+        // Refresh user object
+        user = await storage.getUser(user.id);
+      } else {
+        // Create new user
+        let username = email.split("@")[0];
+        const existingUsername = await storage.getUserByUsername(username);
+        if (existingUsername) {
+          username = `${username}_${Math.floor(Math.random() * 1000)}`;
+        }
+
+        const nameFromApple = fullName
+          ? `${fullName.firstName || ""} ${fullName.lastName || ""}`.trim()
+          : username;
+
+        const [newUser] = await db
+          .insert(users)
+          .values({
+            username,
+            email,
+            fullName: nameFromApple || username,
+            appleId,
+            emailVerified: true,
+            password: null,
+          })
+          .returning();
+
+        user = newUser;
+      }
+    }
+
+    if (!user) {
+      return res.status(500).json({ message: "Failed to create or find user" });
+    }
+
+    req.login(user, (err) => {
+      if (err) {
+        console.error("Apple login session error:", err);
+        return next(err);
+      }
+
+      const userResponse = {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        fullName: user.fullName,
+        avatarUrl: user.avatarUrl,
+        address: user.address,
+        emailVerified: user.emailVerified,
+        createdAt: user.createdAt,
+      };
+
+      return res
+        .status(200)
+        .json({ message: "Login successful", user: userResponse });
+    });
+  } catch (error) {
+    console.error("Apple login error:", error);
+    res.status(401).json({ message: "Invalid Apple credentials" });
+  }
 };
 
 export const logout = (req: Request, res: Response, next: NextFunction) => {

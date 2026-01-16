@@ -12,6 +12,8 @@ interface AuthContextType {
   forgotPassword: (email: string) => Promise<void>;
   verifyResetCode: (token: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<void>;
+  googleLogin: (idToken: string) => Promise<void>;
+  appleLogin: (data: { identityToken: string; fullName?: { firstName?: string; lastName?: string } | null }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -80,6 +82,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const googleLoginMutation = useMutation({
+    mutationFn: async (idToken: string) => {
+      const res = await api.post("/auth/google", { idToken });
+      return res.data;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["/api/auth/me"], data.user);
+    },
+  });
+
+  const appleLoginMutation = useMutation({
+    mutationFn: async (data: { identityToken: string; fullName?: { firstName?: string; lastName?: string } | null }) => {
+      const res = await api.post("/auth/apple", data);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["/api/auth/me"], data.user);
+    },
+  });
+
   return (
     <AuthContext.Provider
       value={{
@@ -102,6 +124,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         },
         resetPassword: async (token, password) => {
           await resetPasswordMutation.mutateAsync({ token, password });
+        },
+        googleLogin: async (idToken: string) => {
+          await googleLoginMutation.mutateAsync(idToken);
+        },
+        appleLogin: async (data) => {
+          await appleLoginMutation.mutateAsync(data);
         },
       }}
     >

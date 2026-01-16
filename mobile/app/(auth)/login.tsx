@@ -1,7 +1,9 @@
-import { View, Text, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, SafeAreaView, Image } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, SafeAreaView, Image, ActivityIndicator } from "react-native";
 import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { useAuth } from "../../hooks/use-auth";
+import { useGoogleAuth } from "../../hooks/use-google-auth";
+import { useAppleAuth } from "../../hooks/use-apple-auth";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { useIntl } from "react-intl";
@@ -11,7 +13,6 @@ import { VerificationModal } from "../../components/VerificationModal";
 import { SuccessModal } from "../../components/SuccessModal";
 import { BiometricService } from "../../lib/biometric";
 import { useEffect } from "react";
-import { ActivityIndicator } from "react-native";
 import { useTheme } from "../../contexts/theme-context";
 import { HapticService } from "../../services/haptic";
 
@@ -38,6 +39,8 @@ export default function LoginScreen() {
   });
 
   const { login } = useAuth();
+  const { signIn: googleSignIn, loading: googleLoading } = useGoogleAuth();
+  const { signIn: appleSignIn, loading: appleLoading, isAvailable: appleAvailable } = useAppleAuth();
   const { isDark } = useTheme();
   const router = useRouter();
   const intl = useIntl();
@@ -263,24 +266,46 @@ export default function LoginScreen() {
 
                 <View className="flex-row gap-4 mb-4">
                    {/* Google Button */}
-                  <TouchableOpacity className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2 border border-border/10">
-                    <Image 
-                      source={{ uri: "https://img.icons8.com/color/48/google-logo.png" }} 
-                      style={{ width: 20, height: 20 }} 
-                      resizeMode="contain"
-                    />
-                    <Text className="text-black font-bold text-sm">{intl.formatMessage({ id: 'auth.login.google' })}</Text>
+                  <TouchableOpacity 
+                    onPress={googleSignIn}
+                    disabled={loading || googleLoading}
+                    className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2 border border-border/10"
+                  >
+                    {googleLoading ? (
+                      <ActivityIndicator size="small" color="#4285F4" />
+                    ) : (
+                      <>
+                        <Image 
+                          source={{ uri: "https://img.icons8.com/color/48/google-logo.png" }} 
+                          style={{ width: 20, height: 20 }} 
+                          resizeMode="contain"
+                        />
+                        <Text className="text-black font-bold text-sm">{intl.formatMessage({ id: 'auth.login.google' })}</Text>
+                      </>
+                    )}
                   </TouchableOpacity>
                   
                   {/* Apple Button */}
-                  <TouchableOpacity className="flex-1 bg-[#3f3f46] h-12 rounded-xl flex-row items-center justify-center gap-2">
-                    <Image 
-                      source={{ uri: "https://img.icons8.com/ios-filled/50/ffffff/mac-os.png" }} 
-                      style={{ width: 20, height: 20 }} 
-                      resizeMode="contain"
-                    />
-                    <Text className="text-white font-bold text-sm">{intl.formatMessage({ id: 'auth.login.apple' })}</Text>
-                  </TouchableOpacity>
+                  {appleAvailable && (
+                    <TouchableOpacity 
+                      onPress={appleSignIn}
+                      disabled={loading || appleLoading}
+                      className="flex-1 bg-[#3f3f46] h-12 rounded-xl flex-row items-center justify-center gap-2"
+                    >
+                      {appleLoading ? (
+                        <ActivityIndicator size="small" color="#ffffff" />
+                      ) : (
+                        <>
+                          <Image 
+                            source={{ uri: "https://img.icons8.com/ios-filled/50/ffffff/mac-os.png" }} 
+                            style={{ width: 20, height: 20 }} 
+                            resizeMode="contain"
+                          />
+                          <Text className="text-white font-bold text-sm">{intl.formatMessage({ id: 'auth.login.apple' })}</Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  )}
                 </View>
 
               </View>
