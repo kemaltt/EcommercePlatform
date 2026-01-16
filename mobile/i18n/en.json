@@ -158,5 +158,12 @@
   "forgotPassword.invalidCode": "Invalid or expired code",
   "forgotPassword.passwordMismatch": "Passwords do not match",
   "forgotPassword.backToLogin": "Back to Login",
-  "auth.error.required": "Required"
+  "auth.error.required": "Required",
+  "validation.email.invalid": "Invalid email format",
+  "validation.password.complexity": "Password does not meet requirements",
+  "validation.password.req.length": "At least 8 characters",
+  "validation.password.req.upper": "One uppercase letter",
+  "validation.password.req.lower": "One lowercase letter",
+  "validation.password.req.number": "One number",
+  "validation.password.req.special": "One special character (@$!%*?&.)"
 }

@@ -162,7 +162,7 @@ export default function LoginScreen() {
               </View>
 
               {/* Logo Area */}
-              <View className="items-center mb-10">
+              <View className="items-center mb-6">
                 <View className="w-20 h-20 bg-card rounded-[24px] items-center justify-center mb-6 border border-border/50 shadow-sm">
                    <ShoppingBag size={40} color="#fbbf24" strokeWidth={2.5} />
                 </View>
@@ -182,7 +182,12 @@ export default function LoginScreen() {
                     value={email}
                     onChangeText={(text) => {
                       setEmail(text);
-                      if (errors.email) setErrors({ ...errors, email: undefined });
+                      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                      if (text.length > 0 && !emailRegex.test(text)) {
+                         setErrors(prev => ({ ...prev, email: intl.formatMessage({ id: 'validation.email.invalid' }) }));
+                      } else {
+                         setErrors(prev => ({ ...prev, email: undefined }));
+                      }
                     }}
                     placeholder={intl.formatMessage({ id: 'auth.login.email.placeholder' })}
                     autoCapitalize="none"
@@ -250,7 +255,7 @@ export default function LoginScreen() {
                   )}
                 </View>
 
-                <View className="flex-row items-center mb-6 mt-10 gap-4 opacity-50">
+                <View className="flex-row items-center mb-6 mt-6 gap-4 opacity-50">
                   <View className="flex-1 h-[1px] bg-border" />
                   <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">{intl.formatMessage({ id: 'auth.login.orConnect' })}</Text>
                   <View className="flex-1 h-[1px] bg-border" />
@@ -271,7 +276,7 @@ export default function LoginScreen() {
               </View>
 
               {/* Footer */}
-              <View className="flex-row justify-center mt-8 mb-4 gap-1">
+              <View className="flex-row justify-center mt-4 mb-4 gap-1">
                 <Text className="text-muted-foreground font-medium text-sm">
                   {intl.formatMessage({ id: 'auth.login.noAccount' })}
                 </Text>

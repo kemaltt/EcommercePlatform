@@ -18,6 +18,7 @@ import { useTheme } from "../../contexts/theme-context";
 import { api } from "../../lib/api";
 import { Button } from "../../components/ui/Button";
 import { SuccessModal } from "../../components/SuccessModal";
+import { PasswordStrengthIndicator } from "../../components/PasswordStrengthIndicator";
 
 export default function ChangePasswordScreen() {
   const router = useRouter();
@@ -200,6 +201,7 @@ export default function ChangePasswordScreen() {
                       secureTextEntry
                     />
                   </View>
+                  <PasswordStrengthIndicator password={newPassword} />
                 </View>
 
                 {/* Confirm Password Input */}

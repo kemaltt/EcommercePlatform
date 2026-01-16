@@ -38,7 +38,13 @@ export const insertUserSchema = createInsertSchema(users, {
     .email("validation.email.invalid")
     .min(1, "validation.email.required"),
   fullName: z.string().min(1, "validation.fullName.required"),
-  password: z.string().min(6, "validation.password.minLengthShared"),
+  password: z
+    .string()
+    .min(8, "validation.password.minLength")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/,
+      "validation.password.complexity"
+    ),
 }).omit({
   id: true,
   createdAt: true,

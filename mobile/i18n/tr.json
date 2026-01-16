@@ -158,5 +158,12 @@
   "forgotPassword.invalidCode": "Geçersiz veya süresi dolmuş kod",
   "forgotPassword.passwordMismatch": "Şifreler eşleşmiyor",
   "forgotPassword.backToLogin": "Girişe Dön",
-  "auth.error.required": "Gerekli"
+  "auth.error.required": "Gerekli",
+  "validation.email.invalid": "Geçersiz e-posta formatı",
+  "validation.password.complexity": "Şifre gereksinimleri karşılamıyor",
+  "validation.password.req.length": "En az 8 karakter",
+  "validation.password.req.upper": "Bir büyük harf",
+  "validation.password.req.lower": "Bir küçük harf",
+  "validation.password.req.number": "Bir rakam",
+  "validation.password.req.special": "Bir özel karakter (@$!%*?&.)"
 }

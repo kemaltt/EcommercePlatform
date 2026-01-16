@@ -152,5 +152,12 @@
   "forgotPassword.invalidCode": "Ungültiger oder abgelaufener Code",
   "forgotPassword.passwordMismatch": "Passwörter stimmen nicht überein",
   "forgotPassword.backToLogin": "Zurück zur Anmeldung",
-  "auth.error.required": "Erforderlich"
+  "auth.error.required": "Erforderlich",
+  "validation.email.invalid": "Ungültiges E-Mail-Format",
+  "validation.password.complexity": "Passwort entspricht nicht den Anforderungen",
+  "validation.password.req.length": "Mindestens 8 Zeichen",
+  "validation.password.req.upper": "Ein Großbuchstabe",
+  "validation.password.req.lower": "Ein Kleinbuchstabe",
+  "validation.password.req.number": "Eine Zahl",
+  "validation.password.req.special": "Ein Sonderzeichen (@$!%*?&.)"
 }

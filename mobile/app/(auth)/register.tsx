@@ -9,17 +9,17 @@ import { StatusBar } from "expo-status-bar";
 import { User, Mail, Lock, Eye, EyeOff, ChevronLeft, RefreshCw } from "lucide-react-native";
 import { VerificationModal } from "../../components/VerificationModal";
 import { SuccessModal } from "../../components/SuccessModal";
+import { PasswordStrengthIndicator } from "../../components/PasswordStrengthIndicator";
 
 export default function RegisterScreen() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
-  const [errors, setErrors] = useState<{ fullName?: string; email?: string; password?: string; confirmPassword?: string }>({});
+  const [errors, setErrors] = useState<{ fullName?: string; email?: string; password?: string; }>({});
   
   const [statusModal, setStatusModal] = useState<{ 
     visible: boolean; 
@@ -38,11 +38,10 @@ export default function RegisterScreen() {
   const intl = useIntl();
 
   const handleRegister = async () => {
-    const newErrors: { fullName?: string; email?: string; password?: string; confirmPassword?: string } = {};
+    const newErrors: { fullName?: string; email?: string; password?: string; } = {};
     if (!fullName) newErrors.fullName = intl.formatMessage({ id: 'auth.error.required' });
     if (!email) newErrors.email = intl.formatMessage({ id: 'auth.error.required' });
     if (!password) newErrors.password = intl.formatMessage({ id: 'auth.error.required' });
-    if (!confirmPassword) newErrors.confirmPassword = intl.formatMessage({ id: 'auth.error.required' });
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -50,16 +49,6 @@ export default function RegisterScreen() {
       return;
     }
     setErrors({});
-
-    if (password !== confirmPassword) {
-       setStatusModal({
-         visible: true,
-         type: 'error',
-         title: intl.formatMessage({ id: 'auth.error.input' }),
-         message: intl.formatMessage({ id: 'auth.error.passwordMismatch' }),
-       });
-       return;
-    }
 
     setLoading(true);
     try {
@@ -156,7 +145,12 @@ export default function RegisterScreen() {
                     value={email}
                     onChangeText={(text) => {
                       setEmail(text);
-                      if (errors.email) setErrors({ ...errors, email: undefined });
+                      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                      if (text.length > 0 && !emailRegex.test(text)) {
+                         setErrors(prev => ({ ...prev, email: intl.formatMessage({ id: 'validation.email.invalid' }) }));
+                      } else {
+                         setErrors(prev => ({ ...prev, email: undefined }));
+                      }
                     }}
                     placeholder={intl.formatMessage({ id: 'auth.login.email.placeholder' })}
                     autoCapitalize="none"
@@ -184,18 +178,7 @@ export default function RegisterScreen() {
                       </TouchableOpacity>
                     }
                   />
-                  <Input
-                    label={intl.formatMessage({ id: 'auth.register.confirmPassword.label' })}
-                    value={confirmPassword}
-                    onChangeText={(text) => {
-                      setConfirmPassword(text);
-                      if (errors.confirmPassword) setErrors({ ...errors, confirmPassword: undefined });
-                    }}
-                    placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
-                    secureTextEntry
-                    icon={<RefreshCw size={18} color="#64748b" />}
-                    error={errors.confirmPassword}
-                  />
+                  {password.length > 0 && <PasswordStrengthIndicator password={password} />}
                 </View>
 
                 <Button
@@ -203,8 +186,26 @@ export default function RegisterScreen() {
                   onPress={handleRegister}
                   loading={loading}
                   variant="primary"
-                  className="mt-8 mb-4 h-14 rounded-2xl"
+                  className="mt-6 mb-4 h-14 rounded-2xl"
                 />
+
+                <View className="flex-row items-center mb-6 mt-4 gap-4 opacity-50">
+                  <View className="flex-1 h-[1px] bg-border" />
+                  <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">{intl.formatMessage({ id: 'auth.login.orConnect' })}</Text>
+                  <View className="flex-1 h-[1px] bg-border" />
+                </View>
+
+                <View className="flex-row gap-4 mb-2">
+                   {/* Google Button */}
+                  <TouchableOpacity className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2 border border-border/10">
+                    <Text className="text-black font-bold text-sm">{intl.formatMessage({ id: 'auth.login.google' })}</Text>
+                  </TouchableOpacity>
+                  
+                  {/* Apple Button */}
+                  <TouchableOpacity className="flex-1 bg-[#3f3f46] h-12 rounded-xl flex-row items-center justify-center gap-2">
+                    <Text className="text-white font-bold text-sm">{intl.formatMessage({ id: 'auth.login.apple' })}</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
 
               {/* Footer */}

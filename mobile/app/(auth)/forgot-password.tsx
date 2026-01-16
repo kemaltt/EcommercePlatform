@@ -9,6 +9,7 @@ import { ChevronLeft, Mail, KeyRound, Lock, CheckCircle2, ShieldCheck, ArrowRigh
 import { useTheme } from "../../contexts/theme-context";
 import { HapticService } from "../../services/haptic";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { PasswordStrengthIndicator } from "../../components/PasswordStrengthIndicator";
 
 type Step = 'EMAIL' | 'CODE' | 'PASSWORD' | 'SUCCESS';
 
@@ -227,6 +228,7 @@ export default function ForgotPasswordScreen() {
                 icon={<Lock size={20} color={isDark ? "#9ca3af" : "#6b7280"} />}
                 className="bg-card/50"
               />
+              <PasswordStrengthIndicator password={password} />
 
               <Input
                 label={intl.formatMessage({ id: 'forgotPassword.confirmPassword' })}
