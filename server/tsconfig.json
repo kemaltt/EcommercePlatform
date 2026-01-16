@@ -13,7 +13,7 @@
     "allowImportingTsExtensions": true,
     "moduleResolution": "bundler",
     "baseUrl": ".",
-
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "paths": {
       "@shared/*": ["../shared/*"],
       "drizzle-orm": ["../shared/node_modules/drizzle-orm"],
