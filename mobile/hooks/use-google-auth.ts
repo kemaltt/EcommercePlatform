@@ -23,27 +23,12 @@ export function useGoogleAuth(options?: GoogleAuthOptions) {
   const [loading, setLoading] = React.useState(false);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    // When using the proxy, we MUST use the Web Client ID even on iOS/Android
-    // because that's where the Redirect URIs are configured in the console.
     iosClientId: WEB_CLIENT_ID,
     androidClientId: WEB_CLIENT_ID,
     webClientId: WEB_CLIENT_ID,
-    // Brute force: Hardcode the Expo Proxy URI
+    // Use the hardcoded proxy URI so Google redirects back to the proxy
     redirectUri: "https://auth.expo.io/@kemaltt/DeinShop-Mobile",
   });
-
-  React.useEffect(() => {
-    if (request) {
-      console.log("Google Auth Redirect URI:", request.redirectUri);
-    }
-  }, [request]);
-
-  React.useEffect(() => {
-    if (response?.type === "success") {
-      const { id_token } = response.params;
-      handleGoogleLogin(id_token);
-    }
-  }, [response]);
 
   const handleGoogleLogin = async (idToken: string) => {
     setLoading(true);
@@ -64,8 +49,37 @@ export function useGoogleAuth(options?: GoogleAuthOptions) {
   };
 
   const signIn = async () => {
-    if (loading) return;
-    promptAsync();
+    if (loading || !request) return;
+
+    try {
+      // 1. Generate the direct Google Auth URL
+      const authUrl = await request.makeAuthUrlAsync(Google.discovery);
+
+      // 2. Construct the local return URL (the exp:// link)
+      const returnUrl = AuthSession.makeRedirectUri({
+        scheme: "ecommerce-app",
+      });
+
+      // 3. Manually construct the Proxy "start" URL
+      const proxyStartUrl = `https://auth.expo.io/@kemaltt/DeinShop-Mobile/start?authUrl=${encodeURIComponent(
+        authUrl
+      )}&returnUrl=${encodeURIComponent(returnUrl)}`;
+
+      console.log("Starting Manual Proxy Auth Session...");
+      console.log("Local Return URI:", returnUrl);
+
+      // 4. Open the proxy start URL instead of the Google URL
+      const result = await promptAsync({ url: proxyStartUrl });
+
+      if (result.type === "success") {
+        const { id_token } = result.params;
+        if (id_token) {
+          await handleGoogleLogin(id_token);
+        }
+      }
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+    }
   };
 
   return {
