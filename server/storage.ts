@@ -217,6 +217,9 @@ export class MemStorage implements IStorage {
       emailVerificationToken: null,
       verificationTokenExpiresAt: null,
       address: user.address || null,
+      avatarUrl: user.avatarUrl || null,
+      googleId: user.googleId || null,
+      appleId: user.appleId || null,
     };
     this.users.set(id, newUser);
     return newUser;
@@ -789,6 +792,9 @@ export class DatabaseStorage implements IStorage {
           createdAt: users.createdAt,
           emailVerified: users.emailVerified,
           emailVerificationToken: users.emailVerificationToken,
+          avatarUrl: users.avatarUrl,
+          googleId: users.googleId,
+          appleId: users.appleId,
           verificationTokenExpiresAt: users.verificationTokenExpiresAt,
         })
         .from(users as any);

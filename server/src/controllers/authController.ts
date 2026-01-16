@@ -368,6 +368,7 @@ export const getCurrentUser = (req: Request, res: Response) => {
     email: user.email,
     isAdmin: user.isAdmin,
     fullName: user.fullName,
+    avatarUrl: user.avatarUrl,
     address: user.address,
     emailVerified: user.emailVerified,
     createdAt: user.createdAt,

@@ -23,6 +23,7 @@ export function useGoogleAuth(options?: GoogleAuthOptions) {
   const [loading, setLoading] = React.useState(false);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
+    responseType: AuthSession.ResponseType.IdToken,
     iosClientId: WEB_CLIENT_ID,
     androidClientId: WEB_CLIENT_ID,
     webClientId: WEB_CLIENT_ID,

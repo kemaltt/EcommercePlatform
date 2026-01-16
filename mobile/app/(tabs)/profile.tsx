@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, Alert, Switch, Platform } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Alert, Switch, Platform, Image, ActivityIndicator } from "react-native";
 import { useAuth } from "../../hooks/use-auth";
 import { Button } from "../../components/ui/Button";
 import { 
@@ -27,13 +27,18 @@ export default function ProfileScreen() {
   const intl = useIntl();
   const { locale, setLocale } = useI18n();
   const { isDark } = useTheme();
+  const [loggingOut, setLoggingOut] = useState(false);
 
   // --- Actions ---
   const handleLogout = async () => {
+    if (loggingOut) return;
+    
+    setLoggingOut(true);
     try {
       await logout();
       router.replace("/(auth)/login");
     } catch (error) {
+      setLoggingOut(false);
       console.error("Logout failed:", error);
       Alert.alert(
         intl.formatMessage({ id: 'common.error' }),
@@ -110,8 +115,13 @@ export default function ProfileScreen() {
            <TouchableOpacity 
              className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border"
              onPress={handleLogout}
+             disabled={loggingOut}
            >
-             <LogOut size={18} color={isDark ? "white" : "black"} />
+             {loggingOut ? (
+               <ActivityIndicator size="small" color="#ef4444" />
+             ) : (
+               <LogOut size={18} color={isDark ? "white" : "black"} />
+             )}
            </TouchableOpacity>
         </View>
         
@@ -120,8 +130,16 @@ export default function ProfileScreen() {
           {/* Avatar Section */}
           <View className="items-center mt-4 mb-8">
             <View className="relative">
-              <View className="w-28 h-28 rounded-full bg-card items-center justify-center border-4 border-card shadow-xl">
-                 <User size={48} color={isDark ? "#94a3b8" : "#64748b"} />
+              <View className="w-28 h-28 rounded-full bg-card items-center justify-center border-4 border-card shadow-xl overflow-hidden">
+                 {user.avatarUrl ? (
+                   <Image 
+                     source={{ uri: user.avatarUrl }} 
+                     className="w-full h-full"
+                     resizeMode="cover"
+                   />
+                 ) : (
+                   <User size={48} color={isDark ? "#94a3b8" : "#64748b"} />
+                 )}
               </View>
               <TouchableOpacity className="absolute bottom-0 right-0 bg-[#fbbf24] w-8 h-8 rounded-full items-center justify-center border-2 border-slate-900">
                  <Edit2 size={14} color="#1e293b" />
@@ -178,9 +196,16 @@ export default function ProfileScreen() {
             className="mt-4 bg-card border border-border rounded-2xl py-4 flex-row items-center justify-center gap-2"
             activeOpacity={0.7}
             onPress={handleLogout}
+            disabled={loggingOut}
           >
-             <LogOut size={18} color="#ef4444" />
-             <Text className="text-red-500 font-bold">{intl.formatMessage({ id: 'profile.signOut' })}</Text>
+             {loggingOut ? (
+               <ActivityIndicator size="small" color="#ef4444" />
+             ) : (
+               <>
+                 <LogOut size={18} color="#ef4444" />
+                 <Text className="text-red-500 font-bold">{intl.formatMessage({ id: 'profile.signOut' })}</Text>
+               </>
+             )}
           </TouchableOpacity>
           
           < View className="h-6" />
