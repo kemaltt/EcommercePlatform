@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Switch, Modal } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Switch, Modal, Pressable } from "react-native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, MapPin, User, Home, Building2, Globe, Phone, Mail, X, ChevronRight } from "lucide-react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
@@ -151,6 +151,7 @@ export default function ManageAddressScreen() {
                 <TouchableOpacity 
                   className={`flex-1 py-3 rounded-xl items-center ${form.type === 'delivery' ? 'bg-primary shadow-sm' : ''}`}
                   onPress={() => updateForm('type', 'delivery')}
+                  activeOpacity={0.7}
                 >
                   <Text className={`font-bold ${form.type === 'delivery' ? 'text-white' : 'text-muted-foreground'}`}>
                     {intl.formatMessage({ id: 'address.type.delivery' })}
@@ -159,6 +160,7 @@ export default function ManageAddressScreen() {
                 <TouchableOpacity 
                   className={`flex-1 py-3 rounded-xl items-center ${form.type === 'invoice' ? 'bg-primary shadow-sm' : ''}`}
                   onPress={() => updateForm('type', 'invoice')}
+                  activeOpacity={0.7}
                 >
                   <Text className={`font-bold ${form.type === 'invoice' ? 'text-white' : 'text-muted-foreground'}`}>
                     {intl.formatMessage({ id: 'address.type.invoice' })}
