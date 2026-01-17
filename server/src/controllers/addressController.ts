@@ -19,12 +19,25 @@ export const getAddressById = async (req: Request, res: Response) => {
   if (!req.isAuthenticated()) return res.sendStatus(401);
   const { id } = req.params;
   const userId = (req.user as any).id;
+  console.log(
+    `[getAddressById] Fetching address ID: ${id} for user ID: ${userId}`,
+  );
 
   try {
     const address = await storage.getAddress(Number(id));
-    if (!address || address.userId !== userId) {
+    if (!address) {
+      console.log(`[getAddressById] Address ID ${id} not found`);
       return res.sendStatus(404);
     }
+
+    if (address.userId !== userId) {
+      console.log(
+        `[getAddressById] Ownership mismatch: Address owner ${address.userId}, Request user ${userId}`,
+      );
+      return res.sendStatus(404);
+    }
+
+    console.log(`[getAddressById] Success: Found address ${address.fullName}`);
     res.json(address);
   } catch (error) {
     console.error("getAddressById error:", error);

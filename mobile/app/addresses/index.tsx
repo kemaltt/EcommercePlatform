@@ -59,57 +59,67 @@ export default function AddressListScreen() {
 
   const renderAddressItem = ({ item }: { item: Address }) => (
     <View className="bg-card rounded-3xl p-5 mb-4 border border-border shadow-sm">
-      <View className="flex-row justify-between items-start mb-3">
-        <View className="flex-row items-center gap-2">
-          <View className="bg-secondary p-2 rounded-xl">
-             <MapPin size={20} color="#6366f1" />
+      <View className="flex-row justify-between items-start mb-4">
+        <View className="flex-row items-center gap-3 flex-1">
+          <View className="bg-primary/10 p-2.5 rounded-2xl">
+             <MapPin size={22} color={isDark ? "#818cf8" : "#4f46e5"} />
           </View>
-          <View>
-             <Text className="text-foreground font-bold text-base">{item.fullName}</Text>
-             <Text className="text-muted-foreground text-xs">
-                {intl.formatMessage({ id: `address.type.${item.type}` })}
-             </Text>
+          <View className="flex-1">
+             <Text className="text-foreground font-bold text-lg" numberOfLines={1}>{item.fullName}</Text>
+             <View className="flex-row items-center gap-2 mt-0.5">
+               <Text className="text-muted-foreground text-xs font-medium uppercase tracking-wider">
+                  {intl.formatMessage({ id: `address.type.${item.type}` })}
+               </Text>
+               {item.isDefault && (
+                 <View className="bg-green-500/10 px-2 py-0.5 rounded-md flex-row items-center gap-1">
+                    <CheckCircle2 size={10} color="#22c55e" />
+                    <Text className="text-green-500 text-[9px] font-bold uppercase">
+                      {intl.formatMessage({ id: 'common.default' })}
+                    </Text>
+                 </View>
+               )}
+             </View>
           </View>
         </View>
-        {item.isDefault && (
-          <View className="bg-green-500/10 px-2 py-1 rounded-lg flex-row items-center gap-1">
-             <CheckCircle2 size={12} color="#22c55e" />
-              <Text className="text-green-500 text-[10px] font-bold">
-                {intl.formatMessage({ id: 'common.default' })}
-              </Text>
-          </View>
-        )}
+        
+        <TouchableOpacity 
+          onPress={() => router.push({ pathname: "/addresses/manage" as any, params: { id: item.id } })}
+          className="w-10 h-10 rounded-full bg-secondary items-center justify-center -mt-1 -mr-1"
+        >
+          <Edit3 size={18} color={isDark ? "#94a3b8" : "#64748b"} />
+        </TouchableOpacity>
       </View>
 
-      <Text className="text-foreground text-sm leading-5 mb-1">
-        {item.addressLine1}{item.addressLine2 ? `, ${item.addressLine2}` : ''}
-      </Text>
-      <Text className="text-muted-foreground text-sm mb-4">
-        {item.zipCode} {item.city}, {item.country}
-      </Text>
+      <View className="px-1 mb-5">
+        <Text className="text-foreground text-base font-medium leading-6">
+          {item.addressLine1}
+        </Text>
+        {item.addressLine2 && (
+          <Text className="text-muted-foreground text-sm leading-5 mt-0.5 italic">
+            {item.addressLine2}
+          </Text>
+        )}
+        <Text className="text-muted-foreground text-sm mt-1 font-medium">
+          {item.zipCode} {item.city}, {item.country}
+        </Text>
+      </View>
 
-      <View className="h-px bg-border/50 mb-4" />
+      <View className="h-[1px] bg-border/40 mb-4" />
 
       <View className="flex-row justify-between items-center">
-        <View className="flex-row gap-4">
-          <TouchableOpacity 
-            onPress={() => router.push({ pathname: "/addresses/manage" as any, params: { id: item.id } })}
-          >
-            <View className="flex-row items-center gap-1">
-              <Edit3 size={16} color={isDark ? "#94a3b8" : "#64748b"} />
-              <Text className="text-muted-foreground text-xs font-medium">{intl.formatMessage({ id: 'common.edit' })}</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleDelete(item.id)}>
-            <View className="flex-row items-center gap-1">
-              <Trash2 size={16} color="#ef4444" />
-              <Text className="text-red-500 text-xs font-medium">{intl.formatMessage({ id: 'common.delete' })}</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity 
+          onPress={() => handleDelete(item.id)}
+          className="flex-row items-center gap-2 py-1 pe-4"
+        >
+          <Trash2 size={16} color="#ef4444" />
+          <Text className="text-red-500 text-xs font-semibold">{intl.formatMessage({ id: 'common.delete' })}</Text>
+        </TouchableOpacity>
 
         {!item.isDefault && (
-          <TouchableOpacity onPress={() => setDefaultMutation.mutate(item.id)}>
+          <TouchableOpacity 
+            onPress={() => setDefaultMutation.mutate(item.id)}
+            className="bg-primary/5 px-4 py-2 rounded-xl"
+          >
             <Text className="text-primary text-xs font-bold">{intl.formatMessage({ id: 'address.setAsDefault' })}</Text>
           </TouchableOpacity>
         )}
