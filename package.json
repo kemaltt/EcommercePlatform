@@ -2,6 +2,10 @@
   "name": "ecommerce-platform",
 
   "private": true,
+  "workspaces": [
+    "server",
+    "shared"
+  ],
   "scripts": {
     "install:shared": "cd shared && npm install",
     "install:server": "cd server && npm install",

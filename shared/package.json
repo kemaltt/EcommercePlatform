@@ -3,7 +3,7 @@
   "version": "1.0.0",
 
   "private": true,
-  "main": "index.ts",
+  "main": "schema.ts",
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "drizzle-orm": "^0.39.1",

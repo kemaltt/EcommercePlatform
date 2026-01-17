@@ -1,5 +1,5 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-serverless";
 import ws from "ws";
 import * as schema from "@shared/schema";
 import "dotenv/config";
@@ -11,8 +11,10 @@ const connectionString = process.env.DATABASE_URL;
 
 // DATABASE_URL tanımlı değilse hata ver
 if (!connectionString) {
-  console.error("DATABASE_URL environment variable is not set. Please check your .env file.");
-  process.exit(1); // Uygulamayı durdur
+  const errorMsg =
+    "DATABASE_URL environment variable is not set. Please check your Vercel Project Settings.";
+  console.error(errorMsg);
+  throw new Error(errorMsg);
 }
 
 // Bağlantıyı test et
@@ -20,7 +22,7 @@ async function testConnection() {
   // Test pool'u için de process.env kullan
   const testPool = new Pool({ connectionString });
   try {
-    await testPool.query('SELECT NOW()');
+    await testPool.query("SELECT NOW()");
     return true;
   } catch (error) {
     console.error("Database connection error:", error);
@@ -34,7 +36,7 @@ async function testConnection() {
 
 // Pool ve db'yi oluştur (process.env kullan)
 export const pool = new Pool({ connectionString });
-export const db = drizzle({ client: pool, schema });
+export const db = drizzle(pool, { schema });
 
 // Uygulama başladığında bağlantıyı test et
 testConnection().catch(console.error);
