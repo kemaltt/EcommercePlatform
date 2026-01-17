@@ -16,10 +16,11 @@
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "paths": {
       "@shared/*": ["../shared/*"],
-      "drizzle-orm": ["../shared/node_modules/drizzle-orm"],
-      "drizzle-orm/*": ["../shared/node_modules/drizzle-orm/*"],
-      "zod": ["../shared/node_modules/zod"],
-      "zod/*": ["../shared/node_modules/zod/*"]
+      "drizzle-orm": ["./node_modules/drizzle-orm"],
+      "drizzle-orm/*": ["./node_modules/drizzle-orm/*"],
+      "zod": ["./node_modules/zod"],
+      "zod/*": ["./node_modules/zod/*"],
+      "drizzle-zod": ["./node_modules/drizzle-zod"]
     }
   }
 } 

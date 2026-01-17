@@ -7,7 +7,12 @@
     "skipLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["shared/*"]
+      "@shared/*": ["shared/*"],
+      "drizzle-orm": ["server/node_modules/drizzle-orm"],
+      "drizzle-orm/*": ["server/node_modules/drizzle-orm/*"],
+      "zod": ["server/node_modules/zod"],
+      "zod/*": ["server/node_modules/zod/*"],
+      "drizzle-zod": ["server/node_modules/drizzle-zod"]
     }
   },
   "include": ["api/**/*.ts", "server/**/*.ts", "shared/**/*.ts"]

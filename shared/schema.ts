@@ -110,7 +110,7 @@ export const passwordResets = pgTable(
     expiresAt: timestamp("expires_at").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
-  (table) => ({
+  (table: any) => ({
     userRelation: foreignKey({
       columns: [table.userId],
       foreignColumns: [users.id],
