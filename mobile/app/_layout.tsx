@@ -35,9 +35,8 @@ const queryClient = new QueryClient({
 
 import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from "@react-navigation/native";
 
-function ThemedNavigationRoot() {
+const InnerLayout = React.memo(() => {
   const { isDark } = useTheme();
-
   return (
     <NavThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       <View 
@@ -48,7 +47,6 @@ function ThemedNavigationRoot() {
         <Stack 
           screenOptions={{ 
             headerShown: false,
-            contentStyle: { backgroundColor: isDark ? "#111827" : "#FFFFFF" }
           }}
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -59,19 +57,21 @@ function ThemedNavigationRoot() {
       </View>
     </NavThemeProvider>
   );
-}
+});
 
 export default function RootLayout() {
+  const [qc] = React.useState(() => queryClient);
+  
   return (
     <SafeAreaProvider>
       <I18nProvider>
         <SettingsProvider>
           <ThemeProvider>
-            <QueryClientProvider client={queryClient}>
+            <QueryClientProvider client={qc}>
               <AuthProvider>
                 <CartProvider>
                   <FavoritesProvider>
-                    <ThemedNavigationRoot />
+                    <InnerLayout />
                   </FavoritesProvider>
                 </CartProvider>
               </AuthProvider>
@@ -82,3 +82,5 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
+
+

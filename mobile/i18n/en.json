@@ -218,6 +218,7 @@
     "country.BR": "Brazil",
     "country.AR": "Argentina",
     "address.country.select": "Select Country",
+    "address.country.search": "Search country...",
   "profile.avatar.select": "Select Profile Picture",
   "profile.avatar.camera": "Camera",
   "profile.avatar.camera.sub": "Take a photo",

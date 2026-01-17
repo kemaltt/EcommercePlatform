@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, FlatList } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, FlatList, Pressable } from "react-native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Plus, MapPin, Trash2, Edit3, CheckCircle2 } from "lucide-react-native";
 import { useRouter } from "expo-router";
@@ -134,21 +134,21 @@ export default function AddressListScreen() {
         
         {/* Header */}
         <View className="flex-row justify-between items-center px-6 py-4">
-           <TouchableOpacity 
+           <Pressable 
              className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border"
              onPress={() => router.back()}
            >
              <ChevronLeft size={20} color={isDark ? "white" : "black"} />
-           </TouchableOpacity>
+           </Pressable>
            
            <Text className="text-lg font-bold text-foreground">{intl.formatMessage({ id: 'profile.myAddresses' })}</Text>
            
-           <TouchableOpacity 
+           <Pressable 
              className="w-10 h-10 rounded-full bg-primary items-center justify-center shadow-lg"
              onPress={() => router.push("/addresses/manage" as any)}
            >
              <Plus size={20} color="white" />
-           </TouchableOpacity>
+           </Pressable>
         </View>
 
         {isLoading ? (

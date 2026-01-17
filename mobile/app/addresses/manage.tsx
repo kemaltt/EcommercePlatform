@@ -1,6 +1,6 @@
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Switch, Modal, Pressable } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Switch, Modal, Pressable, TextInput } from "react-native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ChevronLeft, MapPin, User, Home, Building2, Globe, Phone, Mail, X, ChevronRight } from "lucide-react-native";
+import { ChevronLeft, MapPin, User, Home, Building2, Globe, Phone, Mail, X, ChevronRight, Search } from "lucide-react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useIntl } from "react-intl";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,12 +13,15 @@ import { Input } from "../../components/ui/Input";
 import { Address, InsertAddress } from "@shared/schema";
 
 export default function ManageAddressScreen() {
-  const { id } = useLocalSearchParams();
+  const params = useLocalSearchParams();
+  const id = params?.id as string | undefined;
   const router = useRouter();
   const intl = useIntl();
   const { isDark } = useTheme();
   const queryClient = useQueryClient();
   const [showCountryModal, setShowCountryModal] = useState(false);
+  const [countrySearch, setCountrySearch] = useState("");
+
 
   const countries = [
     { code: 'TR', nameId: 'country.TR' },
@@ -114,8 +117,13 @@ export default function ManageAddressScreen() {
   };
 
   const updateForm = (key: keyof InsertAddress, value: any) => {
-    setForm(prev => ({ ...prev, [key]: value }));
+    setForm(prev => {
+      if (!prev) return { [key]: value };
+      return { ...prev, [key]: value };
+    });
   };
+
+  if (!router) return null;
 
   return (
     <View className="flex-1 bg-background">
@@ -124,12 +132,12 @@ export default function ManageAddressScreen() {
         
         {/* Header */}
         <View className="flex-row justify-between items-center px-6 py-4">
-           <TouchableOpacity 
+           <Pressable 
              className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border"
              onPress={() => router.back()}
            >
              <ChevronLeft size={20} color={isDark ? "white" : "black"} />
-           </TouchableOpacity>
+           </Pressable>
            
            <Text className="text-lg font-bold text-foreground">
              {id ? intl.formatMessage({ id: 'address.edit' }) : intl.formatMessage({ id: 'address.add' })}
@@ -148,50 +156,50 @@ export default function ManageAddressScreen() {
               
               {/* Type Switcher */}
               <View className="flex-row bg-secondary/50 p-1 rounded-2xl mb-6">
-                <TouchableOpacity 
-                  className={`flex-1 py-3 rounded-xl items-center ${form.type === 'delivery' ? 'bg-primary shadow-sm' : ''}`}
+                <Pressable 
+                  className="flex-1 py-3 rounded-xl items-center"
+                  style={{ backgroundColor: form?.type === 'delivery' ? (isDark ? '#6366f1' : '#4f46e5') : 'transparent' }}
                   onPress={() => updateForm('type', 'delivery')}
-                  activeOpacity={0.7}
                 >
-                  <Text className={`font-bold ${form.type === 'delivery' ? 'text-white' : 'text-muted-foreground'}`}>
+                  <Text className={`font-bold ${form?.type === 'delivery' ? 'text-white' : 'text-muted-foreground'}`}>
                     {intl.formatMessage({ id: 'address.type.delivery' })}
                   </Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  className={`flex-1 py-3 rounded-xl items-center ${form.type === 'invoice' ? 'bg-primary shadow-sm' : ''}`}
+                </Pressable>
+                <Pressable 
+                  className="flex-1 py-3 rounded-xl items-center"
+                  style={{ backgroundColor: form?.type === 'invoice' ? (isDark ? '#6366f1' : '#4f46e5') : 'transparent' }}
                   onPress={() => updateForm('type', 'invoice')}
-                  activeOpacity={0.7}
                 >
-                  <Text className={`font-bold ${form.type === 'invoice' ? 'text-white' : 'text-muted-foreground'}`}>
+                  <Text className={`font-bold ${form?.type === 'invoice' ? 'text-white' : 'text-muted-foreground'}`}>
                     {intl.formatMessage({ id: 'address.type.invoice' })}
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
 
-              <View className="mb-4">
+              <View style={{ marginBottom: 16 }}>
                 <Input
                   label={intl.formatMessage({ id: 'address.fullName' })}
-                  value={form.fullName || ""}
+                  value={form?.fullName || ""}
                   onChangeText={(val) => updateForm('fullName', val)}
                   placeholder={intl.formatMessage({ id: 'address.fullName' })}
                   icon={<User size={18} color={isDark ? "#94a3b8" : "#64748b"} />}
                 />
               </View>
 
-              <View className="mb-4">
+              <View style={{ marginBottom: 16 }}>
                 <Input
                   label={intl.formatMessage({ id: 'address.line1' })}
-                  value={form.addressLine1 || ""}
+                  value={form?.addressLine1 || ""}
                   onChangeText={(val) => updateForm('addressLine1', val)}
                   placeholder={intl.formatMessage({ id: 'address.line1' })}
                   icon={<Home size={18} color={isDark ? "#94a3b8" : "#64748b"} />}
                 />
               </View>
 
-              <View className="mb-4">
+              <View style={{ marginBottom: 16 }}>
                 <Input
                   label={intl.formatMessage({ id: 'address.line2' })}
-                  value={form.addressLine2 || ""}
+                  value={form?.addressLine2 || ""}
                   onChangeText={(val) => updateForm('addressLine2', val)}
                   placeholder={intl.formatMessage({ id: 'address.line2' })}
                   icon={<Home size={18} color={isDark ? "#94a3b8" : "#64748b"} />}
@@ -202,7 +210,7 @@ export default function ManageAddressScreen() {
                 <View className="flex-1">
                   <Input
                     label={intl.formatMessage({ id: 'address.city' })}
-                    value={form.city || ""}
+                    value={form?.city || ""}
                     onChangeText={(val) => updateForm('city', val)}
                     placeholder={intl.formatMessage({ id: 'address.city' })}
                     icon={<Building2 size={18} color={isDark ? "#94a3b8" : "#64748b"} />}
@@ -211,7 +219,7 @@ export default function ManageAddressScreen() {
                 <View className="flex-1">
                   <Input
                     label={intl.formatMessage({ id: 'address.zipCode' })}
-                    value={form.zipCode || ""}
+                    value={form?.zipCode || ""}
                     onChangeText={(val) => updateForm('zipCode', val)}
                     placeholder={intl.formatMessage({ id: 'address.zipCode' })}
                     keyboardType="numeric"
@@ -231,7 +239,7 @@ export default function ManageAddressScreen() {
                   <View className="flex-row items-center">
                     <Globe size={18} color={isDark ? "#94a3b8" : "#64748b"} />
                     <Text className="text-foreground ml-3 font-medium">
-                      {form.country ? intl.formatMessage({ id: `country.${form.country}` }) : intl.formatMessage({ id: 'address.country.select' })}
+                      {form?.country ? intl.formatMessage({ id: `country.${form.country}` }) : intl.formatMessage({ id: 'address.country.select' })}
                     </Text>
                   </View>
                   <ChevronRight size={18} color={isDark ? "#94a3b8" : "#64748b"} />
@@ -241,7 +249,7 @@ export default function ManageAddressScreen() {
               <View className="mb-4">
                 <Input
                   label={intl.formatMessage({ id: 'address.phone' })}
-                  value={form.phoneNumber || ""}
+                  value={form?.phoneNumber || ""}
                   onChangeText={(val) => updateForm('phoneNumber', val)}
                   placeholder={intl.formatMessage({ id: 'address.phone' })}
                   icon={<Phone size={18} color={isDark ? "#94a3b8" : "#64748b"} />}
@@ -256,7 +264,7 @@ export default function ManageAddressScreen() {
                   </Text>
                 </View>
                 <Switch
-                  value={form.isDefault}
+                  value={form?.isDefault || false}
                   onValueChange={(val) => updateForm('isDefault', val)}
                   trackColor={{ false: "#94a3b8", true: "#6366f1" }}
                   thumbColor="white"
@@ -278,39 +286,65 @@ export default function ManageAddressScreen() {
           visible={showCountryModal}
           transparent
           animationType="slide"
-          onRequestClose={() => setShowCountryModal(false)}
+          onRequestClose={() => {
+            setShowCountryModal(false);
+            setCountrySearch("");
+          }}
         >
           <View className="flex-1 bg-black/50 justify-end">
-            <View className="bg-background rounded-t-[32px] p-6 pb-12 border-t border-border/10 max-h-[80%]">
+            <View className="bg-background rounded-t-[32px] p-6 pb-12 border-t border-border/10 max-h-[85%]">
               <View className="flex-row justify-between items-center mb-6">
                 <Text className="text-xl font-bold text-foreground">{intl.formatMessage({ id: 'address.country.select' })}</Text>
-                <TouchableOpacity onPress={() => setShowCountryModal(false)}>
+                <TouchableOpacity onPress={() => {
+                  setShowCountryModal(false);
+                  setCountrySearch("");
+                }}>
                   <X size={24} color={isDark ? "white" : "black"} />
                 </TouchableOpacity>
               </View>
+
+              {/* Search Bar */}
+              <View className="flex-row items-center bg-secondary/30 rounded-2xl px-4 py-3 mb-6 border border-border/50">
+                <Search size={18} color={isDark ? "#94a3b8" : "#64748b"} />
+                <TextInput
+                  placeholder={intl.formatMessage({ id: 'address.country.search' })}
+                  placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
+                  value={countrySearch}
+                  onChangeText={setCountrySearch}
+                  className="flex-1 ml-3 text-foreground font-medium text-base"
+                />
+                {countrySearch.length > 0 && (
+                  <TouchableOpacity onPress={() => setCountrySearch("")}>
+                    <X size={16} color={isDark ? "#94a3b8" : "#64748b"} />
+                  </TouchableOpacity>
+                )}
+              </View>
               
               <ScrollView showsVerticalScrollIndicator={false}>
-                {countries.map((country) => (
-                  <TouchableOpacity 
-                    key={country.code}
-                    onPress={() => {
-                      updateForm('country', country.code);
-                      setShowCountryModal(false);
-                    }}
-                    className={`flex-row items-center justify-between p-4 rounded-2xl mb-2 ${
-                      form.country === country.code ? 'bg-primary/10 border border-primary/30' : 'bg-card'
-                    }`}
-                  >
-                    <Text className={`text-[16px] font-semibold ${form.country === country.code ? 'text-primary' : 'text-foreground'}`}>
-                      {intl.formatMessage({ id: country.nameId })}
-                    </Text>
-                    {form.country === country.code && (
-                       <View className="w-6 h-6 rounded-full bg-primary items-center justify-center">
-                          <Text className="text-white text-[10px]">✓</Text>
-                       </View>
-                    )}
-                  </TouchableOpacity>
-                ))}
+                {countries
+                  .filter(c => intl.formatMessage({ id: c.nameId }).toLowerCase().includes(countrySearch.toLowerCase()))
+                  .map((country) => (
+                    <TouchableOpacity 
+                      key={country.code}
+                      onPress={() => {
+                        updateForm('country', country.code);
+                        setShowCountryModal(false);
+                        setCountrySearch("");
+                      }}
+                      className={`flex-row items-center justify-between p-4 rounded-2xl mb-2 ${
+                        form.country === country.code ? 'bg-primary/10 border border-primary/30' : 'bg-card'
+                      }`}
+                    >
+                      <Text className={`text-[16px] font-semibold ${form.country === country.code ? 'text-primary' : 'text-foreground'}`}>
+                        {intl.formatMessage({ id: country.nameId })}
+                      </Text>
+                      {form.country === country.code && (
+                         <View className="w-6 h-6 rounded-full bg-primary items-center justify-center">
+                            <Text className="text-white text-[10px]">✓</Text>
+                         </View>
+                      )}
+                    </TouchableOpacity>
+                  ))}
               </ScrollView>
             </View>
           </View>
