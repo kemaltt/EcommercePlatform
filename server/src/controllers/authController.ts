@@ -42,16 +42,19 @@ export const register = async (
         errors: validationResult.error.flatten().fieldErrors,
       });
     }
-    const { username, email, password, fullName, address } =
-      validationResult.data;
+    const { email, password, fullName, address } = validationResult.data;
 
-    const existingUserByUsername = await storage.getUserByUsername(username);
-    if (existingUserByUsername) {
-      return res.status(409).json({ message: "Username already exists" });
-    }
+    // Check if email already exists
     const existingUserByEmail = await storage.getUserByEmail(email);
     if (existingUserByEmail) {
       return res.status(409).json({ message: "Email already exists" });
+    }
+
+    // Generate unique username from email prefix
+    let username = email.split("@")[0];
+    const existingUserByUsername = await storage.getUserByUsername(username);
+    if (existingUserByUsername) {
+      username = `${username}_${Math.floor(1000 + Math.random() * 9000)}`;
     }
 
     const hashedPassword = await hashPassword(password);

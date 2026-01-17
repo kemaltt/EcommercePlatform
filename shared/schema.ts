@@ -36,7 +36,7 @@ export const users = pgTable("users", {
 });
 
 export const insertUserSchema = createInsertSchema(users, {
-  username: z.string().min(1, "validation.username.required"),
+  username: z.string().optional(),
   email: z
     .string()
     .email("validation.email.invalid")

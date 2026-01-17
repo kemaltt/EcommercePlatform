@@ -64,7 +64,6 @@ export default function RegisterScreen() {
       await register({ 
         fullName, 
         email, 
-        username: email, 
         password 
       });
 
