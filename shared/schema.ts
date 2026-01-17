@@ -24,8 +24,7 @@ export const users = pgTable("users", {
   googleId: text("google_id").unique(),
   appleId: text("apple_id").unique(),
   isAdmin: boolean("is_admin").default(false).notNull(),
-  status: text("status").default("trial").notNull(), // active, cancellation_request, cancelled, deleted, passive, trial
-  trialExpiresAt: timestamp("trial_expires_at"),
+  status: text("status").default("active").notNull(), // active, passive, deleted
   address: text("address"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   emailVerified: boolean("email_verified").default(false).notNull(),
@@ -52,7 +51,6 @@ export const insertUserSchema = createInsertSchema(users, {
 }).omit({
   isAdmin: true,
   status: true,
-  trialExpiresAt: true,
 });
 
 // Product schema

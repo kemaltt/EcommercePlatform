@@ -208,12 +208,9 @@ export class MemStorage implements IStorage {
       (user) => user.email.toLowerCase() === email.toLowerCase(),
     );
   }
-
   async createUser(user: Omit<InsertUser, "confirmPassword">): Promise<User> {
     const id = crypto.randomUUID();
     const now = new Date();
-    const trialExpiresAt = new Date();
-    trialExpiresAt.setDate(trialExpiresAt.getDate() + 30);
 
     const newUser: User = {
       username: user.username!,
@@ -222,8 +219,7 @@ export class MemStorage implements IStorage {
       password: user.password || null,
       id,
       isAdmin: false,
-      status: "trial",
-      trialExpiresAt,
+      status: "active",
       createdAt: now,
       emailVerified: false,
       emailVerificationToken: null,
@@ -600,9 +596,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(user: Omit<InsertUser, "confirmPassword">): Promise<User> {
-    const trialExpiresAt = new Date();
-    trialExpiresAt.setDate(trialExpiresAt.getDate() + 30);
-
     const [newUser] = await db
       .insert(users)
       .values({
@@ -614,8 +607,7 @@ export class DatabaseStorage implements IStorage {
         avatarUrl: user.avatarUrl || null,
         googleId: user.googleId || null,
         appleId: user.appleId || null,
-        status: "trial",
-        trialExpiresAt,
+        status: "active",
         createdAt: new Date(),
         emailVerified: false,
       } as any)
@@ -849,7 +841,6 @@ export class DatabaseStorage implements IStorage {
           fullName: users.fullName,
           status: users.status,
           isAdmin: users.isAdmin,
-          trialExpiresAt: users.trialExpiresAt,
           address: users.address,
           createdAt: users.createdAt,
           emailVerified: users.emailVerified,
@@ -859,7 +850,7 @@ export class DatabaseStorage implements IStorage {
           appleId: users.appleId,
           verificationTokenExpiresAt: users.verificationTokenExpiresAt,
         })
-        .from(users as any);
+        .from(users);
 
       return result as User[];
     } catch (error) {
