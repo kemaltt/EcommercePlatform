@@ -43,6 +43,7 @@ setupPassport(app);
 
 // Register all API routes
 app.use("/api", routes);
+app.use("/", routes);
 
 // Health check
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
