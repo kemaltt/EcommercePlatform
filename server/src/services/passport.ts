@@ -63,7 +63,7 @@ export function setupPassport(app: Express) {
         console.error("LocalStrategy error:", err);
         return done(err);
       }
-    })
+    }),
   );
 
   passport.serializeUser((user, done) => {
@@ -75,11 +75,11 @@ export function setupPassport(app: Express) {
     }
   });
 
-  passport.deserializeUser(async (id: unknown, done) => {
-    if (typeof id !== "number") {
+  passport.deserializeUser(async (id: any, done) => {
+    if (typeof id !== "string") {
       console.error(
-        `Deserialization error: Expected ID to be a number, but received ${typeof id}`,
-        id
+        `Deserialization error: Expected ID to be a string (UUID), but received ${typeof id}`,
+        id,
       );
       return done(new Error("Invalid user ID type in session"));
     }
