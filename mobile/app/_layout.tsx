@@ -52,7 +52,7 @@ function ThemedNavigationRoot() {
           }}
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)/_layout" options={{ headerShown: false }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="product/[id]" options={{ presentation: "modal" }} />
           <Stack.Screen name="admin" />
         </Stack>
