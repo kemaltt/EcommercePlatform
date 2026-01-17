@@ -4,7 +4,7 @@ import { useState } from "react";
 import { api } from "../../lib/api";
 import { Product } from "@shared/schema";
 import { Input } from "../../components/ui/Input";
-import { Search, Bell, Heart, SlidersHorizontal, ChevronRight } from "lucide-react-native";
+import { Search, Bell, Heart, SlidersHorizontal, ChevronRight, User } from "lucide-react-native";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Image } from "expo-image";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -13,6 +13,7 @@ import { useAuth } from "../../hooks/use-auth";
 import { useFavorites } from "../../hooks/use-favorites";
 import { useRouter } from "expo-router";
 import { useTheme } from "../../contexts/theme-context";
+import * as Haptics from 'expo-haptics';
 
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = (width - 48) / 2; // px-6 is 24px each side -> 48px total
@@ -133,11 +134,37 @@ export default function HomeScreen() {
               {intl.formatMessage({ id: 'home.catalog' })}
             </Text>
           </View>
-          <TouchableOpacity 
-            className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
-          >
-             <Bell size={20} color={isDark ? "white" : "black"} />
-          </TouchableOpacity>
+          <View className="flex-row items-center gap-3">
+            <TouchableOpacity 
+              className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                // Notification navigation logic could go here
+              }}
+            >
+               <Bell size={20} color={isDark ? "white" : "black"} />
+            </TouchableOpacity>
+
+            {user && (
+              <TouchableOpacity 
+                className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border overflow-hidden"
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  router.push("/(tabs)/profile");
+                }}
+              >
+                {user.avatarUrl ? (
+                  <Image 
+                    source={{ uri: user.avatarUrl }} 
+                    style={{ width: "100%", height: "100%" }}
+                    contentFit="cover"
+                  />
+                ) : (
+                  <User size={20} color={isDark ? "white" : "black"} />
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
 
         {/* Search Bar */}
