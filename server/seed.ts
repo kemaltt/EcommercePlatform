@@ -215,6 +215,106 @@ async function seed() {
       reviews: 57,
       isActive: true,
     },
+    // More Products
+    {
+      name: "Bluetooth Speaker",
+      description: "Portable waterproof speaker with deep bass.",
+      price: 59.99,
+      category: "electronics",
+      imageUrl:
+        "https://images.unsplash.com/photo-1608156639585-34a0a5625bf4?auto=format&fit=crop&w=800&q=80",
+      stock: 40,
+      rating: 4.4,
+      reviews: 112,
+      isActive: true,
+    },
+    {
+      name: "4K Action Camera",
+      description:
+        "Rugged action camera for capturing adventures in high detail.",
+      price: 199.0,
+      category: "electronics",
+      imageUrl:
+        "https://images.unsplash.com/photo-1526170315873-3a56162992d2?auto=format&fit=crop&w=800&q=80",
+      stock: 15,
+      rating: 4.6,
+      reviews: 45,
+      isActive: true,
+    },
+    {
+      name: "Canvas Backpack",
+      description: "Durable canvas backpack for school or travel.",
+      price: 49.99,
+      category: "clothing",
+      imageUrl:
+        "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=800&q=80",
+      stock: 28,
+      rating: 4.5,
+      reviews: 89,
+      isActive: true,
+    },
+    {
+      name: "Wool Scarf",
+      description: "Soft and warm wool scarf for winter days.",
+      price: 24.99,
+      category: "clothing",
+      imageUrl:
+        "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?auto=format&fit=crop&w=800&q=80",
+      stock: 60,
+      rating: 4.2,
+      reviews: 15,
+      isActive: true,
+    },
+    {
+      name: "Air Purifier",
+      description: "HEPA air purifier for clean and fresh indoor air.",
+      price: 129.99,
+      category: "home",
+      imageUrl:
+        "https://images.unsplash.com/photo-1585771724684-252702b64428?auto=format&fit=crop&w=800&q=80",
+      stock: 10,
+      rating: 4.7,
+      reviews: 67,
+      isActive: true,
+    },
+    {
+      name: "Ceramic Vase",
+      description: "Handcrafted ceramic vase with a minimalist design.",
+      price: 34.0,
+      category: "home",
+      imageUrl:
+        "https://images.unsplash.com/photo-1578500484748-5823b82fcfad?auto=format&fit=crop&w=800&q=80",
+      stock: 25,
+      rating: 4.4,
+      reviews: 22,
+      isActive: true,
+    },
+    {
+      name: "Water Bottle",
+      description:
+        "Insulated stainless steel water bottle, keeps drinks cold for 24h.",
+      price: 24.99,
+      category: "sports",
+      imageUrl:
+        "https://images.unsplash.com/photo-1602143307185-84e672399692?auto=format&fit=crop&w=800&q=80",
+      stock: 120,
+      rating: 4.8,
+      reviews: 345,
+      isActive: true,
+    },
+    {
+      name: "Mountain Bike",
+      description:
+        "Versatile mountain bike with 21 speeds and front suspension.",
+      price: 499.0,
+      category: "sports",
+      imageUrl:
+        "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=800&q=80",
+      stock: 5,
+      rating: 4.7,
+      reviews: 18,
+      isActive: true,
+    },
   ];
 
   for (const product of sampleProducts) {
