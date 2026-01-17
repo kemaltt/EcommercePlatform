@@ -36,7 +36,7 @@ async function testConnection() {
 
 // Pool ve db'yi oluştur (process.env kullan)
 export const pool = new Pool({ connectionString });
-export const db = drizzle(pool, { schema });
+export const db = drizzle(pool as any, { schema });
 
 // Uygulama başladığında bağlantıyı test et
 testConnection().catch(console.error);
