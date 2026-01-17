@@ -217,5 +217,20 @@
     "country.MX": "Meksika",
     "country.BR": "Brezilya",
     "country.AR": "Arjantin",
-  "address.country.select": "Ülke Seçin"
+  "address.country.select": "Ülke Seçin",
+  "profile.avatar.select": "Profil Resmi Seç",
+  "profile.avatar.camera": "Kamera",
+  "profile.avatar.camera.sub": "Fotoğraf çek",
+  "profile.avatar.gallery": "Galeri",
+  "profile.avatar.gallery.sub": "Galeriden seç",
+  "profile.avatar.delete": "Resmi Sil",
+  "profile.avatar.uploadSuccess": "Profil resmi başarıyla yüklendi",
+  "profile.avatar.uploadError": "Profil resmi yüklenirken hata oluştu",
+  "profile.avatar.deleteSuccess": "Profil resmi başarıyla silindi",
+  "profile.avatar.deleteError": "Profil resmi silinirken hata oluştu",
+  "profile.avatar.deleteConfirm": "Profil resminizi silmek istediğinizden emin misiniz?",
+  "profile.avatar.permissionDenied": "Kamera/Galeri izni reddedildi",
+  "profile.avatar.pickError": "Resim seçilirken hata oluştu",
+  "profile.myAddresses.sub": "Adreslerinizi yönetin",
+  "profile.avatar.invalidType": "Sadece resim dosyaları (jpeg, jpg, png, gif, webp) yüklenebilir"
 }

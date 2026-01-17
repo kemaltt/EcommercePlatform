@@ -211,5 +211,20 @@
   "country.MX": "Mexiko",
   "country.BR": "Brasilien",
   "country.AR": "Argentinien",
-  "address.country.select": "Land auswählen"
+  "address.country.select": "Land auswählen",
+  "profile.avatar.select": "Profilbild auswählen",
+  "profile.avatar.camera": "Kamera",
+  "profile.avatar.camera.sub": "Ein Foto machen",
+  "profile.avatar.gallery": "Galerie",
+  "profile.avatar.gallery.sub": "Aus Galerie wählen",
+  "profile.avatar.delete": "Bild löschen",
+  "profile.avatar.uploadSuccess": "Profilbild erfolgreich hochgeladen",
+  "profile.avatar.uploadError": "Fehler beim Hochladen des Profilbilds",
+  "profile.avatar.deleteSuccess": "Profilbild erfolgreich gelöscht",
+  "profile.avatar.deleteError": "Fehler beim Löschen des Profilbilds",
+  "profile.avatar.deleteConfirm": "Sind Sie sicher, dass Sie Ihr Profilbild löschen möchten?",
+  "profile.avatar.permissionDenied": "Kamera-/Galerie-Berechtigung verweigert",
+  "profile.avatar.pickError": "Fehler bei der Bildauswahl",
+  "profile.myAddresses.sub": "Verwalten Sie Ihre Adressen",
+  "profile.avatar.invalidType": "Nur Bilddateien (jpeg, jpg, png, gif, webp) sind erlaubt"
 }

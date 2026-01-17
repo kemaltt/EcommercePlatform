@@ -177,7 +177,7 @@ export default function ProfileScreen() {
              <GridMenuItem 
                 icon={<MapPin size={22} color={isDark ? "white" : "black"} />} 
                 label={intl.formatMessage({ id: 'profile.myAddresses' })} 
-                subLabel={intl.formatMessage({ id: 'profile.myAddresses.sub', defaultMessage: 'Manage your addresses' })}
+                subLabel={intl.formatMessage({ id: 'profile.myAddresses.sub' })}
                 onPress={() => router.push("/addresses" as any)}
              />
              <GridMenuItem 

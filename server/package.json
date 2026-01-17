@@ -1,7 +1,6 @@
 {
   "name": "ecommerce-server",
   "version": "1.0.0",
-
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development tsx index.ts",
@@ -11,6 +10,7 @@
   "dependencies": {
     "@jridgewell/trace-mapping": "^0.3.25",
     "@neondatabase/serverless": "^0.10.4",
+    "@types/multer": "^2.0.0",
     "apple-signin-auth": "^2.0.0",
     "connect-pg-simple": "^10.0.0",
     "dotenv": "^16.5.0",
@@ -20,6 +20,7 @@
     "express-session": "^1.18.1",
     "google-auth-library": "^10.5.0",
     "memorystore": "^1.6.7",
+    "multer": "^2.0.2",
     "nanoid": "^5.0.6",
     "nodemailer": "^7.0.0",
     "passport": "^0.7.0",

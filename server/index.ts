@@ -4,9 +4,14 @@ import { setupPassport } from "./src/services/passport";
 import routes from "./src/routes/index";
 import { verifyEmail } from "./src/controllers/authController";
 
+import path from "path";
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Serve static files from the uploads directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -73,6 +78,6 @@ if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
     },
     () => {
       console.log(`API server running on port ${port}`);
-    }
+    },
   );
 }
