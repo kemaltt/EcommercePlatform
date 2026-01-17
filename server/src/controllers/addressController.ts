@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { storage } from "../../storage";
-import { insertAddressSchema } from "@shared/schema";
+import { insertAddressSchema } from "../../../shared/schema";
 
 export const getAddresses = async (req: Request, res: Response) => {
   if (!req.isAuthenticated()) return res.sendStatus(401);
