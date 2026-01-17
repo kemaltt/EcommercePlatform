@@ -4,7 +4,7 @@ import { Express } from "express";
 import session from "express-session";
 import { storage } from "../../storage";
 import { comparePasswords } from "../utils";
-import { User as SelectUser } from "@shared/schema";
+import { User as SelectUser } from "../../../shared/schema";
 
 declare global {
   namespace Express {

@@ -5,7 +5,7 @@ import {
   passwordResets,
   users,
   type User,
-} from "@shared/schema";
+} from "../../../shared/schema";
 import { sendVerificationEmail, sendEmail } from "../services/email";
 import { generatePasswordResetEmail } from "../templates/passwordResetEmail";
 import { generateChangePasswordEmail } from "../templates/changePasswordEmail";

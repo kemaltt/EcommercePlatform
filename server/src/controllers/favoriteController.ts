@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { storage } from "../../storage";
-import { insertFavoriteSchema } from "@shared/schema";
+import { insertFavoriteSchema } from "../../../shared/schema";
 import { z } from "zod";
 
 export const getFavorites = async (req: Request, res: Response) => {

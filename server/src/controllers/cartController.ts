@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { storage } from "../../storage";
-import { insertCartItemSchema } from "@shared/schema";
+import { insertCartItemSchema } from "../../../shared/schema";
 import { z } from "zod";
 
 export const getCart = async (req: Request, res: Response) => {
