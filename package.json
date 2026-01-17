@@ -1,6 +1,5 @@
 {
   "name": "ecommerce-platform",
-
   "private": true,
   "workspaces": [
     "server",
@@ -11,5 +10,10 @@
     "install:server": "cd server && npm install",
     "build:server": "npm run build --workspace=server",
     "deploy:build": "cd shared && npm install && cd ../server && npm install && npm run build"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.39.1",
+    "drizzle-zod": "^0.7.0",
+    "zod": "^3.24.2"
   }
 }
