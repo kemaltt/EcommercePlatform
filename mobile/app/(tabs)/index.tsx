@@ -101,12 +101,19 @@ export default function HomeScreen() {
       </View>
       
       <View className="p-4">
-        <Text className="text-foreground font-bold text-base mb-1" numberOfLines={1}>
-          {item.name}
-        </Text>
         <Text className="text-[#fbbf24] font-bold text-base mb-1">
           ${Number(item.price).toFixed(2)}
         </Text>
+        <View className="flex-row items-center gap-2 mb-2">
+            <View className={`w-1.5 h-1.5 rounded-full ${item.stock > 5 ? 'bg-green-500' : item.stock > 0 ? 'bg-orange-500' : 'bg-red-500'}`} />
+            <Text className={`text-[10px] font-bold ${item.stock > 0 ? 'text-muted-foreground/60' : 'text-red-500'}`}>
+              {item.stock > 0 ? (
+                <FormattedMessage id="product.stock.available" values={{ count: item.stock }} />
+              ) : (
+                <FormattedMessage id="product.details.outOfStock" />
+              )}
+            </Text>
+        </View>
         <Text className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest">
            {item.category?.toUpperCase() || "COLLECTION"}
         </Text>

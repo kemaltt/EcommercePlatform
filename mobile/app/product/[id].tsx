@@ -146,6 +146,16 @@ export default function ProductDetailsScreen() {
                </View>
             </View>
 
+            {/* Stock Status Row */}
+            <View className="flex-row items-center gap-2 mb-6">
+                <View className={`w-2 h-2 rounded-full ${product.stock > 5 ? 'bg-green-500' : product.stock > 0 ? 'bg-orange-500' : 'bg-red-500'}`} />
+                <Text className={`text-xs font-bold ${product.stock > 0 ? 'text-muted-foreground' : 'text-red-500'}`}>
+                   {product.stock > 0 
+                     ? intl.formatMessage({ id: 'product.stock.available' }, { count: product.stock })
+                     : intl.formatMessage({ id: 'product.details.outOfStock' })}
+                </Text>
+            </View>
+
             {/* Title & Price */}
             <Text className="text-3xl font-bold text-foreground mb-2 leading-tight">
               {product.name}

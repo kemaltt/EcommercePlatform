@@ -106,6 +106,7 @@
   "product.goBack": "Zurück",
   "product.limitedEdition": "Limitierte Auflage",
   "product.reviews": "Bewertungen",
+  "product.stock.available": "Lager: {count} Stück",
   "product.selectSize": "Größe auswählen",
   "product.addToCart": "In den Warenkorb",
   "product.addedToCart": "Zum Warenkorb hinzugefügt!",

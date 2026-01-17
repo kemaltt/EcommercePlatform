@@ -39,6 +39,7 @@
   "product.details.price": "Fiyat",
   "product.details.addToCart": "Sepete Ekle",
   "product.details.outOfStock": "Stokta Yok",
+  "product.stock.available": "Stok: {count} adet",
   "cart.title": "Sepetim",
   "cart.empty.title": "Sepetiniz boş",
   "cart.empty.subtitle": "Henüz sepetinize bir şey eklememişsiniz gibi görünüyor.",

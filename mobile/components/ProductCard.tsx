@@ -29,15 +29,18 @@ export function ProductCard({ product }: ProductCardProps) {
           <Text className="text-base font-bold text-foreground mb-2" numberOfLines={1}>
             {product.name}
           </Text>
-          <View className="flex-row items-center justify-between">
-            <Text className="text-lg font-extrabold text-primary">
-              ${product.price.toFixed(2)}
-            </Text>
-            {product.stock === 0 && (
-              <Text className="text-[10px] text-red-500 font-bold uppercase">
-                <FormattedMessage id="product.details.outOfStock" />
+          <Text className="text-lg font-extrabold text-primary mb-1">
+            ${product.price.toFixed(2)}
+          </Text>
+          <View className="flex-row items-center gap-2 mb-2">
+              <View className={`w-1.5 h-1.5 rounded-full ${product.stock > 5 ? 'bg-green-500' : product.stock > 0 ? 'bg-orange-500' : 'bg-red-500'}`} />
+              <Text className={`text-[10px] font-bold ${product.stock > 0 ? 'text-muted-foreground/60' : 'text-red-500'}`}>
+                {product.stock > 0 ? (
+                  <FormattedMessage id="product.stock.available" values={{ count: product.stock }} />
+                ) : (
+                  <FormattedMessage id="product.details.outOfStock" />
+                )}
               </Text>
-            )}
           </View>
         </View>
       </TouchableOpacity>
