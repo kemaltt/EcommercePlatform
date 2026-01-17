@@ -20,7 +20,7 @@ export const addFavorite = async (req: Request, res: Response) => {
 
     const favoriteData = insertFavoriteSchema.parse({
       userId,
-      productId: parseInt(productId),
+      productId,
     });
 
     const favorite = await storage.addFavorite(favoriteData);
@@ -43,7 +43,7 @@ export const addFavorite = async (req: Request, res: Response) => {
 export const removeFavorite = async (req: Request, res: Response) => {
   try {
     const userId = (req.user as any).id;
-    const productId = parseInt(req.params.productId);
+    const productId = req.params.productId;
 
     const success = await storage.removeFavorite(userId, productId);
 
@@ -60,7 +60,7 @@ export const removeFavorite = async (req: Request, res: Response) => {
 export const checkFavorite = async (req: Request, res: Response) => {
   try {
     const userId = (req.user as any).id;
-    const productId = parseInt(req.params.productId);
+    const productId = req.params.productId;
 
     const isFavorite = await storage.checkFavorite(userId, productId);
     res.json({ isFavorite });

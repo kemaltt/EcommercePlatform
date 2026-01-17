@@ -21,13 +21,13 @@ export const addToCart = async (req: Request, res: Response) => {
     const userId = (req.user as any).id;
     const { productId, quantity } = req.body;
     console.log(
-      `[addToCart] Adding product ${productId} (qty: ${quantity}) for userId: ${userId}`
+      `[addToCart] Adding product ${productId} (qty: ${quantity}) for userId: ${userId}`,
     );
 
     const cartItemData = insertCartItemSchema.parse({
       userId,
-      productId: parseInt(productId),
-      quantity: parseInt(quantity) || 1,
+      productId,
+      quantity: Number(quantity) || 1,
     });
 
     const cartItem = await storage.addCartItem(cartItemData);
@@ -46,7 +46,7 @@ export const addToCart = async (req: Request, res: Response) => {
 
 export const updateCartItem = async (req: Request, res: Response) => {
   try {
-    const itemId = parseInt(req.params.id);
+    const itemId = req.params.id;
     const { quantity } = req.body;
 
     if (!quantity || quantity < 1) {
@@ -67,7 +67,7 @@ export const updateCartItem = async (req: Request, res: Response) => {
 
 export const removeCartItem = async (req: Request, res: Response) => {
   try {
-    const itemId = parseInt(req.params.id);
+    const itemId = req.params.id;
     const success = await storage.removeCartItem(itemId);
 
     if (!success) {

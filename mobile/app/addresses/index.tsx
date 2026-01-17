@@ -25,7 +25,7 @@ export default function AddressListScreen() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       await api.delete(`/addresses/${id}`);
     },
     onSuccess: () => {
@@ -34,7 +34,7 @@ export default function AddressListScreen() {
   });
 
   const setDefaultMutation = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       await api.patch(`/addresses/${id}`, { isDefault: true });
     },
     onSuccess: () => {
@@ -42,7 +42,7 @@ export default function AddressListScreen() {
     },
   });
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     Alert.alert(
       intl.formatMessage({ id: 'common.confirm' }),
       intl.formatMessage({ id: 'address.delete.confirm' }),
@@ -158,7 +158,7 @@ export default function AddressListScreen() {
         ) : (
           <FlatList
              data={addresses}
-             keyExtractor={(item) => item.id.toString()}
+             keyExtractor={(item) => item.id}
              renderItem={renderAddressItem}
              contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 40 }}
              ListEmptyComponent={

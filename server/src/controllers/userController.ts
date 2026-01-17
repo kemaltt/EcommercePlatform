@@ -93,7 +93,7 @@ export const uploadAvatar = async (req: Request, res: Response) => {
       const oldAvatarPath = path.join(
         __dirname,
         "../../uploads",
-        userId.toString(),
+        userId,
         "avatar",
         path.basename(currentUser.avatarUrl),
       );
@@ -135,7 +135,7 @@ export const deleteAvatar = async (req: Request, res: Response) => {
       const avatarPath = path.join(
         __dirname,
         "../../uploads",
-        userId.toString(),
+        userId,
         "avatar",
         path.basename(currentUser.avatarUrl),
       );

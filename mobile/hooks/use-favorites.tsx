@@ -9,7 +9,7 @@ import { Alert } from "react-native";
 interface FavoritesContextType {
   favorites: Product[];
   toggleFavorite: (product: Product) => Promise<void>;
-  isFavorite: (productId: number) => boolean;
+  isFavorite: (productId: string) => boolean;
   isLoading: boolean;
 }
 
@@ -30,7 +30,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   });
 
   const addFavoriteMutation = useMutation({
-    mutationFn: async (productId: number) => {
+    mutationFn: async (productId: string) => {
       await api.post("/favorites", { productId });
     },
     onSuccess: () => {
@@ -39,7 +39,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
   });
 
   const removeFavoriteMutation = useMutation({
-    mutationFn: async (productId: number) => {
+    mutationFn: async (productId: string) => {
       await api.delete(`/favorites/${productId}`);
     },
     onSuccess: () => {
@@ -47,7 +47,7 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
     },
   });
 
-  const isFavorite = (productId: number) => {
+  const isFavorite = (productId: string) => {
     return favorites.some((fav) => fav.id === productId);
   };
 

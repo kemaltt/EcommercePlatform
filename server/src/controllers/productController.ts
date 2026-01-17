@@ -16,7 +16,7 @@ export const getProducts = async (req: Request, res: Response) => {
 
 export const getProductById = async (req: Request, res: Response) => {
   try {
-    const productId = parseInt(req.params.id);
+    const productId = req.params.id;
     const product = await storage.getProduct(productId);
 
     if (!product) {
@@ -46,7 +46,7 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const updateProduct = async (req: Request, res: Response) => {
   try {
-    const productId = parseInt(req.params.id);
+    const productId = req.params.id;
     const productData = req.body;
 
     const updatedProduct = await storage.updateProduct(productId, productData);
@@ -63,7 +63,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 
 export const deleteProduct = async (req: Request, res: Response) => {
   try {
-    const productId = parseInt(req.params.id);
+    const productId = req.params.id;
     const success = await storage.deleteProduct(productId);
 
     if (!success) {

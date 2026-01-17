@@ -8,13 +8,14 @@ import {
   timestamp,
   foreignKey,
   json,
+  uuid,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // User schema
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   username: text("username").notNull().unique(),
   password: text("password"), // Nullable for social users
   email: text("email").notNull().unique(),
@@ -56,7 +57,7 @@ export const insertUserSchema = createInsertSchema(users, {
 
 // Product schema
 export const products = pgTable("products", {
-  id: serial("id").primaryKey(),
+  id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
   description: text("description").notNull(),
   price: doublePrecision("price").notNull(),
@@ -76,9 +77,9 @@ export const insertProductSchema = createInsertSchema(products).omit({
 
 // Favorites schema
 export const favorites = pgTable("favorites", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
-  productId: integer("product_id").notNull(),
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull(),
+  productId: uuid("product_id").notNull(),
 });
 
 export const insertFavoriteSchema = createInsertSchema(favorites).omit({
@@ -87,9 +88,9 @@ export const insertFavoriteSchema = createInsertSchema(favorites).omit({
 
 // Cart schema
 export const cartItems = pgTable("cart_items", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
-  productId: integer("product_id").notNull(),
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull(),
+  productId: uuid("product_id").notNull(),
   quantity: integer("quantity").notNull().default(1),
 });
 
@@ -101,9 +102,9 @@ export const insertCartItemSchema = createInsertSchema(cartItems).omit({
 export const passwordResets = pgTable(
   "password_resets",
   {
-    id: serial("id").primaryKey(),
+    id: uuid("id").primaryKey().defaultRandom(),
     token: text("token").notNull().unique(),
-    userId: integer("user_id")
+    userId: uuid("user_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     expiresAt: timestamp("expires_at").notNull(),
@@ -127,8 +128,8 @@ export const insertPasswordResetSchema = createInsertSchema(
 
 // Addresses schema
 export const addresses = pgTable("addresses", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id")
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   type: text("type").notNull(), // 'delivery', 'invoice'

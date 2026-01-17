@@ -37,7 +37,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 
 export const getUser = async (req: Request, res: Response) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = req.params.id;
     const user = await storage.getUser(userId);
 
     if (!user) {
@@ -54,7 +54,7 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const userId = parseInt(req.params.id);
+    const userId = req.params.id;
     const userData = req.body;
 
     const updatedUser = await storage.updateUser(userId, userData);

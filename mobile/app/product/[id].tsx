@@ -30,8 +30,8 @@ export default function ProductDetailsScreen() {
   const { isDark } = useTheme();
 
   // Find if item is in cart
-  // id from params is string, productId is number
-  const cartItem = cartItems.find(item => item.productId === Number(id));
+  // id from params is string, productId is also string now
+  const cartItem = cartItems.find(item => item.productId === id);
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: ["/api/products", id],
@@ -95,7 +95,7 @@ export default function ProductDetailsScreen() {
           style={{ width: "100%", height: "100%" }}
           contentFit="cover"
           transition={400}
-          recyclingKey={product.id.toString()}
+          recyclingKey={product.id}
           onError={() => {
             if (__DEV__) {
               console.warn(`[DetailImageLoad] Failed to load image for: ${product.name}, URL: ${product.imageUrl}`);

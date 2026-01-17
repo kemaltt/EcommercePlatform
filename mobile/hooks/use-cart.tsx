@@ -9,8 +9,8 @@ interface CartContextType {
   cartItems: (CartItem & { product: Product })[];
   subtotal: number;
   addToCart: (product: Product, quantity?: number) => Promise<void>;
-  updateQuantity: (id: number, quantity: number) => Promise<void>;
-  removeFromCart: (id: number) => Promise<void>;
+  updateQuantity: (id: string, quantity: number) => Promise<void>;
+  removeFromCart: (id: string) => Promise<void>;
   isLoading: boolean;
 }
 
@@ -45,7 +45,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   });
 
   const updateQuantityMutation = useMutation({
-    mutationFn: async ({ id, quantity }: { id: number; quantity: number }) => {
+    mutationFn: async ({ id, quantity }: { id: string; quantity: number }) => {
       await api.put(`/cart/${id}`, { quantity });
     },
     onSuccess: () => {
@@ -54,7 +54,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   });
 
   const removeMutation = useMutation({
-    mutationFn: async (id: number) => {
+    mutationFn: async (id: string) => {
       await api.delete(`/cart/${id}`);
     },
     onSuccess: () => {

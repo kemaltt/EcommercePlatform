@@ -24,7 +24,7 @@ export const getAddressById = async (req: Request, res: Response) => {
   );
 
   try {
-    const address = await storage.getAddress(Number(id));
+    const address = await storage.getAddress(id);
     if (!address) {
       console.log(`[getAddressById] Address ID ${id} not found`);
       return res.sendStatus(404);
@@ -85,7 +85,7 @@ export const updateAddress = async (req: Request, res: Response) => {
   const userId = (req.user as any).id;
 
   try {
-    const existing = await storage.getAddress(Number(id));
+    const existing = await storage.getAddress(id);
     if (!existing || existing.userId !== userId) {
       return res.sendStatus(404);
     }
@@ -98,13 +98,13 @@ export const updateAddress = async (req: Request, res: Response) => {
     if (parsed.data.isDefault) {
       const userAddresses = await storage.getAddresses(userId);
       for (const addr of userAddresses) {
-        if (addr.isDefault && addr.id !== Number(id)) {
+        if (addr.isDefault && addr.id !== id) {
           await storage.updateAddress(addr.id, { isDefault: false });
         }
       }
     }
 
-    const updated = await storage.updateAddress(Number(id), parsed.data);
+    const updated = await storage.updateAddress(id, parsed.data);
     res.json(updated);
   } catch (error) {
     console.error("updateAddress error:", error);
@@ -118,12 +118,12 @@ export const deleteAddress = async (req: Request, res: Response) => {
   const userId = (req.user as any).id;
 
   try {
-    const existing = await storage.getAddress(Number(id));
+    const existing = await storage.getAddress(id);
     if (!existing || existing.userId !== userId) {
       return res.sendStatus(404);
     }
 
-    await storage.deleteAddress(Number(id));
+    await storage.deleteAddress(id);
     res.sendStatus(204);
   } catch (error) {
     console.error("deleteAddress error:", error);
