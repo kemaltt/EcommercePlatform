@@ -45,7 +45,7 @@ export function setupPassport(app: Express) {
           user = await storage.getUserByUsername(identifier);
         }
 
-        if (!user) {
+        if (!user || !user.password) {
           return done(null, false, { message: "Incorrect email or password." });
         }
 
