@@ -216,7 +216,10 @@ export class MemStorage implements IStorage {
     trialExpiresAt.setDate(trialExpiresAt.getDate() + 30);
 
     const newUser: User = {
-      ...user,
+      username: user.username!,
+      email: user.email,
+      fullName: user.fullName,
+      password: user.password || null,
       id,
       isAdmin: false,
       status: "trial",
@@ -603,11 +606,19 @@ export class DatabaseStorage implements IStorage {
     const [newUser] = await db
       .insert(users)
       .values({
-        ...user,
+        username: user.username!,
+        email: user.email,
+        fullName: user.fullName,
+        password: user.password || null,
+        address: user.address || null,
+        avatarUrl: user.avatarUrl || null,
+        googleId: user.googleId || null,
+        appleId: user.appleId || null,
         status: "trial",
         trialExpiresAt,
         createdAt: new Date(),
-      })
+        emailVerified: false,
+      } as any)
       .returning();
     return newUser;
   }
