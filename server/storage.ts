@@ -11,6 +11,9 @@ import {
   products,
   favorites,
   cartItems,
+  addresses,
+  Address,
+  InsertAddress,
 } from "../shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -39,7 +42,7 @@ export interface IStorage {
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(
     id: number,
-    productData: Partial<Product>
+    productData: Partial<Product>,
   ): Promise<Product | undefined>;
   deleteProduct(id: number): Promise<boolean>;
 
@@ -54,13 +57,23 @@ export interface IStorage {
   addCartItem(cartItem: InsertCartItem): Promise<CartItem>;
   updateCartItemQuantity(
     id: number,
-    quantity: number
+    quantity: number,
   ): Promise<CartItem | undefined>;
   removeCartItem(id: number): Promise<boolean>;
   getCartItemByUserAndProduct(
     userId: number,
-    productId: number
+    productId: number,
   ): Promise<CartItem | undefined>;
+
+  // Address operations
+  getAddresses(userId: number): Promise<Address[]>;
+  getAddress(id: number): Promise<Address | undefined>;
+  createAddress(address: InsertAddress): Promise<Address>;
+  updateAddress(
+    id: number,
+    addressData: Partial<Address>,
+  ): Promise<Address | undefined>;
+  deleteAddress(id: number): Promise<boolean>;
 
   // Session store
   sessionStore: SessionStore;
@@ -75,10 +88,12 @@ export class MemStorage implements IStorage {
   private products: Map<number, Product>;
   private favorites: Map<number, Favorite>;
   private cartItems: Map<number, CartItem>;
+  private addresses: Map<number, Address>;
   private userCurrentId: number;
   private productCurrentId: number;
   private favoriteCurrentId: number;
   private cartItemCurrentId: number;
+  private addressCurrentId: number;
   sessionStore: SessionStore;
 
   constructor() {
@@ -86,10 +101,12 @@ export class MemStorage implements IStorage {
     this.products = new Map();
     this.favorites = new Map();
     this.cartItems = new Map();
+    this.addresses = new Map();
     this.userCurrentId = 1;
     this.productCurrentId = 1;
     this.favoriteCurrentId = 1;
     this.cartItemCurrentId = 1;
+    this.addressCurrentId = 1;
 
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // 24 hours
@@ -190,13 +207,13 @@ export class MemStorage implements IStorage {
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
-      (user) => user.username.toLowerCase() === username.toLowerCase()
+      (user) => user.username.toLowerCase() === username.toLowerCase(),
     );
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
-      (user) => user.email.toLowerCase() === email.toLowerCase()
+      (user) => user.email.toLowerCase() === email.toLowerCase(),
     );
   }
 
@@ -227,7 +244,7 @@ export class MemStorage implements IStorage {
 
   async updateUser(
     id: number,
-    userData: Partial<User>
+    userData: Partial<User>,
   ): Promise<User | undefined> {
     const user = await this.getUser(id);
     if (!user) return undefined;
@@ -254,7 +271,7 @@ export class MemStorage implements IStorage {
       products = products.filter(
         (p) =>
           p.name.toLowerCase().includes(searchLower) ||
-          p.description.toLowerCase().includes(searchLower)
+          p.description.toLowerCase().includes(searchLower),
       );
     }
 
@@ -278,7 +295,7 @@ export class MemStorage implements IStorage {
 
   async updateProduct(
     id: number,
-    productData: Partial<Product>
+    productData: Partial<Product>,
   ): Promise<Product | undefined> {
     const product = await this.getProduct(id);
     if (!product) return undefined;
@@ -295,7 +312,7 @@ export class MemStorage implements IStorage {
   // Favorites operations
   async getFavorites(userId: number): Promise<Product[]> {
     const userFavorites = Array.from(this.favorites.values()).filter(
-      (fav) => fav.userId === userId
+      (fav) => fav.userId === userId,
     );
 
     const favoritedProducts: Product[] = [];
@@ -313,7 +330,7 @@ export class MemStorage implements IStorage {
     // Check if already exists
     const exists = await this.checkFavorite(
       favorite.userId,
-      favorite.productId
+      favorite.productId,
     );
     if (exists) {
       throw new Error("Favorite already exists");
@@ -327,7 +344,7 @@ export class MemStorage implements IStorage {
 
   async removeFavorite(userId: number, productId: number): Promise<boolean> {
     const favorite = Array.from(this.favorites.values()).find(
-      (fav) => fav.userId === userId && fav.productId === productId
+      (fav) => fav.userId === userId && fav.productId === productId,
     );
 
     if (!favorite) return false;
@@ -336,16 +353,16 @@ export class MemStorage implements IStorage {
 
   async checkFavorite(userId: number, productId: number): Promise<boolean> {
     return Array.from(this.favorites.values()).some(
-      (fav) => fav.userId === userId && fav.productId === productId
+      (fav) => fav.userId === userId && fav.productId === productId,
     );
   }
 
   // Cart operations
   async getCartItems(
-    userId: number
+    userId: number,
   ): Promise<(CartItem & { product: Product })[]> {
     const userCartItems = Array.from(this.cartItems.values()).filter(
-      (item) => item.userId === userId
+      (item) => item.userId === userId,
     );
 
     const cartWithProducts: (CartItem & { product: Product })[] = [];
@@ -363,13 +380,13 @@ export class MemStorage implements IStorage {
     // Check if already in cart, if so update quantity
     const existing = await this.getCartItemByUserAndProduct(
       cartItem.userId,
-      cartItem.productId
+      cartItem.productId,
     );
     if (existing) {
       const quantityToAdd = cartItem.quantity || 1; // Default to 1 if undefined
       return this.updateCartItemQuantity(
         existing.id,
-        existing.quantity + quantityToAdd
+        existing.quantity + quantityToAdd,
       ) as Promise<CartItem>;
     }
 
@@ -385,7 +402,7 @@ export class MemStorage implements IStorage {
 
   async updateCartItemQuantity(
     id: number,
-    quantity: number
+    quantity: number,
   ): Promise<CartItem | undefined> {
     const cartItem = this.cartItems.get(id);
     if (!cartItem) return undefined;
@@ -401,16 +418,57 @@ export class MemStorage implements IStorage {
 
   async getCartItemByUserAndProduct(
     userId: number,
-    productId: number
+    productId: number,
   ): Promise<CartItem | undefined> {
     return Array.from(this.cartItems.values()).find(
-      (item) => item.userId === userId && item.productId === productId
+      (item) => item.userId === userId && item.productId === productId,
     );
   }
 
   // New method
   async getUsers(): Promise<User[]> {
     return Array.from(this.users.values());
+  }
+
+  // Address operations
+  async getAddresses(userId: number): Promise<Address[]> {
+    return Array.from(this.addresses.values()).filter(
+      (addr) => addr.userId === userId,
+    );
+  }
+
+  async getAddress(id: number): Promise<Address | undefined> {
+    return this.addresses.get(id);
+  }
+
+  async createAddress(address: InsertAddress): Promise<Address> {
+    const id = this.addressCurrentId++;
+    const now = new Date();
+    const newAddress: Address = {
+      ...address,
+      id,
+      createdAt: now,
+      phoneNumber: address.phoneNumber || null,
+      isDefault: address.isDefault ?? false,
+    };
+    this.addresses.set(id, newAddress);
+    return newAddress;
+  }
+
+  async updateAddress(
+    id: number,
+    addressData: Partial<Address>,
+  ): Promise<Address | undefined> {
+    const address = await this.getAddress(id);
+    if (!address) return undefined;
+
+    const updatedAddress = { ...address, ...addressData };
+    this.addresses.set(id, updatedAddress);
+    return updatedAddress;
+  }
+
+  async deleteAddress(id: number): Promise<boolean> {
+    return this.addresses.delete(id);
   }
 }
 
@@ -563,7 +621,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateUser(
     id: number,
-    userData: Partial<User>
+    userData: Partial<User>,
   ): Promise<User | undefined> {
     try {
       const [updatedUser] = await db
@@ -602,24 +660,24 @@ export class DatabaseStorage implements IStorage {
       query = query.where(
         sql`${products.name} ILIKE ${`%${search}%`} OR ${
           products.description
-        } ILIKE ${`%${search}%`}`
+        } ILIKE ${`%${search}%`}`,
       );
     }
 
     const results = (await query.orderBy(
-      desc(products.createdAt)
+      desc(products.createdAt),
     )) as unknown as Product[];
 
     // Debug logging to verify imageUrl consistency
     if (results.length > 0) {
       console.log(
-        `[Storage] getProducts returned ${results.length} items. First item imageUrl: ${results[0].imageUrl}`
+        `[Storage] getProducts returned ${results.length} items. First item imageUrl: ${results[0].imageUrl}`,
       );
       const missingImages = results.filter((p) => !p.imageUrl);
       if (missingImages.length > 0) {
         console.warn(
           `[Storage] Warning: ${missingImages.length} products have missing imageUrls:`,
-          missingImages.map((p) => p.name)
+          missingImages.map((p) => p.name),
         );
       }
     }
@@ -640,7 +698,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateProduct(
     id: number,
-    productData: Partial<Product>
+    productData: Partial<Product>,
   ): Promise<Product | undefined> {
     const [updatedProduct] = await db
       .update(products)
@@ -670,7 +728,7 @@ export class DatabaseStorage implements IStorage {
     // Önce kontrol edelim
     const exists = await this.checkFavorite(
       favorite.userId,
-      favorite.productId
+      favorite.productId,
     );
     if (exists) {
       throw new Error("Favorite already exists");
@@ -687,7 +745,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .delete(favorites)
       .where(
-        and(eq(favorites.userId, userId), eq(favorites.productId, productId))
+        and(eq(favorites.userId, userId), eq(favorites.productId, productId)),
       );
     return !!result;
   }
@@ -697,14 +755,14 @@ export class DatabaseStorage implements IStorage {
       .select({ count: sql<number>`count(*)` })
       .from(favorites)
       .where(
-        and(eq(favorites.userId, userId), eq(favorites.productId, productId))
+        and(eq(favorites.userId, userId), eq(favorites.productId, productId)),
       );
     return result.count > 0;
   }
 
   // Cart operations
   async getCartItems(
-    userId: number
+    userId: number,
   ): Promise<(CartItem & { product: Product })[]> {
     const result = await db
       .select()
@@ -722,13 +780,13 @@ export class DatabaseStorage implements IStorage {
     // Sepette zaten var mı kontrol edelim
     const existing = await this.getCartItemByUserAndProduct(
       cartItem.userId,
-      cartItem.productId
+      cartItem.productId,
     );
     if (existing) {
       const quantityToAdd = cartItem.quantity || 1; // Undefined ise 1 kullan
       return this.updateCartItemQuantity(
         existing.id,
-        existing.quantity + quantityToAdd
+        existing.quantity + quantityToAdd,
       ) as Promise<CartItem>;
     }
 
@@ -747,7 +805,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateCartItemQuantity(
     id: number,
-    quantity: number
+    quantity: number,
   ): Promise<CartItem | undefined> {
     const [updatedCartItem] = await db
       .update(cartItems)
@@ -764,13 +822,13 @@ export class DatabaseStorage implements IStorage {
 
   async getCartItemByUserAndProduct(
     userId: number,
-    productId: number
+    productId: number,
   ): Promise<CartItem | undefined> {
     const [cartItem] = await db
       .select()
       .from(cartItems)
       .where(
-        and(eq(cartItems.userId, userId), eq(cartItems.productId, productId))
+        and(eq(cartItems.userId, userId), eq(cartItems.productId, productId)),
       );
     return cartItem;
   }
@@ -804,6 +862,51 @@ export class DatabaseStorage implements IStorage {
       console.error("DatabaseStorage.getUsers error:", error);
       throw new Error("Failed to fetch users");
     }
+  }
+
+  // Address operations
+  async getAddresses(userId: number): Promise<Address[]> {
+    return await db
+      .select()
+      .from(addresses)
+      .where(eq(addresses.userId, userId))
+      .orderBy(desc(addresses.isDefault), desc(addresses.createdAt));
+  }
+
+  async getAddress(id: number): Promise<Address | undefined> {
+    const [address] = await db
+      .select()
+      .from(addresses)
+      .where(eq(addresses.id, id));
+    return address;
+  }
+
+  async createAddress(addressData: InsertAddress): Promise<Address> {
+    const [newAddress] = await db
+      .insert(addresses)
+      .values({
+        ...addressData,
+        createdAt: new Date(),
+      })
+      .returning();
+    return newAddress;
+  }
+
+  async updateAddress(
+    id: number,
+    addressData: Partial<Address>,
+  ): Promise<Address | undefined> {
+    const [updatedAddress] = await db
+      .update(addresses)
+      .set(addressData)
+      .where(eq(addresses.id, id))
+      .returning();
+    return updatedAddress;
+  }
+
+  async deleteAddress(id: number): Promise<boolean> {
+    const result = await db.delete(addresses).where(eq(addresses.id, id));
+    return !!result;
   }
 }
 

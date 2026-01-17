@@ -10,7 +10,8 @@ import {
   ChevronLeft,
   Lock,
   Bell,
-  Trophy
+  Trophy,
+  MapPin
 } from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { FormattedMessage, useIntl } from "react-intl";
@@ -141,27 +142,49 @@ export default function ProfileScreen() {
                    <User size={48} color={isDark ? "#94a3b8" : "#64748b"} />
                  )}
               </View>
-              <TouchableOpacity className="absolute bottom-0 right-0 bg-[#fbbf24] w-8 h-8 rounded-full items-center justify-center border-2 border-slate-900">
-                 <Edit2 size={14} color="#1e293b" />
-              </TouchableOpacity>
+                <TouchableOpacity 
+                  className="absolute bottom-0 right-0 bg-[#fbbf24] w-8 h-8 rounded-full items-center justify-center border-2 border-slate-900"
+                  onPress={() => router.push("/edit-profile" as any)}
+                >
+                   <Edit2 size={14} color="#1e293b" />
+                </TouchableOpacity>
             </View>
             <Text className="text-xl font-bold text-foreground mt-4">{user.fullName}</Text>
-            <Text className="text-muted-foreground text-sm mt-1">{user.email}</Text>
+            <Text className="text-muted-foreground text-sm mt-1">@{user.username}</Text>
+            <Text className="text-muted-foreground text-sm">{user.email}</Text>
+
+            {/* Default Address Summary */}
+            {user.defaultAddress && (
+              <View className="bg-card/50 border border-border/50 rounded-2xl p-4 mt-6 w-full flex-row items-center gap-3">
+                <View className="bg-primary/10 p-2 rounded-xl">
+                  <MapPin size={20} color={isDark ? "#818cf8" : "#4f46e5"} />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-foreground font-bold text-sm" numberOfLines={1}>
+                    {intl.formatMessage({ id: 'address.type.delivery' })}
+                  </Text>
+                  <Text className="text-muted-foreground text-xs" numberOfLines={1}>
+                    {user.defaultAddress.addressLine1}
+                    {user.defaultAddress.addressLine2 ? `, ${user.defaultAddress.addressLine2}` : ''}, {user.defaultAddress.city}
+                  </Text>
+                </View>
+              </View>
+            )}
           </View>
 
           {/* GRID MENU */}
           <View className="flex-row flex-wrap justify-between mt-4">
              <GridMenuItem 
-                icon={<Bell size={22} color={isDark ? "white" : "black"} />} 
-                label={intl.formatMessage({ id: 'profile.general' })} 
-                subLabel={intl.formatMessage({ id: 'profile.notifications.sub' })}
-                onPress={() => {}}
+                icon={<MapPin size={22} color={isDark ? "white" : "black"} />} 
+                label={intl.formatMessage({ id: 'profile.myAddresses' })} 
+                subLabel={intl.formatMessage({ id: 'profile.myAddresses.sub', defaultMessage: 'Manage your addresses' })}
+                onPress={() => router.push("/addresses" as any)}
              />
              <GridMenuItem 
                 icon={<User size={22} color={isDark ? "white" : "black"} />} 
                 label={intl.formatMessage({ id: 'profile.myProfile' })} 
                 subLabel={intl.formatMessage({ id: 'profile.myProfile.sub' })}
-                onPress={() => {}}
+                onPress={() => router.push("/edit-profile" as any)}
              />
              <GridMenuItem 
                 icon={<Lock size={22} color={isDark ? "white" : "black"} />} 

@@ -4,7 +4,7 @@ import { storage } from "../../storage";
 export const updateProfile = async (req: Request, res: Response) => {
   try {
     const userId = (req.user as any).id;
-    const { fullName, email, address } = req.body;
+    const { fullName, email, username, address } = req.body;
 
     // If email is being changed, check if it's already in use
     if (email && email !== (req.user as any).email) {
@@ -14,9 +14,18 @@ export const updateProfile = async (req: Request, res: Response) => {
       }
     }
 
+    // If username is being changed, check if it's already in use
+    if (username && username !== (req.user as any).username) {
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.status(400).json({ message: "Username already in use" });
+      }
+    }
+
     const updatedUser = await storage.updateUser(userId, {
       fullName,
       email,
+      username,
       address,
     });
 

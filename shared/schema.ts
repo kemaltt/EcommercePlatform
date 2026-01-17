@@ -46,14 +46,9 @@ export const insertUserSchema = createInsertSchema(users, {
     .min(8, "validation.password.minLength")
     .regex(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/,
-      "validation.password.complexity"
+      "validation.password.complexity",
     ),
 }).omit({
-  id: true,
-  createdAt: true,
-  emailVerified: true,
-  emailVerificationToken: true,
-  verificationTokenExpiresAt: true,
   isAdmin: true,
   status: true,
   trialExpiresAt: true,
@@ -120,26 +115,46 @@ export const passwordResets = pgTable(
       foreignColumns: [users.id],
       name: "password_resets_user_id_fkey",
     }),
-  })
+  }),
 );
 
 export const insertPasswordResetSchema = createInsertSchema(
-  passwordResets
+  passwordResets,
 ).omit({
   id: true,
   createdAt: true,
 });
 
-// Session table for connect-pg-simple
-export const session = pgTable("session", {
-  sid: text("sid").primaryKey(),
-  sess: json("sess").notNull(),
-  expire: timestamp("expire", { precision: 6 }).notNull(),
+// Addresses schema
+export const addresses = pgTable("addresses", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  type: text("type").notNull(), // 'delivery', 'invoice'
+  fullName: text("full_name").notNull(),
+  addressLine1: text("address_line1").notNull(),
+  addressLine2: text("address_line2"),
+  city: text("city").notNull(),
+  zipCode: text("zip_code").notNull(),
+  country: text("country").notNull(),
+  phoneNumber: text("phone_number"),
+  isDefault: boolean("is_default").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertAddressSchema = createInsertSchema(addresses).omit({
+  id: true,
+  createdAt: true,
 });
 
 // Type exports
-export type User = typeof users.$inferSelect;
+export type User = typeof users.$inferSelect & {
+  defaultAddress?: Address | null;
+};
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type Address = typeof addresses.$inferSelect;
+export type InsertAddress = z.infer<typeof insertAddressSchema>;
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type Favorite = typeof favorites.$inferSelect;

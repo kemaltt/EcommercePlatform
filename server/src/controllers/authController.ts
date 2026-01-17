@@ -32,7 +32,7 @@ async function hashPassword(password: string) {
 export const register = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const validationResult = insertUserSchema.safeParse(req.body);
@@ -57,7 +57,7 @@ export const register = async (
     const hashedPassword = await hashPassword(password);
     // Generate 6-digit OTP
     const verificationToken = Math.floor(
-      100000 + Math.random() * 900000
+      100000 + Math.random() * 900000,
     ).toString();
     const tokenExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
@@ -95,7 +95,7 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
     (
       err: any,
       user: Express.User | false | null,
-      info: { message: string } | undefined
+      info: { message: string } | undefined,
     ) => {
       if (err) {
         console.error("Login authentication error:", err);
@@ -112,13 +112,16 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
         });
       }
 
-      req.login(user, (loginErr) => {
+      req.login(user, async (loginErr) => {
         if (loginErr) {
           console.error("Login session establishment error:", loginErr);
           return next(loginErr);
         }
 
         const userObj = user as any;
+        const defaultAddress = (await storage.getAddresses(userObj.id)).find(
+          (a) => a.isDefault,
+        );
         const userResponse = {
           id: userObj.id,
           username: userObj.username,
@@ -126,6 +129,7 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
           isAdmin: userObj.isAdmin,
           fullName: userObj.fullName,
           address: userObj.address,
+          defaultAddress: defaultAddress || null,
           emailVerified: userObj.emailVerified,
           createdAt: userObj.createdAt,
         };
@@ -133,14 +137,14 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
           .status(200)
           .json({ message: "Login successful", user: userResponse });
       });
-    }
+    },
   )(req, res, next);
 };
 
 export const googleLogin = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { idToken } = req.body;
@@ -208,12 +212,15 @@ export const googleLogin = async (
       return res.status(500).json({ message: "Failed to create or find user" });
     }
 
-    req.login(user, (err) => {
+    req.login(user, async (err) => {
       if (err) {
         console.error("Google login session error:", err);
         return next(err);
       }
 
+      const defaultAddress = (await storage.getAddresses(user.id)).find(
+        (a) => a.isDefault,
+      );
       const userResponse = {
         id: user.id,
         username: user.username,
@@ -222,6 +229,7 @@ export const googleLogin = async (
         fullName: user.fullName,
         avatarUrl: user.avatarUrl,
         address: user.address,
+        defaultAddress: defaultAddress || null,
         emailVerified: user.emailVerified,
         createdAt: user.createdAt,
       };
@@ -239,7 +247,7 @@ export const googleLogin = async (
 export const appleLogin = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { identityToken, fullName } = req.body;
@@ -312,12 +320,15 @@ export const appleLogin = async (
       return res.status(500).json({ message: "Failed to create or find user" });
     }
 
-    req.login(user, (err) => {
+    req.login(user, async (err) => {
       if (err) {
         console.error("Apple login session error:", err);
         return next(err);
       }
 
+      const defaultAddress = (await storage.getAddresses(user.id)).find(
+        (a) => a.isDefault,
+      );
       const userResponse = {
         id: user.id,
         username: user.username,
@@ -326,6 +337,7 @@ export const appleLogin = async (
         fullName: user.fullName,
         avatarUrl: user.avatarUrl,
         address: user.address,
+        defaultAddress: defaultAddress || null,
         emailVerified: user.emailVerified,
         createdAt: user.createdAt,
       };
@@ -356,12 +368,16 @@ export const logout = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-export const getCurrentUser = (req: Request, res: Response) => {
+export const getCurrentUser = async (req: Request, res: Response) => {
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   const user = req.user as User;
+
+  const defaultAddress = (await storage.getAddresses(user.id)).find(
+    (a) => a.isDefault,
+  );
 
   const userResponse = {
     id: user.id,
@@ -371,6 +387,7 @@ export const getCurrentUser = (req: Request, res: Response) => {
     fullName: user.fullName,
     avatarUrl: user.avatarUrl,
     address: user.address,
+    defaultAddress: defaultAddress || null,
     emailVerified: user.emailVerified,
     createdAt: user.createdAt,
   };
@@ -380,7 +397,7 @@ export const getCurrentUser = (req: Request, res: Response) => {
 export const verifyEmail = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const { token } = req.query;
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
@@ -393,13 +410,13 @@ export const verifyEmail = async (
     const user = await db.query.users.findFirst({
       where: and(
         eq(users.emailVerificationToken, token),
-        gt(users.verificationTokenExpiresAt, new Date())
+        gt(users.verificationTokenExpiresAt, new Date()),
       ),
     });
 
     if (!user) {
       return res.redirect(
-        `${frontendUrl}/email-verified?error=invalid_or_expired_token`
+        `${frontendUrl}/email-verified?error=invalid_or_expired_token`,
       );
     }
 
@@ -416,7 +433,7 @@ export const verifyEmail = async (
   } catch (error) {
     console.error("Email verification process error:", error);
     return res.redirect(
-      `${frontendUrl}/email-verified?error=verification_failed`
+      `${frontendUrl}/email-verified?error=verification_failed`,
     );
   }
 };
@@ -571,13 +588,16 @@ export const verifyEmailCode = async (req: Request, res: Response) => {
       })
       .where(eq(users.id, user.id));
 
-    req.login(user, (err) => {
+    req.login(user, async (err) => {
       if (err) {
         return res.status(200).json({
           message:
             "Email verified, but auto-login failed. Please login manually.",
         });
       }
+      const defaultAddress = (await storage.getAddresses(user.id)).find(
+        (a) => a.isDefault,
+      );
       const userResponse = {
         id: user.id,
         username: user.username,
@@ -585,6 +605,7 @@ export const verifyEmailCode = async (req: Request, res: Response) => {
         isAdmin: user.isAdmin,
         fullName: user.fullName,
         address: user.address,
+        defaultAddress: defaultAddress || null,
         emailVerified: true,
         createdAt: user.createdAt,
       };
@@ -613,7 +634,7 @@ export const resendVerificationCode = async (req: Request, res: Response) => {
     }
 
     const verificationToken = Math.floor(
-      100000 + Math.random() * 900000
+      100000 + Math.random() * 900000,
     ).toString();
     const tokenExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
@@ -656,7 +677,7 @@ export const requestPasswordChange = async (req: Request, res: Response) => {
 
     // Generate 6-digit code
     const verificationCode = Math.floor(
-      100000 + Math.random() * 900000
+      100000 + Math.random() * 900000,
     ).toString();
     const tokenExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
