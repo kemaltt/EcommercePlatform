@@ -329,5 +329,10 @@
   "orders.details.shipping": "Versandinformationen",
   "orders.details.payment": "Zahlungsmethode",
   "admin.menu.orders": "Bestellungen verwalten",
-  "admin.orders.title": "Bestellverwaltung"
+  "admin.orders.title": "Bestellverwaltung",
+  "admin.orders.details": "Bestelldetails",
+  "admin.orders.customer": "Kundeninformationen",
+  "admin.orders.shipping": "Lieferadresse",
+  "admin.orders.items": "Bestellte Artikel",
+  "admin.orders.payment": "Zahlungsinformationen"
 }

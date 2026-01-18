@@ -81,3 +81,37 @@ export const getAllOrders = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching orders" });
   }
 };
+
+export const getOrderDetails = async (req: Request, res: Response) => {
+  try {
+    const orderId = req.params.id;
+    const order = await storage.getOrder(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Fetch user details to get customer name/email
+    const user = await storage.getUser(order.userId);
+
+    // Fetch address details if stored separately, but typically address snapshot might be needed
+    // For now assuming we rely on current user address or if order stores a specific address snapshot.
+    // Based on schema, Order doesn't link directly to an Address ID, so we might need to rely on User's address
+    // or if the checkout flow stored it. Checking schema...
+
+    res.json({
+      ...order,
+      customer: user
+        ? {
+            id: user.id,
+            fullName: user.fullName,
+            email: user.email,
+            username: user.username,
+          }
+        : null,
+    });
+  } catch (err) {
+    console.error("Error fetching order details:", err);
+    res.status(500).json({ message: "Error fetching order details" });
+  }
+};

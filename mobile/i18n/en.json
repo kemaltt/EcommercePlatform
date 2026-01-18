@@ -277,5 +277,10 @@
   "orders.details.shipping": "Shipping Information",
   "orders.details.payment": "Payment Method",
   "admin.menu.orders": "Manage Orders",
-  "admin.orders.title": "Orders Management"
+  "admin.orders.title": "Orders Management",
+  "admin.orders.details": "Order Details",
+  "admin.orders.customer": "Customer Info",
+  "admin.orders.shipping": "Shipping Address",
+  "admin.orders.items": "Order Items",
+  "admin.orders.payment": "Payment Details"
 }

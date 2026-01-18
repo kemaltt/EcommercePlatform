@@ -108,8 +108,9 @@ export default function AdminOrdersScreen() {
                 const statusStyle = getStatusColor(order.status);
 
                 return (
-                  <View
+                  <TouchableOpacity
                     key={order.id}
+                    onPress={() => router.push(`/admin/orders/${order.id}`)}
                     className="bg-card border border-border/50 rounded-3xl p-5 mb-2"
                   >
                     <View className="flex-row justify-between items-start mb-4">
@@ -154,7 +155,7 @@ export default function AdminOrdersScreen() {
                         </Text>
                       </View>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 );
               })}
             </View>
