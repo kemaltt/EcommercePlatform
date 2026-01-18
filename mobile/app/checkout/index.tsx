@@ -41,6 +41,7 @@ export default function ShippingStep() {
   const { cartItems } = useCart();
   const intl = useIntl();
   const shippingMethods = getShippingMethods(intl);
+  const [attemptedNext, setAttemptedNext] = React.useState(false);
 
   const { data: addresses, isLoading } = useQuery<Address[]>({
     queryKey: ["/api/addresses"],
@@ -74,8 +75,8 @@ export default function ShippingStep() {
   }, [cartItems]);
 
   const handleNext = () => {
+    setAttemptedNext(true);
     if (!state.shippingAddress) {
-      // Alert or show error
       return;
     }
     router.push("/checkout/payment");
@@ -103,38 +104,113 @@ export default function ShippingStep() {
           </Text>
           <TouchableOpacity onPress={() => router.push("/addresses")}>
             <Text className="text-primary font-bold text-sm">
-              <FormattedMessage id="common.edit" />
+              <FormattedMessage id="checkout.shipping.selectDifferent" />
             </Text>
           </TouchableOpacity>
         </View>
 
-        {state.shippingAddress ? (
-          <View className="bg-card border border-border rounded-3xl p-5 mb-8 flex-row items-center gap-4">
-            <View className="bg-primary/10 w-12 h-12 rounded-2xl items-center justify-center">
-              <MapPin size={24} color={isDark ? "#818cf8" : "#4f46e5"} />
-            </View>
-            <View className="flex-1">
-              <Text className="text-foreground font-bold text-lg">
-                {state.shippingAddress.fullName}
-              </Text>
-              <Text
-                className="text-muted-foreground text-sm mt-1"
-                numberOfLines={2}
-              >
-                {state.shippingAddress.addressLine1},{" "}
-                {state.shippingAddress.city}, {state.shippingAddress.zipCode}
-              </Text>
-            </View>
-          </View>
-        ) : (
+        {!addresses || addresses.length === 0 ? (
           <TouchableOpacity
             onPress={() => router.push("/addresses/manage")}
-            className="bg-card border border-dashed border-border rounded-3xl p-8 mb-8 items-center justify-center"
+            className={`bg-card border border-dashed rounded-3xl p-8 mb-8 items-center justify-center ${
+              attemptedNext && !state.shippingAddress
+                ? "border-red-500 bg-red-50/10"
+                : "border-border"
+            }`}
           >
-            <Text className="text-muted-foreground font-medium">
+            <Text
+              className={`font-medium ${
+                attemptedNext && !state.shippingAddress
+                  ? "text-red-500"
+                  : "text-muted-foreground"
+              }`}
+            >
               <FormattedMessage id="checkout.shipping.addAddress" />
             </Text>
           </TouchableOpacity>
+        ) : (
+          <View className="mb-8">
+            {addresses.map((address) => {
+              const isSelected = state.shippingAddress?.id === address.id;
+              return (
+                <TouchableOpacity
+                  key={address.id}
+                  onPress={() => {
+                    setShippingAddress(address);
+                    setAttemptedNext(false);
+                  }}
+                  className={`bg-card border rounded-3xl p-5 mb-3 flex-row items-center gap-4 ${
+                    isSelected ? "border-primary bg-primary/5" : "border-border"
+                  } ${
+                    attemptedNext && !state.shippingAddress
+                      ? "border-red-500"
+                      : ""
+                  }`}
+                >
+                  <View
+                    className={`bg-primary/10 w-10 h-10 rounded-xl items-center justify-center`}
+                  >
+                    <MapPin
+                      size={20}
+                      color={
+                        isSelected
+                          ? isDark
+                            ? "#818cf8"
+                            : "#4f46e5"
+                          : "#94a3b8"
+                      }
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <View className="flex-row items-center gap-2">
+                      <Text className="text-foreground font-bold text-base">
+                        {address.fullName}
+                      </Text>
+                      {address.isDefault && (
+                        <View className="bg-secondary px-2 py-0.5 rounded-md">
+                          <Text className="text-[10px] text-muted-foreground font-bold uppercase">
+                            <FormattedMessage id="common.default" />
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                    <Text
+                      className="text-muted-foreground text-xs mt-0.5"
+                      numberOfLines={1}
+                    >
+                      {address.addressLine1}, {address.city}
+                    </Text>
+                  </View>
+                  <View
+                    className={`w-5 h-5 rounded-full border-2 items-center justify-center ${
+                      isSelected
+                        ? "border-primary"
+                        : "border-muted-foreground/30"
+                    }`}
+                  >
+                    {isSelected && (
+                      <View className="w-2.5 h-2.5 rounded-full bg-primary" />
+                    )}
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+
+            {attemptedNext && !state.shippingAddress && (
+              <Text className="text-red-500 text-xs font-bold mt-1 ml-2">
+                <FormattedMessage id="checkout.shipping.error.requiredAddress" />
+              </Text>
+            )}
+
+            <TouchableOpacity
+              className="mt-2 ml-2"
+              onPress={() => router.push("/addresses/manage")}
+            >
+              <Text className="text-primary text-xs font-bold">
+                + <FormattedMessage id="address.add" />
+              </Text>
+            </TouchableOpacity>
+          </View>
         )}
 
         {/* Shipping Method Section */}
@@ -207,6 +283,7 @@ export default function ShippingStep() {
           variant="primary"
           className="h-16 rounded-3xl shadow-xl shadow-primary/30"
           icon={<ChevronRight size={20} color="white" />}
+          iconPosition="right"
         />
       </View>
     </View>

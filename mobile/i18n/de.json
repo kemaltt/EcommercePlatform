@@ -248,6 +248,8 @@
   "checkout.shipping.address": "LIEFERADRESSE",
   "checkout.shipping.method": "VERSANDART",
   "checkout.shipping.addAddress": "Lieferadresse hinzufügen",
+  "checkout.shipping.error.requiredAddress": "Bitte wählen Sie eine Lieferadresse aus, um fortzufahren",
+  "checkout.shipping.selectDifferent": "Adresse ändern",
   "checkout.shipping.priority": "Priority Express",
   "checkout.shipping.standard": "Standardversand",
   "checkout.shipping.days.priority": "1-2 Werktage",

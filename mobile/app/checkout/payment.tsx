@@ -211,6 +211,7 @@ export default function PaymentStep() {
           variant="primary"
           className="h-16 rounded-3xl shadow-xl shadow-primary/30"
           icon={<ChevronRight size={20} color="white" />}
+          iconPosition="right"
         />
       </View>
     </View>

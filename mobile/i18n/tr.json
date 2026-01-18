@@ -248,6 +248,8 @@
   "checkout.shipping.address": "TESLİMAT ADRESİ",
   "checkout.shipping.method": "TESLİMAT YÖNTEMİ",
   "checkout.shipping.addAddress": "Teslimat Adresi Ekle",
+  "checkout.shipping.error.requiredAddress": "Devam etmek için lütfen bir teslimat adresi seçin",
+  "checkout.shipping.selectDifferent": "Adresi Değiştir",
   "checkout.shipping.priority": "Öncelikli Ekspres",
   "checkout.shipping.standard": "Standart Teslimat",
   "checkout.shipping.days.priority": "1-2 iş günü",

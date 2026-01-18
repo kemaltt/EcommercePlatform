@@ -193,6 +193,8 @@
   "checkout.shipping.address": "SHIPPING ADDRESS",
   "checkout.shipping.method": "SHIPPING METHOD",
   "checkout.shipping.addAddress": "Add Shipping Address",
+  "checkout.shipping.error.requiredAddress": "Please select a shipping address to continue",
+  "checkout.shipping.selectDifferent": "Change Address",
   "checkout.shipping.priority": "Priority Express",
   "checkout.shipping.standard": "Standard Delivery",
   "checkout.shipping.days.priority": "1-2 business days",
