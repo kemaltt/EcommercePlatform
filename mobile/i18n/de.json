@@ -3,6 +3,7 @@
   "common.success": "Erfolg",
   "common.ok": "OK",
   "common.cancel": "Abbrechen",
+  "common.current": "Aktuell",
   "common.confirm": "Bestätigen",
   "common.delete": "Löschen",
   "common.edit": "Bearbeiten",
@@ -352,5 +353,6 @@
   "admin.orders.items": "Bestellte Artikel",
   "admin.orders.shippingInfo": "Versandinformationen",
   "admin.orders.shippedDate": "Versanddatum",
+  "admin.orders.manage.noLabel": "Noch kein Etikett erstellt",
   "admin.orders.payment": "Zahlungsinformationen"
 }

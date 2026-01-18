@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useMemo, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,10 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Modal,
+  Animated,
+  Dimensions,
+  PanResponder,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,6 +19,7 @@ import {
   Package,
   Calendar,
   DollarSign,
+  ChevronDown,
 } from "lucide-react-native";
 import { useTheme } from "../../../../contexts/theme-context";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -23,6 +28,8 @@ import { Order } from "@shared/schema";
 import { Button } from "../../../../components/ui/Button";
 import { FormattedMessage, useIntl } from "react-intl";
 import DateTimePicker from "@react-native-community/datetimepicker";
+
+const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
 type OrderDetail = Order & {
   items: any[];
@@ -34,6 +41,8 @@ type OrderDetail = Order & {
   };
 };
 
+type BottomSheetType = "status" | "label" | null;
+
 export default function ManageOrderScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
@@ -41,13 +50,13 @@ export default function ManageOrderScreen() {
   const intl = useIntl();
   const queryClient = useQueryClient();
 
+  const [activeSheet, setActiveSheet] = useState<BottomSheetType>(null);
   const [selectedStatus, setSelectedStatus] = useState("");
   const [trackingNumber, setTrackingNumber] = useState("");
   const [shippingCarrier, setShippingCarrier] = useState("");
   const [shippingCost, setShippingCost] = useState("");
   const [shippingDate, setShippingDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [activeTab, setActiveTab] = useState<"manual" | "api">("manual");
 
   const { data: order, isLoading } = useQuery<OrderDetail>({
     queryKey: [`/api/admin/orders/${id}`],
@@ -88,6 +97,7 @@ export default function ManageOrderScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/admin/orders/${id}`] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/orders"] });
+      setActiveSheet(null);
       Alert.alert(
         intl.formatMessage({ id: "common.success" }),
         intl.formatMessage({ id: "admin.orders.manage.updateSuccess" }),
@@ -183,104 +193,148 @@ export default function ManageOrderScreen() {
         </View>
 
         <ScrollView className="flex-1 p-6" showsVerticalScrollIndicator={false}>
-          {/* Status Update Section */}
-          <View className="bg-card p-5 rounded-3xl border border-border/50 mb-4">
-            <View className="flex-row items-center mb-4">
+          {/* Status Update Button */}
+          <TouchableOpacity
+            onPress={() => setActiveSheet("status")}
+            className="bg-card p-5 rounded-3xl border border-border/50 mb-4 flex-row items-center justify-between"
+          >
+            <View className="flex-row items-center flex-1">
               <Package size={20} color={isDark ? "#818cf8" : "#4f46e5"} />
-              <Text className="text-foreground font-bold text-lg ml-2">
+              <View className="ml-3 flex-1">
+                <Text className="text-foreground font-bold text-lg">
+                  <FormattedMessage
+                    id="admin.orders.manage.updateStatus"
+                    defaultMessage="Update Status"
+                  />
+                </Text>
+                <Text className="text-muted-foreground text-sm mt-1 capitalize">
+                  {intl.formatMessage({ id: "common.current" })}: {order.status}
+                </Text>
+              </View>
+            </View>
+            <ChevronDown size={20} color={isDark ? "#818cf8" : "#4f46e5"} />
+          </TouchableOpacity>
+
+          {/* Create Label Button */}
+          <TouchableOpacity
+            onPress={() => setActiveSheet("label")}
+            className="bg-card p-5 rounded-3xl border border-border/50 mb-4 flex-row items-center justify-between"
+          >
+            <View className="flex-row items-center flex-1">
+              <Package size={20} color={isDark ? "#818cf8" : "#4f46e5"} />
+              <View className="ml-3 flex-1">
+                <Text className="text-foreground font-bold text-lg">
+                  <FormattedMessage
+                    id="admin.orders.manage.createLabel"
+                    defaultMessage="Create Shipping Label"
+                  />
+                </Text>
+                <Text className="text-muted-foreground text-sm mt-1">
+                  {order.trackingNumber
+                    ? `${order.shippingCarrier || ""} - ${order.trackingNumber}`
+                    : intl.formatMessage({ id: "admin.orders.manage.noLabel" })}
+                </Text>
+              </View>
+            </View>
+            <ChevronDown size={20} color={isDark ? "#818cf8" : "#4f46e5"} />
+          </TouchableOpacity>
+        </ScrollView>
+      </SafeAreaView>
+
+      {/* Status Update Bottom Sheet */}
+      <Modal
+        visible={activeSheet === "status"}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setActiveSheet(null)}
+      >
+        <View className="flex-1 justify-end bg-black/50">
+          <View
+            className={`${isDark ? "bg-background" : "bg-white"} rounded-t-3xl max-h-[80%]`}
+          >
+            {/* Handle */}
+            <View className="items-center py-3">
+              <View className="w-12 h-1 bg-muted-foreground/30 rounded-full" />
+            </View>
+
+            <ScrollView className="px-6 pb-6">
+              <Text className="text-foreground font-bold text-xl mb-4">
                 <FormattedMessage
                   id="admin.orders.manage.updateStatus"
                   defaultMessage="Update Status"
                 />
               </Text>
-            </View>
 
-            <View className="gap-2">
-              {statuses.map((status) => (
-                <TouchableOpacity
-                  key={status.value}
-                  onPress={() => setSelectedStatus(status.value)}
-                  className={`p-4 rounded-2xl border ${
-                    selectedStatus === status.value
-                      ? "border-primary bg-primary/10"
-                      : "border-border bg-background"
-                  }`}
-                >
-                  <Text
-                    className={`font-bold ${
+              <View className="gap-2 mb-4">
+                {statuses.map((status) => (
+                  <TouchableOpacity
+                    key={status.value}
+                    onPress={() => setSelectedStatus(status.value)}
+                    className={`p-4 rounded-2xl border ${
                       selectedStatus === status.value
-                        ? "text-primary"
-                        : "text-foreground"
+                        ? "border-primary bg-primary/10"
+                        : "border-border bg-card"
                     }`}
                   >
-                    {status.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+                    <Text
+                      className={`font-bold ${
+                        selectedStatus === status.value
+                          ? "text-primary"
+                          : "text-foreground"
+                      }`}
+                    >
+                      {status.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
 
-            <Button
-              title={intl.formatMessage({
-                id: "admin.orders.manage.updateStatusButton",
-              })}
-              onPress={handleUpdateStatus}
-              variant="primary"
-              className="mt-4"
-              disabled={updateMutation.isPending}
-            />
-          </View>
-
-          {/* Label Creation Section */}
-          <View className="bg-card p-5 rounded-3xl border border-border/50 mb-4">
-            <Text className="text-foreground font-bold text-lg mb-4">
-              <FormattedMessage
-                id="admin.orders.manage.createLabel"
-                defaultMessage="Create Shipping Label"
+              <Button
+                title={intl.formatMessage({
+                  id: "admin.orders.manage.updateStatusButton",
+                })}
+                onPress={handleUpdateStatus}
+                variant="primary"
+                disabled={updateMutation.isPending}
               />
-            </Text>
+              <Button
+                title={intl.formatMessage({ id: "common.cancel" })}
+                onPress={() => setActiveSheet(null)}
+                variant="outline"
+                className="mt-2"
+              />
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
 
-            {/* Tabs */}
-            <View className="flex-row bg-background rounded-2xl p-1 mb-4">
-              <TouchableOpacity
-                onPress={() => setActiveTab("manual")}
-                className={`flex-1 py-3 rounded-xl ${
-                  activeTab === "manual" ? "bg-primary" : "bg-transparent"
-                }`}
-              >
-                <Text
-                  className={`text-center font-bold ${
-                    activeTab === "manual"
-                      ? "text-white"
-                      : "text-muted-foreground"
-                  }`}
-                >
-                  <FormattedMessage
-                    id="admin.orders.manage.manual"
-                    defaultMessage="Manual"
-                  />
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setActiveTab("api")}
-                className={`flex-1 py-3 rounded-xl ${
-                  activeTab === "api" ? "bg-primary" : "bg-transparent"
-                } opacity-50`}
-                disabled
-              >
-                <Text
-                  className={`text-center font-bold ${
-                    activeTab === "api" ? "text-white" : "text-muted-foreground"
-                  }`}
-                >
-                  <FormattedMessage
-                    id="admin.orders.manage.api"
-                    defaultMessage="API (Coming Soon)"
-                  />
-                </Text>
-              </TouchableOpacity>
+      {/* Label Creation Bottom Sheet */}
+      <Modal
+        visible={activeSheet === "label"}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setActiveSheet(null)}
+      >
+        <View className="flex-1 justify-end bg-black/50">
+          <View
+            className={`${isDark ? "bg-background" : "bg-white"} rounded-t-3xl max-h-[90%]`}
+          >
+            {/* Handle */}
+            <View className="items-center py-3">
+              <View className="w-12 h-1 bg-muted-foreground/30 rounded-full" />
             </View>
 
-            {activeTab === "manual" && (
+            <ScrollView
+              className="px-6 pb-6"
+              showsVerticalScrollIndicator={false}
+            >
+              <Text className="text-foreground font-bold text-xl mb-4">
+                <FormattedMessage
+                  id="admin.orders.manage.createLabel"
+                  defaultMessage="Create Shipping Label"
+                />
+              </Text>
+
               <View className="gap-4">
                 {/* Tracking Number */}
                 <View>
@@ -297,7 +351,7 @@ export default function ManageOrderScreen() {
                       id: "admin.orders.manage.trackingPlaceholder",
                     })}
                     placeholderTextColor="#94a3b8"
-                    className="bg-background border border-border rounded-2xl px-4 py-3 text-foreground"
+                    className="bg-card border border-border rounded-2xl px-4 py-3 text-foreground"
                   />
                 </View>
 
@@ -318,7 +372,7 @@ export default function ManageOrderScreen() {
                           className={`p-3 rounded-2xl border flex-row items-center ${
                             shippingCarrier === carrier
                               ? "border-primary bg-primary/10"
-                              : "border-border bg-background"
+                              : "border-border bg-card"
                           }`}
                         >
                           <View
@@ -347,27 +401,6 @@ export default function ManageOrderScreen() {
                   </View>
                 </View>
 
-                {/* Shipping Cost */}
-                <View>
-                  <Text className="text-muted-foreground text-xs font-bold mb-2 uppercase">
-                    <FormattedMessage
-                      id="admin.orders.manage.shippingCost"
-                      defaultMessage="Shipping Cost"
-                    />
-                  </Text>
-                  <View className="flex-row items-center bg-background border border-border rounded-2xl px-4">
-                    <DollarSign size={20} color="#94a3b8" />
-                    <TextInput
-                      value={shippingCost}
-                      onChangeText={setShippingCost}
-                      placeholder="0.00"
-                      placeholderTextColor="#94a3b8"
-                      keyboardType="decimal-pad"
-                      className="flex-1 py-3 text-foreground ml-2"
-                    />
-                  </View>
-                </View>
-
                 {/* Shipping Date */}
                 <View>
                   <Text className="text-muted-foreground text-xs font-bold mb-2 uppercase">
@@ -378,7 +411,7 @@ export default function ManageOrderScreen() {
                   </Text>
                   <TouchableOpacity
                     onPress={() => setShowDatePicker(true)}
-                    className="flex-row items-center bg-background border border-border rounded-2xl px-4 py-3"
+                    className="flex-row items-center bg-card border border-border rounded-2xl px-4 py-3"
                   >
                     <Calendar size={20} color="#94a3b8" />
                     <Text className="text-foreground ml-2 flex-1">
@@ -410,11 +443,16 @@ export default function ManageOrderScreen() {
                   className="mt-2"
                   disabled={updateMutation.isPending}
                 />
+                <Button
+                  title={intl.formatMessage({ id: "common.cancel" })}
+                  onPress={() => setActiveSheet(null)}
+                  variant="outline"
+                />
               </View>
-            )}
+            </ScrollView>
           </View>
-        </ScrollView>
-      </SafeAreaView>
+        </View>
+      </Modal>
     </View>
   );
 }
