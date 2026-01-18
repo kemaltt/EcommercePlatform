@@ -187,7 +187,7 @@ export default function OrderDetailsScreen() {
                 <Text className="text-muted-foreground font-bold text-xs uppercase tracking-widest mb-4">
                   <FormattedMessage id="orders.details.shipping" />
                 </Text>
-                <View className="bg-card border border-border/50 rounded-3xl p-4 h-full">
+                <View className="bg-card border border-border/50 rounded-3xl p-4">
                   <MapPin
                     size={20}
                     color={isDark ? "#818cf8" : "#4f46e5"}
@@ -211,7 +211,7 @@ export default function OrderDetailsScreen() {
                 <Text className="text-muted-foreground font-bold text-xs uppercase tracking-widest mb-4">
                   <FormattedMessage id="orders.details.payment" />
                 </Text>
-                <View className="bg-card border border-border/50 rounded-3xl p-4 h-full">
+                <View className="bg-card border border-border/50 rounded-3xl p-4">
                   <CreditCard
                     size={20}
                     color={isDark ? "#818cf8" : "#4f46e5"}
