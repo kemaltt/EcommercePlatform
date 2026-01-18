@@ -1,4 +1,15 @@
-import { View, Text, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, SafeAreaView, Image, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { useAuth } from "../../hooks/use-auth";
@@ -8,7 +19,15 @@ import { useGoogleAuth } from "../../hooks/use-google-auth";
 import { useAppleAuth } from "../../hooks/use-apple-auth";
 import { useIntl } from "react-intl";
 import { StatusBar } from "expo-status-bar";
-import { User, Mail, Lock, Eye, EyeOff, ChevronLeft, RefreshCw } from "lucide-react-native";
+import {
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ChevronLeft,
+  RefreshCw,
+} from "lucide-react-native";
 import { VerificationModal } from "../../components/VerificationModal";
 import { SuccessModal } from "../../components/SuccessModal";
 import { PasswordStrengthIndicator } from "../../components/PasswordStrengthIndicator";
@@ -17,39 +36,61 @@ export default function RegisterScreen() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
-  const [errors, setErrors] = useState<{ fullName?: string; email?: string; password?: string; }>({});
-  
-  const [statusModal, setStatusModal] = useState<{ 
-    visible: boolean; 
-    type: 'success' | 'error'; 
-    title: string; 
-    message: string; 
+  const [errors, setErrors] = useState<{
+    fullName?: string;
+    email?: string;
+    password?: string;
+  }>({});
+
+  const [statusModal, setStatusModal] = useState<{
+    visible: boolean;
+    type: "success" | "error";
+    title: string;
+    message: string;
   }>({
     visible: false,
-    type: 'success',
-    title: '',
-    message: '',
+    type: "success",
+    title: "",
+    message: "",
   });
-  
+
   const { register, login } = useAuth();
   const { signIn: googleSignIn, loading: googleLoading } = useGoogleAuth({
-    onSuccess: () => router.replace("/(tabs)")
+    onSuccess: () => router.replace("/(tabs)"),
   });
-  const { signIn: appleSignIn, loading: appleLoading, isAvailable: appleAvailable } = useAppleAuth({
-    onSuccess: () => router.replace("/(tabs)")
+  const {
+    signIn: appleSignIn,
+    loading: appleLoading,
+    isAvailable: appleAvailable,
+  } = useAppleAuth({
+    onSuccess: () => router.replace("/(tabs)"),
   });
   const router = useRouter();
   const intl = useIntl();
 
   const handleRegister = async () => {
-    const newErrors: { fullName?: string; email?: string; password?: string; } = {};
-    if (!fullName) newErrors.fullName = intl.formatMessage({ id: 'auth.error.required' });
-    if (!email) newErrors.email = intl.formatMessage({ id: 'auth.error.required' });
-    if (!password) newErrors.password = intl.formatMessage({ id: 'auth.error.required' });
+    const newErrors: { fullName?: string; email?: string; password?: string } =
+      {};
+    if (!fullName)
+      newErrors.fullName = intl.formatMessage({ id: "auth.error.required" });
+    if (!email)
+      newErrors.email = intl.formatMessage({ id: "auth.error.required" });
+    if (!password)
+      newErrors.password = intl.formatMessage({ id: "auth.error.required" });
+
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
+    if (password && !passwordRegex.test(password)) {
+      setErrors({
+        ...newErrors,
+        password: intl.formatMessage({ id: "validation.password.complexity" }),
+      });
+      return;
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -61,10 +102,10 @@ export default function RegisterScreen() {
     setLoading(true);
     try {
       // Register (backend sends email code inside)
-      await register({ 
-        fullName, 
-        email, 
-        password 
+      await register({
+        fullName,
+        email,
+        password,
       });
 
       // Show Verification Modal
@@ -72,9 +113,11 @@ export default function RegisterScreen() {
     } catch (error: any) {
       setStatusModal({
         visible: true,
-        type: 'error',
-        title: intl.formatMessage({ id: 'auth.error.registrationFailed' }),
-        message: error?.response?.data?.message || intl.formatMessage({ id: 'auth.error.registrationFailed' }),
+        type: "error",
+        title: intl.formatMessage({ id: "auth.error.registrationFailed" }),
+        message:
+          error?.response?.data?.message ||
+          intl.formatMessage({ id: "auth.error.registrationFailed" }),
       });
     } finally {
       setLoading(false);
@@ -82,53 +125,52 @@ export default function RegisterScreen() {
   };
 
   const handleVerificationSuccess = async () => {
-     setShowVerification(false);
-     
-     // Attempt auto-login or redirect
-     setLoading(true);
-     try {
-       await login({ username: email, password });
-       router.replace("/(tabs)");
-     } catch (err) {
-        // Fallback if login fails but verification worked
-        router.replace("/(auth)/login");
-     } finally {
-        setLoading(false);
-     }
+    setShowVerification(false);
+
+    // Attempt auto-login or redirect
+    setLoading(true);
+    try {
+      await login({ username: email, password });
+      router.replace("/(tabs)");
+    } catch (err) {
+      // Fallback if login fails but verification worked
+      router.replace("/(auth)/login");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <View className="flex-1 bg-background">
       <StatusBar style="light" />
       <SafeAreaView className="flex-1">
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
-          <ScrollView 
+          <ScrollView
             contentContainerStyle={{ flexGrow: 1 }}
             className="flex-1"
             showsVerticalScrollIndicator={false}
           >
             <View className="flex-1 px-6">
-              
-               {/* Top Navigation */}
+              {/* Top Navigation */}
               <View className="mt-2 mb-4">
-                 <TouchableOpacity 
-                   onPress={() => router.navigate("/")}
-                   className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border"
-                 >
-                    <ChevronLeft size={20} color="#94a3b8" />
-                 </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => router.navigate("/")}
+                  className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border"
+                >
+                  <ChevronLeft size={20} color="#94a3b8" />
+                </TouchableOpacity>
               </View>
 
               {/* Header */}
               <View className="items-center mb-8">
                 <Text className="text-3xl font-extrabold text-foreground mb-2 text-center">
-                  {intl.formatMessage({ id: 'auth.register.title' })}
+                  {intl.formatMessage({ id: "auth.register.title" })}
                 </Text>
                 <Text className="text-muted-foreground text-center text-sm">
-                  {intl.formatMessage({ id: 'auth.register.subtitle' })}
+                  {intl.formatMessage({ id: "auth.register.subtitle" })}
                 </Text>
               </View>
 
@@ -136,47 +178,68 @@ export default function RegisterScreen() {
               <View className="bg-card border border-border rounded-[32px] p-6 shadow-2xl mb-8">
                 <View className="space-y-4">
                   <Input
-                    label={intl.formatMessage({ id: 'auth.register.fullName.label' })}
+                    label={intl.formatMessage({
+                      id: "auth.register.fullName.label",
+                    })}
                     value={fullName}
                     onChangeText={(text) => {
                       setFullName(text);
-                      if (errors.fullName) setErrors({ ...errors, fullName: undefined });
+                      if (errors.fullName)
+                        setErrors({ ...errors, fullName: undefined });
                     }}
-                    placeholder={intl.formatMessage({ id: 'auth.register.fullName.placeholder' })}
+                    placeholder={intl.formatMessage({
+                      id: "auth.register.fullName.placeholder",
+                    })}
                     autoCapitalize="words"
                     icon={<User size={18} color="#64748b" />}
                     error={errors.fullName}
                   />
                   <Input
-                    label={intl.formatMessage({ id: 'auth.register.email.label' })}
+                    label={intl.formatMessage({
+                      id: "auth.register.email.label",
+                    })}
                     value={email}
                     onChangeText={(text) => {
                       setEmail(text);
                       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                       if (text.length > 0 && !emailRegex.test(text)) {
-                         setErrors(prev => ({ ...prev, email: intl.formatMessage({ id: 'validation.email.invalid' }) }));
+                        setErrors((prev) => ({
+                          ...prev,
+                          email: intl.formatMessage({
+                            id: "validation.email.invalid",
+                          }),
+                        }));
                       } else {
-                         setErrors(prev => ({ ...prev, email: undefined }));
+                        setErrors((prev) => ({ ...prev, email: undefined }));
                       }
                     }}
-                    placeholder={intl.formatMessage({ id: 'auth.login.email.placeholder' })}
+                    placeholder={intl.formatMessage({
+                      id: "auth.login.email.placeholder",
+                    })}
                     autoCapitalize="none"
                     icon={<Mail size={18} color="#64748b" />}
                     error={errors.email}
                   />
                   <Input
-                    label={intl.formatMessage({ id: 'auth.register.password.label' })}
+                    label={intl.formatMessage({
+                      id: "auth.register.password.label",
+                    })}
                     value={password}
                     onChangeText={(text) => {
                       setPassword(text);
-                      if (errors.password) setErrors({ ...errors, password: undefined });
+                      if (errors.password)
+                        setErrors({ ...errors, password: undefined });
                     }}
-                    placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
+                    placeholder={intl.formatMessage({
+                      id: "auth.login.password.placeholder",
+                    })}
                     secureTextEntry={!showPassword}
                     icon={<Lock size={18} color="#64748b" />}
                     error={errors.password}
                     rightIcon={
-                      <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                      <TouchableOpacity
+                        onPress={() => setShowPassword(!showPassword)}
+                      >
                         {showPassword ? (
                           <EyeOff size={18} color="#64748b" />
                         ) : (
@@ -185,11 +248,13 @@ export default function RegisterScreen() {
                       </TouchableOpacity>
                     }
                   />
-                  {password.length > 0 && <PasswordStrengthIndicator password={password} />}
+                  {password.length > 0 && (
+                    <PasswordStrengthIndicator password={password} />
+                  )}
                 </View>
 
                 <Button
-                  title={intl.formatMessage({ id: 'auth.register.button' })}
+                  title={intl.formatMessage({ id: "auth.register.button" })}
                   onPress={handleRegister}
                   loading={loading}
                   variant="primary"
@@ -198,13 +263,15 @@ export default function RegisterScreen() {
 
                 <View className="flex-row items-center mb-6 mt-4 gap-4 opacity-50">
                   <View className="flex-1 h-[1px] bg-border" />
-                  <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">{intl.formatMessage({ id: 'auth.login.orConnect' })}</Text>
+                  <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
+                    {intl.formatMessage({ id: "auth.login.orConnect" })}
+                  </Text>
                   <View className="flex-1 h-[1px] bg-border" />
                 </View>
 
                 <View className="flex-row gap-4 mb-2">
-                   {/* Google Button */}
-                  <TouchableOpacity 
+                  {/* Google Button */}
+                  <TouchableOpacity
                     onPress={googleSignIn}
                     disabled={loading || googleLoading}
                     className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2 border border-border/10"
@@ -213,19 +280,23 @@ export default function RegisterScreen() {
                       <ActivityIndicator size="small" color="#4285F4" />
                     ) : (
                       <>
-                        <Image 
-                          source={{ uri: "https://img.icons8.com/color/48/google-logo.png" }} 
-                          style={{ width: 20, height: 20 }} 
+                        <Image
+                          source={{
+                            uri: "https://img.icons8.com/color/48/google-logo.png",
+                          }}
+                          style={{ width: 20, height: 20 }}
                           resizeMode="contain"
                         />
-                        <Text className="text-black font-bold text-sm">{intl.formatMessage({ id: 'auth.login.google' })}</Text>
+                        <Text className="text-black font-bold text-sm">
+                          {intl.formatMessage({ id: "auth.login.google" })}
+                        </Text>
                       </>
                     )}
                   </TouchableOpacity>
-                  
+
                   {/* Apple Button */}
                   {appleAvailable && (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       onPress={appleSignIn}
                       disabled={loading || appleLoading}
                       className="flex-1 bg-[#3f3f46] h-12 rounded-xl flex-row items-center justify-center gap-2"
@@ -234,12 +305,16 @@ export default function RegisterScreen() {
                         <ActivityIndicator size="small" color="#ffffff" />
                       ) : (
                         <>
-                          <Image 
-                            source={{ uri: "https://img.icons8.com/ios-filled/50/ffffff/mac-os.png" }} 
-                            style={{ width: 20, height: 20 }} 
+                          <Image
+                            source={{
+                              uri: "https://img.icons8.com/ios-filled/50/ffffff/mac-os.png",
+                            }}
+                            style={{ width: 20, height: 20 }}
                             resizeMode="contain"
                           />
-                          <Text className="text-white font-bold text-sm">{intl.formatMessage({ id: 'auth.login.apple' })}</Text>
+                          <Text className="text-white font-bold text-sm">
+                            {intl.formatMessage({ id: "auth.login.apple" })}
+                          </Text>
                         </>
                       )}
                     </TouchableOpacity>
@@ -250,35 +325,34 @@ export default function RegisterScreen() {
               {/* Footer */}
               <View className="flex-row justify-center mb-6 gap-1">
                 <Text className="text-muted-foreground font-medium text-sm">
-                  {intl.formatMessage({ id: 'auth.register.hasAccount' })}
+                  {intl.formatMessage({ id: "auth.register.hasAccount" })}
                 </Text>
                 <Link href="/(auth)/login" asChild>
                   <TouchableOpacity>
                     <Text className="text-[#6366f1] font-bold text-sm">
-                      {intl.formatMessage({ id: 'auth.register.login' })}
+                      {intl.formatMessage({ id: "auth.register.login" })}
                     </Text>
                   </TouchableOpacity>
                 </Link>
               </View>
-
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
 
-      <VerificationModal 
-         visible={showVerification} 
-         email={email} 
-         onClose={() => setShowVerification(false)}
-         onSuccess={handleVerificationSuccess}
+      <VerificationModal
+        visible={showVerification}
+        email={email}
+        onClose={() => setShowVerification(false)}
+        onSuccess={handleVerificationSuccess}
       />
 
-      <SuccessModal 
+      <SuccessModal
         visible={statusModal.visible}
         type={statusModal.type}
         title={statusModal.title}
         message={statusModal.message}
-        onClose={() => setStatusModal(prev => ({ ...prev, visible: false }))}
+        onClose={() => setStatusModal((prev) => ({ ...prev, visible: false }))}
       />
     </View>
   );

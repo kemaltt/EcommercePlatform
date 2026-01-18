@@ -1,20 +1,38 @@
-import { View, Text, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  TextInput,
+} from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { useAuth } from "../../hooks/use-auth";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { useIntl } from "react-intl";
-import { ChevronLeft, Mail, KeyRound, Lock, CheckCircle2, ShieldCheck, ArrowRight, Eye, EyeOff } from "lucide-react-native";
+import {
+  ChevronLeft,
+  Mail,
+  KeyRound,
+  Lock,
+  CheckCircle2,
+  ShieldCheck,
+  ArrowRight,
+  Eye,
+  EyeOff,
+} from "lucide-react-native";
 import { useTheme } from "../../contexts/theme-context";
 import { HapticService } from "../../services/haptic";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { PasswordStrengthIndicator } from "../../components/PasswordStrengthIndicator";
 
-type Step = 'EMAIL' | 'CODE' | 'PASSWORD' | 'SUCCESS';
+type Step = "EMAIL" | "CODE" | "PASSWORD" | "SUCCESS";
 
 export default function ForgotPasswordScreen() {
-  const [step, setStep] = useState<Step>('EMAIL');
+  const [step, setStep] = useState<Step>("EMAIL");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +49,7 @@ export default function ForgotPasswordScreen() {
 
   const handleSendCode = async () => {
     if (!email) {
-      setError(intl.formatMessage({ id: 'auth.error.fillAll' }));
+      setError(intl.formatMessage({ id: "auth.error.fillAll" }));
       HapticService.error();
       return;
     }
@@ -41,10 +59,13 @@ export default function ForgotPasswordScreen() {
     try {
       await forgotPassword(email);
       HapticService.success();
-      setStep('CODE');
+      setStep("CODE");
     } catch (err: any) {
       HapticService.error();
-      setError(err?.response?.data?.message || intl.formatMessage({ id: 'common.error' }));
+      setError(
+        err?.response?.data?.message ||
+          intl.formatMessage({ id: "common.error" }),
+      );
     } finally {
       setLoading(false);
     }
@@ -52,16 +73,16 @@ export default function ForgotPasswordScreen() {
 
   const verifyCodeDirectly = async (inputCode: string) => {
     if (inputCode.length !== 6) return;
-    
+
     setLoading(true);
     setError("");
     try {
       await verifyResetCode(inputCode);
       HapticService.success();
-      setStep('PASSWORD');
+      setStep("PASSWORD");
     } catch (err: any) {
       HapticService.error();
-      setError(intl.formatMessage({ id: 'forgotPassword.invalidCode' }));
+      setError(intl.formatMessage({ id: "forgotPassword.invalidCode" }));
     } finally {
       setLoading(false);
     }
@@ -69,7 +90,7 @@ export default function ForgotPasswordScreen() {
 
   const handleVerifyCode = async () => {
     if (code.length !== 6) {
-      setError(intl.formatMessage({ id: 'forgotPassword.invalidCode' }));
+      setError(intl.formatMessage({ id: "forgotPassword.invalidCode" }));
       HapticService.error();
       return;
     }
@@ -79,10 +100,10 @@ export default function ForgotPasswordScreen() {
     try {
       await verifyResetCode(code);
       HapticService.success();
-      setStep('PASSWORD');
+      setStep("PASSWORD");
     } catch (err: any) {
       HapticService.error();
-      setError(intl.formatMessage({ id: 'forgotPassword.invalidCode' }));
+      setError(intl.formatMessage({ id: "forgotPassword.invalidCode" }));
     } finally {
       setLoading(false);
     }
@@ -90,13 +111,21 @@ export default function ForgotPasswordScreen() {
 
   const handleResetPassword = async () => {
     if (!password || !confirmPassword) {
-      setError(intl.formatMessage({ id: 'auth.error.fillAll' }));
+      setError(intl.formatMessage({ id: "auth.error.fillAll" }));
+      HapticService.error();
+      return;
+    }
+
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setError(intl.formatMessage({ id: "validation.password.complexity" }));
       HapticService.error();
       return;
     }
 
     if (password !== confirmPassword) {
-      setError(intl.formatMessage({ id: 'forgotPassword.passwordMismatch' }));
+      setError(intl.formatMessage({ id: "forgotPassword.passwordMismatch" }));
       HapticService.error();
       return;
     }
@@ -106,10 +135,13 @@ export default function ForgotPasswordScreen() {
     try {
       await resetPassword(code, password);
       HapticService.success();
-      setStep('SUCCESS');
+      setStep("SUCCESS");
     } catch (err: any) {
       HapticService.error();
-      setError(err?.response?.data?.message || intl.formatMessage({ id: 'common.error' }));
+      setError(
+        err?.response?.data?.message ||
+          intl.formatMessage({ id: "common.error" }),
+      );
     } finally {
       setLoading(false);
     }
@@ -117,7 +149,7 @@ export default function ForgotPasswordScreen() {
 
   const renderStep = () => {
     switch (step) {
-      case 'EMAIL':
+      case "EMAIL":
         return (
           <View className="space-y-8">
             <View className="items-center mb-4">
@@ -125,16 +157,16 @@ export default function ForgotPasswordScreen() {
                 <Mail size={40} color={isDark ? "#818cf8" : "#4f46e5"} />
               </View>
               <Text className="text-3xl font-extrabold text-foreground text-center mb-3">
-                {intl.formatMessage({ id: 'forgotPassword.title' })}
+                {intl.formatMessage({ id: "forgotPassword.title" })}
               </Text>
               <Text className="text-muted-foreground text-center text-base px-4 leading-6">
-                {intl.formatMessage({ id: 'forgotPassword.subtitle' })}
+                {intl.formatMessage({ id: "forgotPassword.subtitle" })}
               </Text>
             </View>
 
             <View className="space-y-4">
               <Input
-                label={intl.formatMessage({ id: 'forgotPassword.emailLabel' })}
+                label={intl.formatMessage({ id: "forgotPassword.emailLabel" })}
                 value={email}
                 onChangeText={setEmail}
                 placeholder="name@example.com"
@@ -146,7 +178,7 @@ export default function ForgotPasswordScreen() {
               />
 
               <Button
-                title={intl.formatMessage({ id: 'forgotPassword.sendCode' })}
+                title={intl.formatMessage({ id: "forgotPassword.sendCode" })}
                 onPress={handleSendCode}
                 loading={loading}
                 variant="primary"
@@ -157,7 +189,7 @@ export default function ForgotPasswordScreen() {
           </View>
         );
 
-      case 'CODE':
+      case "CODE":
         return (
           <View className="space-y-8">
             <View className="items-center mb-4">
@@ -165,12 +197,14 @@ export default function ForgotPasswordScreen() {
                 <ShieldCheck size={40} color={isDark ? "#818cf8" : "#4f46e5"} />
               </View>
               <Text className="text-3xl font-extrabold text-foreground text-center mb-3">
-                {intl.formatMessage({ id: 'forgotPassword.codeLabel' })}
+                {intl.formatMessage({ id: "forgotPassword.codeLabel" })}
               </Text>
               <Text className="text-muted-foreground text-center text-base px-4">
-                {intl.formatMessage({ id: 'forgotPassword.codeSent' })}
+                {intl.formatMessage({ id: "forgotPassword.codeSent" })}
               </Text>
-              <Text className="text-primary font-bold mt-2 text-lg">{email}</Text>
+              <Text className="text-primary font-bold mt-2 text-lg">
+                {email}
+              </Text>
             </View>
 
             <View className="space-y-6">
@@ -183,41 +217,46 @@ export default function ForgotPasswordScreen() {
                   }
                 }}
                 maxLength={6}
-                icon={<KeyRound size={20} color={isDark ? "#9ca3af" : "#6b7280"} />}
+                icon={
+                  <KeyRound size={20} color={isDark ? "#9ca3af" : "#6b7280"} />
+                }
                 error={error}
                 className="text-center text-3xl tracking-[10px] font-mono h-20 bg-card/50"
                 style={{ fontSize: 32 }}
               />
 
               <Button
-                title={intl.formatMessage({ id: 'forgotPassword.verifyCode' })}
+                title={intl.formatMessage({ id: "forgotPassword.verifyCode" })}
                 onPress={handleVerifyCode}
                 loading={loading}
                 variant="primary"
                 className="h-14 rounded-2xl shadow-xl shadow-primary/20"
               />
-              
-              <TouchableOpacity onPress={() => setStep('EMAIL')} className="items-center py-2">
+
+              <TouchableOpacity
+                onPress={() => setStep("EMAIL")}
+                className="items-center py-2"
+              >
                 <Text className="text-muted-foreground font-medium">
-                  {intl.formatMessage({ id: 'common.cancel' })}
+                  {intl.formatMessage({ id: "common.cancel" })}
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
         );
 
-      case 'PASSWORD':
+      case "PASSWORD":
         return (
           <View>
             <View className="items-center mb-8">
-               <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-6">
+              <View className="w-20 h-20 bg-primary/10 rounded-full items-center justify-center mb-6">
                 <Lock size={40} color={isDark ? "#818cf8" : "#4f46e5"} />
               </View>
               <Text className="text-3xl font-extrabold text-foreground text-center mb-3">
-                {intl.formatMessage({ id: 'forgotPassword.newPassword' })}
+                {intl.formatMessage({ id: "forgotPassword.newPassword" })}
               </Text>
               <Text className="text-muted-foreground text-center text-base px-4">
-                {intl.formatMessage({ id: 'auth.register.subtitle' })}
+                {intl.formatMessage({ id: "auth.register.subtitle" })}
               </Text>
             </View>
 
@@ -225,7 +264,7 @@ export default function ForgotPasswordScreen() {
               {/* New Password */}
               <View className="mb-5">
                 <Text className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 ml-1">
-                  {intl.formatMessage({ id: 'forgotPassword.newPassword' })}
+                  {intl.formatMessage({ id: "forgotPassword.newPassword" })}
                 </Text>
                 <View className="flex-row items-center bg-card rounded-2xl border border-border h-14">
                   <View className="pl-5">
@@ -235,16 +274,21 @@ export default function ForgotPasswordScreen() {
                     value={password}
                     onChangeText={(text) => {
                       setPassword(text);
-                      if (error) setError('');
+                      if (error) setError("");
                     }}
-                    placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
+                    placeholder={intl.formatMessage({
+                      id: "auth.login.password.placeholder",
+                    })}
                     placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
                     secureTextEntry={!showPassword}
                     autoCapitalize="none"
                     className="flex-1 px-5 text-base text-foreground font-medium"
                     style={{ height: 56 }}
                   />
-                  <TouchableOpacity onPress={() => setShowPassword(!showPassword)} className="pr-5">
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    className="pr-5"
+                  >
                     {showPassword ? (
                       <EyeOff size={18} color="#64748b" />
                     ) : (
@@ -253,28 +297,37 @@ export default function ForgotPasswordScreen() {
                   </TouchableOpacity>
                 </View>
               </View>
-              {password.length > 0 && <PasswordStrengthIndicator password={password} />}
+              {password.length > 0 && (
+                <PasswordStrengthIndicator password={password} />
+              )}
 
               {/* Confirm Password */}
               <View className="mb-5">
                 <Text className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 ml-1">
-                  {intl.formatMessage({ id: 'forgotPassword.confirmPassword' })}
+                  {intl.formatMessage({ id: "forgotPassword.confirmPassword" })}
                 </Text>
-                <View className={`flex-row items-center bg-card rounded-2xl border h-14 ${error ? 'border-destructive/50 bg-destructive/5' : 'border-border'}`}>
+                <View
+                  className={`flex-row items-center bg-card rounded-2xl border h-14 ${error ? "border-destructive/50 bg-destructive/5" : "border-border"}`}
+                >
                   <View className="pl-5">
                     <Lock size={18} color="#64748b" />
                   </View>
                   <TextInput
                     value={confirmPassword}
                     onChangeText={setConfirmPassword}
-                    placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
+                    placeholder={intl.formatMessage({
+                      id: "auth.login.password.placeholder",
+                    })}
                     placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
                     secureTextEntry={!showConfirmPassword}
                     autoCapitalize="none"
                     className="flex-1 px-5 text-base text-foreground font-medium"
                     style={{ height: 56 }}
                   />
-                  <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} className="pr-5">
+                  <TouchableOpacity
+                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="pr-5"
+                  >
                     {showConfirmPassword ? (
                       <EyeOff size={18} color="#64748b" />
                     ) : (
@@ -290,7 +343,9 @@ export default function ForgotPasswordScreen() {
               </View>
 
               <Button
-                title={intl.formatMessage({ id: 'forgotPassword.resetPassword' })}
+                title={intl.formatMessage({
+                  id: "forgotPassword.resetPassword",
+                })}
                 onPress={handleResetPassword}
                 loading={loading}
                 variant="primary"
@@ -300,24 +355,24 @@ export default function ForgotPasswordScreen() {
           </View>
         );
 
-      case 'SUCCESS':
+      case "SUCCESS":
         return (
           <View className="items-center justify-center py-10 space-y-8">
             <View className="w-24 h-24 bg-green-500/10 rounded-full items-center justify-center mb-4 ring-4 ring-green-500/20">
               <CheckCircle2 size={48} color="#22c55e" />
             </View>
-            
+
             <View className="space-y-2 text-center items-center">
               <Text className="text-3xl font-extrabold text-foreground text-center">
-                {intl.formatMessage({ id: 'common.success' })}
+                {intl.formatMessage({ id: "common.success" })}
               </Text>
               <Text className="text-muted-foreground text-center text-lg max-w-[280px]">
-                {intl.formatMessage({ id: 'forgotPassword.success' })}
+                {intl.formatMessage({ id: "forgotPassword.success" })}
               </Text>
             </View>
-            
+
             <Button
-              title={intl.formatMessage({ id: 'forgotPassword.backToLogin' })}
+              title={intl.formatMessage({ id: "forgotPassword.backToLogin" })}
               onPress={() => router.replace("/(auth)/login")}
               className="w-full mt-8 h-14 rounded-2xl"
               variant="outline"
@@ -329,7 +384,7 @@ export default function ForgotPasswordScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <SafeAreaView className="flex-1" edges={['top']}>
+      <SafeAreaView className="flex-1" edges={["top"]}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
@@ -349,9 +404,7 @@ export default function ForgotPasswordScreen() {
             className="px-8"
             showsVerticalScrollIndicator={false}
           >
-            <View className="flex-1 justify-center pb-20">
-              {renderStep()}
-            </View>
+            <View className="flex-1 justify-center pb-20">{renderStep()}</View>
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
