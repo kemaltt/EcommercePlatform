@@ -118,7 +118,11 @@ export default function PaymentMethodsScreen() {
         return <Apple size={24} color="white" fill="white" />;
       case "paypal":
         return (
-          <Text className="font-bold text-[#003087] text-xl italic">P</Text>
+          <Image
+            source={{ uri: "https://img.icons8.com/color/96/paypal.png" }}
+            style={{ width: 28, height: 28 }}
+            resizeMode="contain"
+          />
         );
       case "klarna":
         return (

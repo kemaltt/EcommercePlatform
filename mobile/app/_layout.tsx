@@ -1,7 +1,12 @@
 import React from "react";
 import { View } from "react-native";
 import { Stack } from "expo-router";
-import { QueryClient, QueryClientProvider, MutationCache, QueryCache } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  MutationCache,
+  QueryCache,
+} from "@tanstack/react-query";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import "../assets/global.css";
@@ -25,7 +30,7 @@ const queryClient = new QueryClient({
   }),
   queryCache: new QueryCache({
     onError: () => {
-      // Optional: trigger error haptic on query failure? 
+      // Optional: trigger error haptic on query failure?
       // Often too noisy, maybe only for specific high-value queries.
       // Keeping it off by default for queries to avoid vibration loops on retries.
       // hapticError();
@@ -33,35 +38,42 @@ const queryClient = new QueryClient({
   }),
 });
 
-import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider } from "@react-navigation/native";
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider as NavThemeProvider,
+} from "@react-navigation/native";
 
-const InnerLayout = React.memo(() => {
+const InnerLayout = () => {
   const { isDark } = useTheme();
   return (
     <NavThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
-      <View 
-        className={isDark ? "dark" : ""} 
+      <View
+        className={isDark ? "dark" : ""}
         style={{ flex: 1, backgroundColor: isDark ? "#111827" : "#FFFFFF" }}
       >
         <StatusBar style={isDark ? "light" : "dark"} />
-        <Stack 
-          screenOptions={{ 
+        <Stack
+          screenOptions={{
             headerShown: false,
           }}
         >
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="product/[id]" options={{ presentation: "modal" }} />
+          <Stack.Screen
+            name="product/[id]"
+            options={{ presentation: "modal" }}
+          />
           <Stack.Screen name="admin" />
         </Stack>
       </View>
     </NavThemeProvider>
   );
-});
+};
 
 export default function RootLayout() {
   const [qc] = React.useState(() => queryClient);
-  
+
   return (
     <SafeAreaProvider>
       <I18nProvider>
@@ -82,5 +94,3 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
-
-
