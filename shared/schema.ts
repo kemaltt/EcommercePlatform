@@ -24,7 +24,7 @@ export const users = pgTable("users", {
   googleId: text("google_id").unique(),
   appleId: text("apple_id").unique(),
   isAdmin: boolean("is_admin").default(false).notNull(),
-  status: text("status").default("active").notNull(), // active, passive, deleted
+  status: text("status").default("active").notNull(), // active, passive, cancellation_request, cancelled, deleted
   address: text("address"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   emailVerified: boolean("email_verified").default(false).notNull(),

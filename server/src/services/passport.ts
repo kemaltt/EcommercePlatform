@@ -54,6 +54,11 @@ export function setupPassport(app: Express) {
           return done(null, false, { message: "Incorrect email or password." });
         }
 
+        const blockedStatuses = ["passive", "cancelled", "deleted"];
+        if (blockedStatuses.includes(user.status)) {
+          return done(null, false, { message: "ACCOUNT_DISABLED" });
+        }
+
         if (!user.emailVerified) {
           return done(null, false, { message: "EMAIL_NOT_VERIFIED" });
         }
@@ -87,8 +92,13 @@ export function setupPassport(app: Express) {
     try {
       const user = await storage.getUser(id);
 
-      if (!user) {
-        console.warn(`User with ID ${id} not found during deserialization.`);
+      const blockedStatuses = ["passive", "cancelled", "deleted"];
+      if (!user || blockedStatuses.includes(user.status)) {
+        if (user && blockedStatuses.includes(user.status)) {
+          console.warn(`User with ID ${id} is ${user.status}. Denying access.`);
+        } else {
+          console.warn(`User with ID ${id} not found during deserialization.`);
+        }
         return done(null, false);
       }
 

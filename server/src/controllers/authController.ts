@@ -110,6 +110,12 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
             message: "Please verify your email address before logging in.",
           });
         }
+        if (info && info.message === "ACCOUNT_DISABLED") {
+          return res.status(403).json({
+            message:
+              "Your account has been disabled or cancelled. Please contact support.",
+          });
+        }
         return res.status(401).json({
           message: info?.message || "Incorrect username or password.",
         });
@@ -213,6 +219,14 @@ export const googleLogin = async (
 
     if (!user) {
       return res.status(500).json({ message: "Failed to create or find user" });
+    }
+
+    const blockedStatuses = ["passive", "cancelled", "deleted"];
+    if (user.status && blockedStatuses.includes(user.status)) {
+      return res.status(403).json({
+        message:
+          "Your account has been disabled or cancelled. Please contact support.",
+      });
     }
 
     req.login(user, async (err) => {
@@ -321,6 +335,14 @@ export const appleLogin = async (
 
     if (!user) {
       return res.status(500).json({ message: "Failed to create or find user" });
+    }
+
+    const blockedStatuses = ["passive", "cancelled", "deleted"];
+    if (user.status && blockedStatuses.includes(user.status)) {
+      return res.status(403).json({
+        message:
+          "Your account has been disabled or cancelled. Please contact support.",
+      });
     }
 
     req.login(user, async (err) => {
@@ -447,8 +469,9 @@ export const forgotPassword = async (req: Request, res: Response) => {
 
     const user = await storage.getUserByEmail(email);
 
-    if (!user) {
-      // Don't reveal if email exists for security
+    const blockedStatuses = ["passive", "cancelled", "deleted"];
+    if (!user || (user.status && blockedStatuses.includes(user.status))) {
+      // Don't reveal if email exists or is disabled for security
       return res.json({
         message: "If the email exists, a reset code has been sent",
       });
@@ -531,11 +554,11 @@ export const resetPassword = async (req: Request, res: Response) => {
 
     // Password validation
     const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/;
     if (!passwordRegex.test(password)) {
       return res.status(400).json({
         message:
-          "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+          "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&.).",
       });
     }
 
