@@ -223,7 +223,7 @@ export default function AccountScreen() {
             <AccountItem
               icon={<CreditCard size={22} />}
               label={intl.formatMessage({ id: "account.paymentMethods" })}
-              onPress={() => {}}
+              onPress={() => router.push("/account/payment-methods")}
             />
             <AccountItem
               icon={<History size={22} />}
