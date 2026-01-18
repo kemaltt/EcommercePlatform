@@ -6,6 +6,7 @@
   "common.confirm": "Confirm",
   "common.delete": "Delete",
   "common.edit": "Edit",
+  "common.chooseAction": "Choose Action",
   "common.default": "Default",
   "auth.login.title": "Welcome Back",
   "auth.login.subtitle": "Sign in to continue your curated shopping experience.",
