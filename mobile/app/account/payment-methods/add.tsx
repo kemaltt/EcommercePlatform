@@ -17,14 +17,13 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const schema = z.object({
-  cardNumber: z.string().min(16, "Invalid card number"),
-  expiry: z.string().min(5, "Invalid expiry date (MM/YY)"),
-  cvv: z.string().min(3, "Invalid CVV"),
-  holderName: z.string().min(3, "Invalid holder name"),
-});
-
-type FormData = z.infer<typeof schema>;
+// Moved schema inside component to use intl
+type FormData = {
+  cardNumber: string;
+  expiry: string;
+  cvv: string;
+  holderName: string;
+};
 
 export default function AddPaymentMethodScreen() {
   const router = useRouter();
@@ -32,6 +31,19 @@ export default function AddPaymentMethodScreen() {
   const isEditing = !!params.id;
   const { isDark } = useTheme();
   const intl = useIntl();
+
+  const schema = z.object({
+    cardNumber: z
+      .string()
+      .min(16, intl.formatMessage({ id: "validation.card.number" })),
+    expiry: z
+      .string()
+      .min(5, intl.formatMessage({ id: "validation.card.expiry" })),
+    cvv: z.string().min(3, intl.formatMessage({ id: "validation.card.cvv" })),
+    holderName: z
+      .string()
+      .min(3, intl.formatMessage({ id: "validation.card.holderName" })),
+  });
 
   const {
     control,

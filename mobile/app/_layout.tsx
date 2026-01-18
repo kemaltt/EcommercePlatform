@@ -44,7 +44,7 @@ import {
   ThemeProvider as NavThemeProvider,
 } from "@react-navigation/native";
 
-const InnerLayout = () => {
+const InnerLayout = React.memo(() => {
   const { isDark } = useTheme();
   return (
     <NavThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
@@ -69,7 +69,7 @@ const InnerLayout = () => {
       </View>
     </NavThemeProvider>
   );
-};
+});
 
 export default function RootLayout() {
   const [qc] = React.useState(() => queryClient);

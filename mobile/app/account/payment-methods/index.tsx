@@ -150,7 +150,7 @@ export default function PaymentMethodsScreen() {
       // For other types, editing might just mean re-linking or changing email
       Alert.alert(
         intl.formatMessage({ id: "common.edit" }),
-        "Edit functionality for this method would open a specific provider flow.",
+        intl.formatMessage({ id: "paymentMethods.alert.editProvider" }),
       );
     }
   };
@@ -206,13 +206,16 @@ export default function PaymentMethodsScreen() {
       case "amex":
         return `•••• ${method.last4}`;
       case "apple_pay":
-        return "Apple Pay";
+        return intl.formatMessage({ id: "paymentMethods.type.apple_pay" });
       case "paypal":
-        return method.email || "PayPal Wallet";
+        return (
+          method.email ||
+          intl.formatMessage({ id: "paymentMethods.type.paypal" })
+        );
       case "klarna":
-        return "Klarna";
+        return intl.formatMessage({ id: "paymentMethods.type.klarna" });
       default:
-        return "Payment Method";
+        return intl.formatMessage({ id: "paymentMethods.title" }); // Fallback
     }
   };
 
@@ -221,13 +224,20 @@ export default function PaymentMethodsScreen() {
       case "visa":
       case "mastercard":
       case "amex":
-        return `Expires ${method.expiry}`;
+        return intl.formatMessage(
+          { id: "paymentMethods.label.expires" },
+          { date: method.expiry },
+        );
       case "apple_pay":
-        return "Device Account";
+        return intl.formatMessage({
+          id: "paymentMethods.sublabel.deviceAccount",
+        });
       case "paypal":
-        return "PayPal Wallet";
+        return intl.formatMessage({
+          id: "paymentMethods.sublabel.paypalWallet",
+        });
       case "klarna":
-        return "Pay in 30 days";
+        return intl.formatMessage({ id: "paymentMethods.sublabel.payLater" });
       default:
         return "";
     }
@@ -265,7 +275,7 @@ export default function PaymentMethodsScreen() {
                 <Text
                   className={`text-[10px] font-bold uppercase ${isDark ? "text-[#818cf8]" : "text-indigo-600"}`}
                 >
-                  Default
+                  <FormattedMessage id="paymentMethods.badge.default" />
                 </Text>
               </View>
             )}
@@ -319,7 +329,7 @@ export default function PaymentMethodsScreen() {
           {primaryMethod && (
             <View className="mb-6">
               <Text className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-3">
-                Primary Method
+                <FormattedMessage id="paymentMethods.section.primary" />
               </Text>
               <MethodItem method={primaryMethod} isPrimary />
             </View>
@@ -328,7 +338,7 @@ export default function PaymentMethodsScreen() {
           {/* Other Methods Section */}
           <View className="mb-8">
             <Text className="text-muted-foreground text-xs font-bold uppercase tracking-wider mb-3">
-              Other Methods
+              <FormattedMessage id="paymentMethods.section.other" />
             </Text>
             {otherMethods.map((method) => (
               <MethodItem key={method.id} method={method} />
@@ -345,11 +355,10 @@ export default function PaymentMethodsScreen() {
             <Text
               className={`font-bold text-base mb-2 text-center ${isDark ? "text-white" : "text-gray-900"}`}
             >
-              Secure Payments
+              <FormattedMessage id="paymentMethods.secure.title" />
             </Text>
             <Text className="text-muted-foreground text-xs text-center leading-5 px-4">
-              Your payment details are encrypted and securely stored. We never
-              share your full card info.
+              <FormattedMessage id="paymentMethods.secure.description" />
             </Text>
           </View>
         </ScrollView>
