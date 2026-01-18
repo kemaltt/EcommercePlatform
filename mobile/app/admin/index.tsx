@@ -1,3 +1,4 @@
+import React from "react";
 import {
   View,
   Text,
@@ -7,7 +8,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { useRouter, Stack } from "expo-router";
+import { useRouter, Stack, useFocusEffect } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import {
@@ -33,13 +34,19 @@ export default function AdminConsoleScreen() {
   const { isDark } = useTheme();
   const intl = useIntl();
 
-  const { data: stats } = useQuery({
+  const { data: stats, refetch } = useQuery({
     queryKey: ["/api/admin/stats"],
     queryFn: async () => {
       const res = await api.get("/admin/stats");
       return res.data;
     },
   });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
   // Mock Data for Chart
   const lineChartData = {
@@ -165,17 +172,14 @@ export default function AdminConsoleScreen() {
             </View>
           </View>
 
-          <View className="flex-row mb-8">
-            <View className="flex-1 mr-4">
-              <ManagementCard
-                title={intl.formatMessage({ id: "admin.orders.title" })}
-                count={"-" /* We can add stats later */}
-                subtitle={intl.formatMessage({ id: "admin.menu.orders" })}
-                icon={<Box size={20} color="#6366f1" />}
-                onPress={() => router.push("/admin/orders")}
-              />
-            </View>
-            <View className="flex-1" />
+          <View className="mb-4">
+            <ManagementCard
+              title={intl.formatMessage({ id: "admin.orders.title" })}
+              count={stats?.totalOrders || "0"}
+              subtitle={intl.formatMessage({ id: "admin.menu.orders" })}
+              icon={<Box size={20} color="#6366f1" />}
+              onPress={() => router.push("/admin/orders")}
+            />
           </View>
 
           <View className="flex-row justify-between items-center mb-4">

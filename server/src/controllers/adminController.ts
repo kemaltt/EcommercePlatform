@@ -5,10 +5,12 @@ export const getStats = async (req: Request, res: Response) => {
   try {
     const allUsers = await storage.getUsers();
     const allProducts = await storage.getProducts();
+    const allOrders = await storage.getAllOrders();
 
     res.json({
       totalUsers: allUsers.length,
       totalProducts: allProducts.length,
+      totalOrders: allOrders.length,
       activeSessions: 0,
     });
   } catch (err) {
