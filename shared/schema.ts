@@ -163,6 +163,9 @@ export const orders = pgTable("orders", {
   shippingMethod: text("shipping_method").notNull(),
   paymentMethod: text("payment_method").notNull(),
   paymentStatus: text("payment_status").notNull().default("pending"),
+  trackingNumber: text("tracking_number"),
+  shippingCarrier: text("shipping_carrier"), // DHL, DPD, UPS, FedEx, etc.
+  shippedAt: timestamp("shipped_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

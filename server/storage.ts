@@ -1098,6 +1098,24 @@ export class DatabaseStorage implements IStorage {
 
     return ordersWithItems;
   }
+
+  async updateOrder(id: string, data: Partial<Order>): Promise<Order> {
+    const [updatedOrder] = await db
+      .update(orders)
+      .set(data)
+      .where(eq(orders.id, id))
+      .returning();
+
+    const items = await db
+      .select()
+      .from(orderItems)
+      .where(eq(orderItems.orderId, id));
+
+    return {
+      ...updatedOrder,
+      items,
+    };
+  }
 }
 
 export const storage = new DatabaseStorage();

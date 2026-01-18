@@ -10,6 +10,7 @@ router.get("/stats", adminController.getStats);
 router.get("/users", adminController.getAllUsers);
 router.get("/orders", adminController.getAllOrders);
 router.get("/orders/:id", adminController.getOrderDetails);
+router.patch("/orders/:id/status", adminController.updateOrderStatus);
 router.get("/users/:id", adminController.getUser);
 router.patch("/users/:id", adminController.updateUser);
 

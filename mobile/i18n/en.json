@@ -282,5 +282,21 @@
   "admin.orders.customer": "Customer Info",
   "admin.orders.shipping": "Shipping Address",
   "admin.orders.items": "Order Items",
-  "admin.orders.payment": "Payment Details"
+  "admin.orders.payment": "Payment Details",
+  "admin.orders.manage.title": "Manage Order",
+  "admin.orders.manage.updateStatus": "Update Status",
+  "admin.orders.manage.updateStatusButton": "Update Status",
+  "admin.orders.manage.createLabel": "Create Shipping Label",
+  "admin.orders.manage.manual": "Manual",
+  "admin.orders.manage.api": "API (Coming Soon)",
+  "admin.orders.manage.trackingNumber": "Tracking Number",
+  "admin.orders.manage.trackingPlaceholder": "Enter tracking number",
+  "admin.orders.manage.shippingCost": "Shipping Cost",
+  "admin.orders.manage.shippingCarrier": "Shipping Carrier",
+  "admin.orders.manage.shippingDate": "Shipping Date",
+  "admin.orders.manage.createLabelButton": "Create Label & Mark as Shipped",
+  "admin.orders.manage.updateSuccess": "Order updated successfully",
+  "admin.orders.manage.updateError": "Failed to update order",
+  "admin.orders.manage.trackingRequired": "Please enter a tracking number",
+  "admin.orders.manage.notFound": "Order not found"
 }

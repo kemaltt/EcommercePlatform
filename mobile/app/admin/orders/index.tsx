@@ -10,7 +10,15 @@ import { useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { FormattedMessage, useIntl } from "react-intl";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ChevronLeft, Package, Clock, Box, Filter } from "lucide-react-native";
+import {
+  ChevronLeft,
+  Package,
+  Clock,
+  Box,
+  Filter,
+  Eye,
+  Settings,
+} from "lucide-react-native";
 import { useTheme } from "../../../contexts/theme-context";
 import { api } from "../../../lib/api";
 import { Order } from "@shared/schema";
@@ -106,56 +114,77 @@ export default function AdminOrdersScreen() {
             <View className="gap-4">
               {orders.map((order) => {
                 const statusStyle = getStatusColor(order.status);
+                const statusColor =
+                  order.status === "delivered"
+                    ? "text-green-500 bg-green-500/10"
+                    : order.status === "shipped"
+                      ? "text-blue-500 bg-blue-500/10"
+                      : order.status === "cancelled"
+                        ? "text-red-500 bg-red-500/10"
+                        : "text-yellow-500 bg-yellow-500/10";
 
                 return (
-                  <TouchableOpacity
+                  <View
                     key={order.id}
-                    onPress={() => router.push(`/admin/orders/${order.id}`)}
-                    className="bg-card border border-border/50 rounded-3xl p-5 mb-2"
+                    className="bg-card border border-border/50 rounded-3xl p-5 mb-4"
                   >
-                    <View className="flex-row justify-between items-start mb-4">
-                      <View className="flex-row items-center gap-3">
-                        <View className="w-10 h-10 rounded-xl bg-primary/10 items-center justify-center">
-                          <Package
-                            size={20}
+                    <View className="flex-row items-start justify-between mb-3">
+                      <View className="flex-1">
+                        <Text className="text-foreground font-bold text-base mb-1">
+                          #{order.orderNumber}
+                        </Text>
+                        <Text className="text-muted-foreground text-xs">
+                          {format(
+                            new Date(order.createdAt),
+                            "dd MMM yyyy, HH:mm",
+                            { locale: getDateLocale() },
+                          )}
+                        </Text>
+                      </View>
+                      <View className="flex-row gap-2">
+                        <TouchableOpacity
+                          onPress={() =>
+                            router.push(`/admin/orders/${order.id}`)
+                          }
+                          className="w-9 h-9 bg-primary/10 rounded-xl items-center justify-center"
+                        >
+                          <Eye
+                            size={18}
                             color={isDark ? "#818cf8" : "#4f46e5"}
                           />
-                        </View>
-                        <View>
-                          <Text className="text-foreground font-bold text-base">
-                            #{order.orderNumber}
-                          </Text>
-                          <Text className="text-muted-foreground text-xs font-medium">
-                            {format(
-                              new Date(order.createdAt),
-                              "dd MMMM yyyy, HH:mm",
-                              { locale: getDateLocale() },
-                            )}
-                          </Text>
-                        </View>
-                      </View>
-                      <View
-                        className={`px-3 py-1.5 rounded-full ${statusStyle.split(" ")[1]}`}
-                      >
-                        <Text
-                          className={`text-xs font-bold capitalize ${statusStyle.split(" ")[0]}`}
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={() =>
+                            router.push(`/admin/orders/manage/${order.id}`)
+                          }
+                          className="w-9 h-9 bg-primary/10 rounded-xl items-center justify-center"
                         >
-                          {getStatusLabel(order.status)}
-                        </Text>
+                          <Settings
+                            size={18}
+                            color={isDark ? "#818cf8" : "#4f46e5"}
+                          />
+                        </TouchableOpacity>
                       </View>
                     </View>
 
-                    <View className="flex-row justify-between items-end">
-                      <View>
-                        <Text className="text-muted-foreground text-xs mb-1">
-                          Customer ID: {order.userId.substring(0, 8)}...
-                        </Text>
-                        <Text className="text-foreground font-bold text-lg">
-                          ${order.total.toFixed(2)}
+                    <View className="flex-row items-center justify-between pt-3 border-t border-border/30">
+                      <View
+                        className={`px-3 py-1.5 rounded-full ${statusColor.split(" ")[1]}`}
+                      >
+                        <Text
+                          className={`text-xs font-bold capitalize ${statusColor.split(" ")[0]}`}
+                        >
+                          <FormattedMessage
+                            id={`orders.status.${order.status}`}
+                            defaultMessage={order.status}
+                          />
                         </Text>
                       </View>
+                      <Text className="text-foreground font-bold text-lg">
+                        ${Number(order.total).toFixed(2)}
+                      </Text>
                     </View>
-                  </TouchableOpacity>
+                  </View>
                 );
               })}
             </View>

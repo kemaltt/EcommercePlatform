@@ -348,5 +348,21 @@
   "admin.period.month": "AY",
   "admin.activeInventory": "Aktif Envanter",
   "admin.seeAll": "Hepsini Gör",
-  "admin.stock": "Stok"
+  "admin.stock": "Stok",
+  "admin.orders.manage.title": "Siparişi Yönet",
+  "admin.orders.manage.updateStatus": "Durumu Güncelle",
+  "admin.orders.manage.updateStatusButton": "Durumu Güncelle",
+  "admin.orders.manage.createLabel": "Kargo Etiketi Oluştur",
+  "admin.orders.manage.manual": "Manuel",
+  "admin.orders.manage.api": "API (Yakında)",
+  "admin.orders.manage.trackingNumber": "Takip Numarası",
+  "admin.orders.manage.trackingPlaceholder": "Takip numarası girin",
+  "admin.orders.manage.shippingCost": "Kargo Ücreti",
+  "admin.orders.manage.shippingCarrier": "Kargo Şirketi",
+  "admin.orders.manage.shippingDate": "Kargo Tarihi",
+  "admin.orders.manage.createLabelButton": "Etiket Oluştur ve Gönderildi Olarak İşaretle",
+  "admin.orders.manage.updateSuccess": "Sipariş başarıyla güncellendi",
+  "admin.orders.manage.updateError": "Sipariş güncellenemedi",
+  "admin.orders.manage.trackingRequired": "Lütfen takip numarası girin",
+  "admin.orders.manage.notFound": "Sipariş bulunamadı"
 }

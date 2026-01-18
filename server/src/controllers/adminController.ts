@@ -115,3 +115,31 @@ export const getOrderDetails = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error fetching order details" });
   }
 };
+
+export const updateOrderStatus = async (req: Request, res: Response) => {
+  try {
+    const orderId = req.params.id;
+    const { status, trackingNumber, shippingCarrier, shippedAt } = req.body;
+
+    const order = await storage.getOrder(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const updateData: any = {};
+    if (status) updateData.status = status;
+    if (trackingNumber !== undefined)
+      updateData.trackingNumber = trackingNumber;
+    if (shippingCarrier !== undefined)
+      updateData.shippingCarrier = shippingCarrier;
+    if (shippedAt) updateData.shippedAt = new Date(shippedAt);
+    updateData.updatedAt = new Date();
+
+    const updatedOrder = await storage.updateOrder(orderId, updateData);
+
+    res.json(updatedOrder);
+  } catch (err) {
+    console.error("Error updating order status:", err);
+    res.status(500).json({ message: "Error updating order status" });
+  }
+};
