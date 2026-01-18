@@ -227,6 +227,7 @@
   "checkout.success.trackOrder": "Track Order",
   "checkout.success.continueShopping": "Continue Shopping",
   "account.menu.orders": "My Orders",
+  "account.orderHistory": "Order History",
   "orders.title": "My Orders",
   "orders.empty.title": "No Orders Yet",
   "orders.empty.subtitle": "You haven't placed any orders yet. Start shopping and they will appear here!",
