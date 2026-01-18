@@ -115,7 +115,13 @@ export default function PaymentMethodsScreen() {
           </View>
         );
       case "apple_pay":
-        return <Apple size={24} color="white" fill="white" />;
+        return (
+          <Apple
+            size={24}
+            color={isDark ? "white" : "black"}
+            fill={isDark ? "white" : "black"}
+          />
+        );
       case "paypal":
         return (
           <Image
