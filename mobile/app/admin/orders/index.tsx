@@ -16,7 +16,7 @@ import {
   Clock,
   Box,
   Filter,
-  Eye,
+  Edit,
   Settings,
 } from "lucide-react-native";
 import { useTheme } from "../../../contexts/theme-context";
@@ -148,7 +148,7 @@ export default function AdminOrdersScreen() {
                           }
                           className="w-9 h-9 bg-primary/10 rounded-xl items-center justify-center"
                         >
-                          <Eye
+                          <Edit
                             size={18}
                             color={isDark ? "#818cf8" : "#4f46e5"}
                           />

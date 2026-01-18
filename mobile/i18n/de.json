@@ -350,5 +350,7 @@
   "admin.orders.customer": "Kundeninformationen",
   "admin.orders.shipping": "Lieferadresse",
   "admin.orders.items": "Bestellte Artikel",
+  "admin.orders.shippingInfo": "Versandinformationen",
+  "admin.orders.shippedDate": "Versanddatum",
   "admin.orders.payment": "Zahlungsinformationen"
 }

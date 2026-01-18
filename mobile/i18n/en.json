@@ -283,6 +283,8 @@
   "admin.orders.shipping": "Shipping Address",
   "admin.orders.items": "Order Items",
   "admin.orders.payment": "Payment Details",
+  "admin.orders.shippingInfo": "Shipping Information",
+  "admin.orders.shippedDate": "Shipped Date",
   "admin.orders.manage.title": "Manage Order",
   "admin.orders.manage.updateStatus": "Update Status",
   "admin.orders.manage.updateStatusButton": "Update Status",

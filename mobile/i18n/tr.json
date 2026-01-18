@@ -349,6 +349,8 @@
   "admin.activeInventory": "Aktif Envanter",
   "admin.seeAll": "Hepsini Gör",
   "admin.stock": "Stok",
+  "admin.orders.shippingInfo": "Kargo Bilgileri",
+  "admin.orders.shippedDate": "Gönderim Tarihi",
   "admin.orders.manage.title": "Siparişi Yönet",
   "admin.orders.manage.updateStatus": "Durumu Güncelle",
   "admin.orders.manage.updateStatusButton": "Durumu Güncelle",

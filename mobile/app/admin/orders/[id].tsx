@@ -199,6 +199,71 @@ export default function AdminOrderDetailsScreen() {
             </Text>
           </View>
 
+          {/* Shipping Information */}
+          {(order.trackingNumber ||
+            order.shippingCarrier ||
+            order.shippedAt) && (
+            <View className="bg-card p-5 rounded-3xl border border-border/50 mb-4">
+              <View className="flex-row items-center mb-4">
+                <Package size={20} color={isDark ? "#818cf8" : "#4f46e5"} />
+                <Text className="text-foreground font-bold text-lg ml-2">
+                  <FormattedMessage
+                    id="admin.orders.shippingInfo"
+                    defaultMessage="Shipping Information"
+                  />
+                </Text>
+              </View>
+
+              <View className="gap-3">
+                {order.trackingNumber && (
+                  <View>
+                    <Text className="text-muted-foreground text-xs font-bold mb-1 uppercase">
+                      <FormattedMessage
+                        id="admin.orders.manage.trackingNumber"
+                        defaultMessage="Tracking Number"
+                      />
+                    </Text>
+                    <Text className="text-foreground font-medium">
+                      {order.trackingNumber}
+                    </Text>
+                  </View>
+                )}
+
+                {order.shippingCarrier && (
+                  <View>
+                    <Text className="text-muted-foreground text-xs font-bold mb-1 uppercase">
+                      <FormattedMessage
+                        id="admin.orders.manage.shippingCarrier"
+                        defaultMessage="Shipping Carrier"
+                      />
+                    </Text>
+                    <Text className="text-foreground font-medium">
+                      {order.shippingCarrier}
+                    </Text>
+                  </View>
+                )}
+
+                {order.shippedAt && (
+                  <View>
+                    <Text className="text-muted-foreground text-xs font-bold mb-1 uppercase">
+                      <FormattedMessage
+                        id="admin.orders.shippedDate"
+                        defaultMessage="Shipped Date"
+                      />
+                    </Text>
+                    <Text className="text-foreground font-medium">
+                      {format(
+                        new Date(order.shippedAt),
+                        "dd MMMM yyyy, HH:mm",
+                        { locale: getDateLocale() },
+                      )}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
+
           {/* Order Items (Positions) */}
           <View className="bg-card p-5 rounded-3xl border border-border/50 mb-4">
             <View className="flex-row items-center mb-4">
