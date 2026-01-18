@@ -363,6 +363,7 @@
   "admin.orders.manage.trackingPlaceholder": "Takip numarası girin",
   "admin.orders.manage.shippingCost": "Kargo Ücreti",
   "admin.orders.manage.shippingCarrier": "Kargo Şirketi",
+  "admin.orders.manage.selectCarrier": "Kargo şirketi seçin",
   "admin.orders.manage.shippingDate": "Kargo Tarihi",
   "admin.orders.manage.createLabelButton": "Etiket Oluştur ve Gönderildi Olarak İşaretle",
   "admin.orders.manage.updateSuccess": "Sipariş başarıyla güncellendi",

@@ -57,6 +57,7 @@ export default function ManageOrderScreen() {
   const [shippingCost, setShippingCost] = useState("");
   const [shippingDate, setShippingDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showCarrierPicker, setShowCarrierPicker] = useState(false);
 
   const { data: order, isLoading } = useQuery<OrderDetail>({
     queryKey: [`/api/admin/orders/${id}`],
@@ -363,41 +364,44 @@ export default function ManageOrderScreen() {
                       defaultMessage="Shipping Carrier"
                     />
                   </Text>
-                  <View className="gap-2">
-                    {["DHL", "DPD", "UPS", "FedEx", "Hermes", "GLS"].map(
-                      (carrier) => (
-                        <TouchableOpacity
-                          key={carrier}
-                          onPress={() => setShippingCarrier(carrier)}
-                          className={`p-3 rounded-2xl border flex-row items-center ${
-                            shippingCarrier === carrier
-                              ? "border-primary bg-primary/10"
-                              : "border-border bg-card"
-                          }`}
-                        >
-                          <View
-                            className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-3 ${
-                              shippingCarrier === carrier
-                                ? "border-primary"
-                                : "border-muted-foreground/30"
-                            }`}
-                          >
-                            {shippingCarrier === carrier && (
-                              <View className="w-2.5 h-2.5 rounded-full bg-primary" />
-                            )}
-                          </View>
-                          <Text
-                            className={`font-bold ${
-                              shippingCarrier === carrier
-                                ? "text-primary"
-                                : "text-foreground"
-                            }`}
-                          >
-                            {carrier}
-                          </Text>
-                        </TouchableOpacity>
-                      ),
-                    )}
+                  <TouchableOpacity
+                    onPress={() => setShowCarrierPicker(true)}
+                    className="bg-card border border-border rounded-2xl px-4 py-3 flex-row items-center justify-between"
+                  >
+                    <Text
+                      className={
+                        shippingCarrier
+                          ? "text-foreground"
+                          : "text-muted-foreground"
+                      }
+                    >
+                      {shippingCarrier ||
+                        intl.formatMessage({
+                          id: "admin.orders.manage.selectCarrier",
+                        })}
+                    </Text>
+                    <ChevronDown size={20} color="#94a3b8" />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Shipping Cost */}
+                <View>
+                  <Text className="text-muted-foreground text-xs font-bold mb-2 uppercase">
+                    <FormattedMessage
+                      id="admin.orders.manage.shippingCost"
+                      defaultMessage="Shipping Cost"
+                    />
+                  </Text>
+                  <View className="flex-row items-center bg-card border border-border rounded-2xl px-4">
+                    <DollarSign size={20} color="#94a3b8" />
+                    <TextInput
+                      value={shippingCost}
+                      onChangeText={setShippingCost}
+                      placeholder="0.00"
+                      placeholderTextColor="#94a3b8"
+                      keyboardType="decimal-pad"
+                      className="flex-1 py-3 text-foreground ml-2"
+                    />
                   </View>
                 </View>
 
@@ -449,6 +453,73 @@ export default function ManageOrderScreen() {
                   variant="outline"
                 />
               </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Carrier Picker Modal */}
+      <Modal
+        visible={showCarrierPicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowCarrierPicker(false)}
+      >
+        <View className="flex-1 justify-end bg-black/50">
+          <View
+            className={`${isDark ? "bg-background" : "bg-white"} rounded-t-3xl max-h-[60%]`}
+          >
+            {/* Handle */}
+            <View className="items-center py-3">
+              <View className="w-12 h-1 bg-muted-foreground/30 rounded-full" />
+            </View>
+
+            <ScrollView className="px-6 pb-6">
+              <Text className="text-foreground font-bold text-xl mb-4">
+                <FormattedMessage
+                  id="admin.orders.manage.shippingCarrier"
+                  defaultMessage="Shipping Carrier"
+                />
+              </Text>
+
+              <View className="bg-card border border-border rounded-2xl">
+                {["DHL", "DPD", "UPS", "FedEx", "Hermes", "GLS"].map(
+                  (carrier, index) => (
+                    <TouchableOpacity
+                      key={carrier}
+                      onPress={() => {
+                        setShippingCarrier(carrier);
+                        setShowCarrierPicker(false);
+                      }}
+                      className={`p-4 flex-row items-center ${
+                        index !== 5 ? "border-b border-border" : ""
+                      }`}
+                    >
+                      <View
+                        className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-3 ${
+                          shippingCarrier === carrier
+                            ? "border-primary"
+                            : "border-muted-foreground/30"
+                        }`}
+                      >
+                        {shippingCarrier === carrier && (
+                          <View className="w-2.5 h-2.5 rounded-full bg-primary" />
+                        )}
+                      </View>
+                      <Text className="text-foreground font-medium">
+                        {carrier}
+                      </Text>
+                    </TouchableOpacity>
+                  ),
+                )}
+              </View>
+
+              <Button
+                title={intl.formatMessage({ id: "common.cancel" })}
+                onPress={() => setShowCarrierPicker(false)}
+                variant="outline"
+                className="mt-4"
+              />
             </ScrollView>
           </View>
         </View>

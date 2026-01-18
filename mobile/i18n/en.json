@@ -297,6 +297,7 @@
   "admin.orders.manage.trackingPlaceholder": "Enter tracking number",
   "admin.orders.manage.shippingCost": "Shipping Cost",
   "admin.orders.manage.shippingCarrier": "Shipping Carrier",
+  "admin.orders.manage.selectCarrier": "Select carrier",
   "admin.orders.manage.shippingDate": "Shipping Date",
   "admin.orders.manage.createLabelButton": "Create Label & Mark as Shipped",
   "admin.orders.manage.updateSuccess": "Order updated successfully",

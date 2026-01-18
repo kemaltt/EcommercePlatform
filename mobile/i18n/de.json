@@ -341,6 +341,7 @@
   "admin.orders.manage.trackingPlaceholder": "Sendungsnummer eingeben",
   "admin.orders.manage.shippingCost": "Versandkosten",
   "admin.orders.manage.shippingCarrier": "Versanddienstleister",
+  "admin.orders.manage.selectCarrier": "Dienstleister auswählen",
   "admin.orders.manage.shippingDate": "Versanddatum",
   "admin.orders.manage.createLabelButton": "Etikett Erstellen & Als Versandt Markieren",
   "admin.orders.manage.updateSuccess": "Bestellung erfolgreich aktualisiert",
