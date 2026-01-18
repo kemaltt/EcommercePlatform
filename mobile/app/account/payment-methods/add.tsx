@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   Alert,
   TextInput,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FormattedMessage, useIntl } from "react-intl";
 import { ChevronLeft, CreditCard } from "lucide-react-native";
@@ -28,6 +28,8 @@ type FormData = z.infer<typeof schema>;
 
 export default function AddPaymentMethodScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const isEditing = !!params.id;
   const { isDark } = useTheme();
   const intl = useIntl();
 
@@ -35,22 +37,37 @@ export default function AddPaymentMethodScreen() {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      cardNumber: "",
-      expiry: "",
-      cvv: "",
-      holderName: "",
+      cardNumber: (params.cardNumber as string) || "",
+      expiry: (params.expiry as string) || "",
+      cvv: "123", // Dummy CVV for edit mode as it's usually not stored/passed
+      holderName: (params.holderName as string) || "",
     },
   });
 
+  useEffect(() => {
+    if (isEditing) {
+      reset({
+        cardNumber: (params.cardNumber as string) || "",
+        expiry: (params.expiry as string) || "",
+        cvv: "123",
+        holderName: (params.holderName as string) || "",
+      });
+    }
+  }, [isEditing, params, reset]);
+
   const onSubmit = (data: FormData) => {
-    // In a real app, this would make an API call
-    console.log("Adding card:", data);
+    console.log(isEditing ? "Updating card:" : "Adding card:", data);
     Alert.alert(
       intl.formatMessage({ id: "common.success" }),
-      intl.formatMessage({ id: "paymentMethods.addParams.success" }),
+      intl.formatMessage({
+        id: isEditing
+          ? "profile.updateSuccess"
+          : "paymentMethods.addParams.success",
+      }),
       [{ text: "OK", onPress: () => router.back() }],
     );
   };
@@ -67,7 +84,9 @@ export default function AddPaymentMethodScreen() {
             <ChevronLeft size={24} color={isDark ? "white" : "black"} />
           </TouchableOpacity>
           <Text className="text-xl font-bold text-foreground">
-            <FormattedMessage id="paymentMethods.add" />
+            <FormattedMessage
+              id={isEditing ? "paymentMethods.edit" : "paymentMethods.add"}
+            />
           </Text>
         </View>
 

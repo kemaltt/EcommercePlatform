@@ -76,6 +76,43 @@ export default function PaymentMethodsScreen() {
   const intl = useIntl();
   const [methods, setMethods] = useState<PaymentMethod[]>(INITIAL_METHODS);
 
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  const handleAddNew = () => {
+    setShowAddModal(true);
+  };
+
+  const handleSelectMethod = (type: PaymentMethodType) => {
+    setShowAddModal(false);
+
+    // Duplicate Check for static methods
+    const exists = methods.some((m) => m.type === type);
+    if (
+      (type === "apple_pay" || type === "paypal" || type === "klarna") &&
+      exists
+    ) {
+      Alert.alert(
+        intl.formatMessage({ id: "common.error" }),
+        intl.formatMessage({ id: "paymentMethods.error.duplicate" }),
+      );
+      return;
+    }
+
+    if (type === "visa" || type === "mastercard") {
+      router.push("/account/payment-methods/add");
+    } else {
+      // For now, just add a mock item for non-card types
+      const newId = (methods.length + 1).toString();
+      const newMethod: PaymentMethod = {
+        id: newId,
+        type: type,
+        isPrimary: false,
+        email: type === "paypal" ? "user@example.com" : undefined, // Mock email
+      };
+      setMethods([...methods, newMethod]);
+    }
+  };
+
   const handleDelete = (id: string) => {
     Alert.alert(
       intl.formatMessage({ id: "common.delete" }),
@@ -92,10 +129,30 @@ export default function PaymentMethodsScreen() {
   };
 
   const handleEdit = (id: string) => {
-    Alert.alert(
-      intl.formatMessage({ id: "common.edit" }),
-      "Edit functionality would open here.",
-    );
+    const method = methods.find((m) => m.id === id);
+    if (!method) return;
+
+    if (
+      method.type === "visa" ||
+      method.type === "mastercard" ||
+      method.type === "amex"
+    ) {
+      router.push({
+        pathname: "/account/payment-methods/add",
+        params: {
+          id: method.id,
+          cardNumber: `**** **** **** ${method.last4}`,
+          expiry: method.expiry,
+          holderName: method.holderName,
+        },
+      });
+    } else {
+      // For other types, editing might just mean re-linking or changing email
+      Alert.alert(
+        intl.formatMessage({ id: "common.edit" }),
+        "Edit functionality for this method would open a specific provider flow.",
+      );
+    }
   };
 
   const getMethodIcon = (type: PaymentMethodType) => {
@@ -238,10 +295,10 @@ export default function PaymentMethodsScreen() {
   const otherMethods = methods.filter((m) => !m.isPrimary);
 
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-background relative">
       <SafeAreaView className="flex-1" edges={["top"]}>
         {/* Header */}
-        <View className="px-6 py-4 flex-row items-center justify-between z-10">
+        <View className="px-6 py-4 flex-row items-center justify-between z-10 border-b border-border/10">
           <TouchableOpacity
             onPress={() => router.back()}
             className={`w-10 h-10 rounded-full items-center justify-center border ${isDark ? "bg-card/50 border-white/5" : "bg-white border-gray-200 shadow-sm"}`}
@@ -301,13 +358,81 @@ export default function PaymentMethodsScreen() {
         <View className="absolute bottom-10 left-6 right-6">
           <Button
             title={intl.formatMessage({ id: "paymentMethods.add" })}
-            onPress={() => router.push("/account/payment-methods/add")}
+            onPress={handleAddNew}
             variant="primary"
             className="w-full h-14 rounded-xl shadow-xl shadow-indigo-500/20"
             icon={<Plus size={24} color="white" />}
             textStyle={{ fontSize: 16, fontWeight: "700", letterSpacing: 0.5 }}
           />
         </View>
+
+        {/* Mock Modal / Bottom Sheet */}
+        {showAddModal && (
+          <View className="absolute inset-0 bg-black/80 justify-end z-50">
+            <TouchableOpacity
+              className="flex-1"
+              onPress={() => setShowAddModal(false)}
+            />
+            <View
+              className={`rounded-t-3xl p-6 ${isDark ? "bg-[#1e2029]" : "bg-white"}`}
+            >
+              <Text
+                className={`text-xl font-bold mb-6 text-center ${isDark ? "text-white" : "text-gray-900"}`}
+              >
+                <FormattedMessage id="paymentMethods.selectTitle" />
+              </Text>
+
+              <View className="gap-3">
+                <Button
+                  title={intl.formatMessage({
+                    id: "paymentMethods.type.credit",
+                  })}
+                  variant="outline"
+                  className="justify-start pl-6 h-14"
+                  icon={
+                    <CreditCard size={20} color={isDark ? "white" : "black"} />
+                  }
+                  onPress={() => handleSelectMethod("visa")}
+                />
+                <Button
+                  title={intl.formatMessage({
+                    id: "paymentMethods.type.apple_pay",
+                  })}
+                  variant="outline"
+                  className="justify-start pl-6 h-14"
+                  icon={<Apple size={20} color={isDark ? "white" : "black"} />}
+                  onPress={() => handleSelectMethod("apple_pay")}
+                />
+
+                <Button
+                  title={intl.formatMessage({
+                    id: "paymentMethods.type.paypal",
+                  })}
+                  variant="outline"
+                  className="justify-start pl-6 h-14"
+                  onPress={() => handleSelectMethod("paypal")}
+                  // Using text icon for simplicity in button or ideally passing image
+                />
+
+                <Button
+                  title={intl.formatMessage({
+                    id: "paymentMethods.type.klarna",
+                  })}
+                  variant="outline"
+                  className="justify-start pl-6 h-14"
+                  onPress={() => handleSelectMethod("klarna")}
+                />
+              </View>
+
+              <Button
+                title={intl.formatMessage({ id: "common.cancel" })}
+                variant="ghost"
+                className="mt-4"
+                onPress={() => setShowAddModal(false)}
+              />
+            </View>
+          </View>
+        )}
       </SafeAreaView>
     </View>
   );
