@@ -19,7 +19,7 @@ import {
   User,
   CreditCard,
   History,
-  Trash2
+  Trash2,
 } from "lucide-react-native";
 import { StatusBar } from "expo-status-bar";
 import { useIntl } from "react-intl";
@@ -36,20 +36,20 @@ export default function AccountScreen() {
   const { isDark } = useTheme();
   const { user } = useAuth();
   const intl = useIntl();
-  
+
   const [isFaceIdEnabled, setIsFaceIdEnabled] = React.useState(false);
   const [isBiometricAvailable, setIsBiometricAvailable] = React.useState(false);
   const [showPasswordModal, setShowPasswordModal] = React.useState(false);
-  const [statusModal, setStatusModal] = React.useState<{ 
-    visible: boolean; 
-    type: 'success' | 'error'; 
-    title: string; 
-    message: string; 
+  const [statusModal, setStatusModal] = React.useState<{
+    visible: boolean;
+    type: "success" | "error";
+    title: string;
+    message: string;
   }>({
     visible: false,
-    type: 'success',
-    title: '',
-    message: '',
+    type: "success",
+    title: "",
+    message: "",
   });
   const [confirmingPassword, setConfirmingPassword] = React.useState(false);
 
@@ -57,7 +57,7 @@ export default function AccountScreen() {
     (async () => {
       const available = await BiometricService.isAvailable();
       setIsBiometricAvailable(available);
-      
+
       const enabled = await BiometricService.isEnabled();
       setIsFaceIdEnabled(enabled);
     })();
@@ -65,7 +65,9 @@ export default function AccountScreen() {
 
   const toggleFaceId = async (value: boolean) => {
     if (value) {
-      const authSuccess = await BiometricService.authenticate(intl.formatMessage({ id: 'account.biometric' }));
+      const authSuccess = await BiometricService.authenticate(
+        intl.formatMessage({ id: "account.biometric" }),
+      );
       if (authSuccess) {
         setShowPasswordModal(true);
       }
@@ -77,30 +79,35 @@ export default function AccountScreen() {
 
   const handlePasswordConfirm = async (password: string) => {
     if (!user) return;
-    
+
     setConfirmingPassword(true);
     try {
       await api.post("/auth/login", { username: user.email, password });
-      
+
       await BiometricService.setEnabled(true);
-      await BiometricService.storeCredentials({ username: user.email, password });
+      await BiometricService.storeCredentials({
+        username: user.email,
+        password,
+      });
       setIsFaceIdEnabled(true);
       setShowPasswordModal(false);
-      
+
       setTimeout(() => {
         setStatusModal({
           visible: true,
-          type: 'success',
-          title: intl.formatMessage({ id: 'account.biometric.success.title' }),
-          message: intl.formatMessage({ id: 'account.biometric.success.message' }),
+          type: "success",
+          title: intl.formatMessage({ id: "account.biometric.success.title" }),
+          message: intl.formatMessage({
+            id: "account.biometric.success.message",
+          }),
         });
       }, 500);
     } catch (error: any) {
       setStatusModal({
         visible: true,
-        type: 'error',
-        title: intl.formatMessage({ id: 'common.error' }),
-        message: intl.formatMessage({ id: 'account.biometric.error.message' }),
+        type: "error",
+        title: intl.formatMessage({ id: "common.error" }),
+        message: intl.formatMessage({ id: "account.biometric.error.message" }),
       });
     } finally {
       setConfirmingPassword(false);
@@ -113,36 +120,44 @@ export default function AccountScreen() {
     </Text>
   );
 
-  const AccountItem = ({ 
-    icon, 
-    label, 
-    subLabel, 
-    onPress, 
-    showSwitch = false, 
-    switchValue = false, 
+  const AccountItem = ({
+    icon,
+    label,
+    subLabel,
+    onPress,
+    showSwitch = false,
+    switchValue = false,
     onSwitchChange,
-    isDestructive = false 
+    isDestructive = false,
   }: any) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       onPress={onPress}
       disabled={showSwitch}
       activeOpacity={0.7}
       className="flex-row items-center justify-between py-4 border-b border-border/10"
     >
       <View className="flex-row items-center flex-1">
-        <View className={`w-10 h-10 items-center justify-center mr-3 rounded-xl ${isDestructive ? 'bg-red-500/10' : 'bg-card'}`}>
-          {React.cloneElement(icon, { color: isDestructive ? "#ef4444" : (isDark ? "white" : "black") })}
+        <View
+          className={`w-10 h-10 items-center justify-center mr-3 rounded-xl ${isDestructive ? "bg-red-500/10" : "bg-card"}`}
+        >
+          {React.cloneElement(icon, {
+            color: isDestructive ? "#ef4444" : isDark ? "white" : "black",
+          })}
         </View>
-        <Text className={`text-[17px] font-medium ${isDestructive ? 'text-red-500' : 'text-foreground'}`}>{label}</Text>
+        <Text
+          className={`text-[17px] font-medium ${isDestructive ? "text-red-500" : "text-foreground"}`}
+        >
+          {label}
+        </Text>
       </View>
-      
+
       <View className="flex-row items-center">
         {subLabel && !showSwitch && (
           <Text className="text-muted-foreground mr-2 text-sm">{subLabel}</Text>
         )}
         {showSwitch ? (
-          <Switch 
-            value={switchValue} 
+          <Switch
+            value={switchValue}
             onValueChange={onSwitchChange}
             trackColor={{ false: "#e4e4e7", true: "#6366f1" }}
             thumbColor="#fff"
@@ -157,82 +172,93 @@ export default function AccountScreen() {
   return (
     <View className="flex-1 bg-background">
       <StatusBar style={isDark ? "light" : "dark"} />
-      <SafeAreaView className="flex-1" edges={['top']}>
-        
+      <SafeAreaView className="flex-1" edges={["top"]}>
         {/* Header */}
         <View className="px-6 py-4 flex-row items-center">
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => router.back()}
             className="w-10 h-10 rounded-full bg-card items-center justify-center mr-4"
           >
             <ChevronLeft size={24} color={isDark ? "white" : "black"} />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-foreground">{intl.formatMessage({ id: 'account.title' })}</Text>
+          <Text className="text-xl font-bold text-foreground">
+            {intl.formatMessage({ id: "account.title" })}
+          </Text>
         </View>
 
-        <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+        <ScrollView
+          className="flex-1 px-6"
+          showsVerticalScrollIndicator={false}
+        >
           <View className="mb-10">
-            <SectionHeader title={intl.formatMessage({ id: 'account.security' })} />
-            
+            <SectionHeader
+              title={intl.formatMessage({ id: "account.security" })}
+            />
+
             {(isBiometricAvailable || __DEV__) && (
-              <AccountItem 
-                icon={<ScanFace size={22} />} 
-                label={intl.formatMessage({ id: 'account.biometric' })} 
+              <AccountItem
+                icon={<ScanFace size={22} />}
+                label={intl.formatMessage({ id: "account.biometric" })}
                 showSwitch
                 switchValue={isFaceIdEnabled}
                 onSwitchChange={toggleFaceId}
               />
             )}
 
-            <AccountItem 
-              icon={<Shield size={22} />} 
-              label={intl.formatMessage({ id: 'account.changePassword' })} 
+            <AccountItem
+              icon={<Shield size={22} />}
+              label={intl.formatMessage({ id: "account.changePassword" })}
               onPress={() => router.push("/account/change-password")}
             />
 
-            <SectionHeader title={intl.formatMessage({ id: 'account.personalData' })} />
-            
-            <AccountItem 
-              icon={<User size={22} />} 
-              label={intl.formatMessage({ id: 'account.editProfile' })} 
-              onPress={() => {}}
-            />
-            <AccountItem 
-              icon={<CreditCard size={22} />} 
-              label={intl.formatMessage({ id: 'account.paymentMethods' })} 
-              onPress={() => {}}
-            />
-            <AccountItem 
-              icon={<History size={22} />} 
-              label={intl.formatMessage({ id: 'account.orderHistory' })} 
-              onPress={() => {}}
+            <SectionHeader
+              title={intl.formatMessage({ id: "account.personalData" })}
             />
 
-            <SectionHeader title={intl.formatMessage({ id: 'account.dangerZone' })} />
-            <AccountItem 
-              icon={<Trash2 size={22} />} 
-              label={intl.formatMessage({ id: 'account.deleteAccount' })} 
+            <AccountItem
+              icon={<User size={22} />}
+              label={intl.formatMessage({ id: "account.editProfile" })}
+              onPress={() => {}}
+            />
+            <AccountItem
+              icon={<CreditCard size={22} />}
+              label={intl.formatMessage({ id: "account.paymentMethods" })}
+              onPress={() => {}}
+            />
+            <AccountItem
+              icon={<History size={22} />}
+              label={intl.formatMessage({ id: "account.orderHistory" })}
+              onPress={() => router.push("/account/orders")}
+            />
+
+            <SectionHeader
+              title={intl.formatMessage({ id: "account.dangerZone" })}
+            />
+            <AccountItem
+              icon={<Trash2 size={22} />}
+              label={intl.formatMessage({ id: "account.deleteAccount" })}
               isDestructive
               onPress={() => {}}
             />
           </View>
         </ScrollView>
 
-        <PasswordConfirmModal 
+        <PasswordConfirmModal
           visible={showPasswordModal}
           loading={confirmingPassword}
           onClose={() => setShowPasswordModal(false)}
           onConfirm={handlePasswordConfirm}
         />
 
-        <SuccessModal 
+        <SuccessModal
           visible={statusModal.visible}
           type={statusModal.type}
           title={statusModal.title}
           message={statusModal.message}
-          onClose={() => setStatusModal(prev => ({ ...prev, visible: false }))}
+          onClose={() =>
+            setStatusModal((prev) => ({ ...prev, visible: false }))
+          }
         />
-
       </SafeAreaView>
     </View>
   );

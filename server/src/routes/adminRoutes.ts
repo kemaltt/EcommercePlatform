@@ -8,6 +8,7 @@ router.use(isAdmin);
 
 router.get("/stats", adminController.getStats);
 router.get("/users", adminController.getAllUsers);
+router.get("/orders", adminController.getAllOrders);
 router.get("/users/:id", adminController.getUser);
 router.patch("/users/:id", adminController.updateUser);
 

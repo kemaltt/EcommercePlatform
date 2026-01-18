@@ -280,5 +280,21 @@
   "checkout.success.deliveryEstimated": "TAHMİNİ TESLİMAT",
   "checkout.success.confirmationSent": "Onay e-postası {email} adresine gönderildi",
   "checkout.success.trackOrder": "Siparişi Takip Et",
-  "checkout.success.continueShopping": "Alışverişe Devam Et"
+  "checkout.success.continueShopping": "Alışverişe Devam Et",
+  "account.menu.orders": "Siparişlerim",
+  "orders.title": "Siparişlerim",
+  "orders.empty.title": "Henüz Siparişiniz Yok",
+  "orders.empty.subtitle": "Henüz bir sipariş vermediniz. Alışverişe başlayın, siparişleriniz burada görünecektir!",
+  "orders.status.pending": "Beklemede",
+  "orders.status.paid": "Ödendi",
+  "orders.status.shipped": "Kargoda",
+  "orders.status.delivered": "Teslim Edildi",
+  "orders.status.cancelled": "İptal Edildi",
+  "orders.details.title": "Sipariş Detayı",
+  "orders.details.summary": "Sipariş Özeti",
+  "orders.details.items": "Sipariş Edilen Ürünler",
+  "orders.details.shipping": "Teslimat Bilgileri",
+  "orders.details.payment": "Ödeme Yöntemi",
+  "admin.menu.orders": "Siparişleri Yönet",
+  "admin.orders.title": "Sipariş Yönetimi"
 }

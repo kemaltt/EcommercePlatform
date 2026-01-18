@@ -67,6 +67,7 @@ export interface IStorage {
     quantity: number,
   ): Promise<CartItem | undefined>;
   removeCartItem(id: string): Promise<boolean>;
+  clearCart(userId: string): Promise<void>;
   getCartItemByUserAndProduct(
     userId: string,
     productId: string,
@@ -92,6 +93,7 @@ export interface IStorage {
 
   // New method
   getUsers(): Promise<User[]>;
+  getAllOrders(): Promise<Order[]>;
 }
 
 // MemStorage kodunu koruyoruz (gerekirse tekrar kullanabiliriz)
@@ -120,6 +122,10 @@ export class MemStorage implements IStorage {
 
     // Add some initial products
     this.initializeProducts();
+  }
+
+  async getAllOrders(): Promise<Order[]> {
+    return Array.from(this.orders.values());
   }
 
   private initializeProducts() {
@@ -419,6 +425,15 @@ export class MemStorage implements IStorage {
 
   async removeCartItem(id: string): Promise<boolean> {
     return this.cartItems.delete(id);
+  }
+
+  async clearCart(userId: string): Promise<void> {
+    const userItems = Array.from(this.cartItems.values()).filter(
+      (item) => item.userId === userId,
+    );
+    userItems.forEach((item) => {
+      this.cartItems.delete(item.id);
+    });
   }
 
   async getCartItemByUserAndProduct(
@@ -897,6 +912,10 @@ export class DatabaseStorage implements IStorage {
     return !!result;
   }
 
+  async clearCart(userId: string): Promise<void> {
+    await db.delete(cartItems).where(eq(cartItems.userId, userId));
+  }
+
   async getCartItemByUserAndProduct(
     userId: string,
     productId: string,
@@ -1056,7 +1075,29 @@ export class DatabaseStorage implements IStorage {
 
     return ordersWithItems;
   }
+
+  async getAllOrders(): Promise<Order[]> {
+    const allOrders = await db
+      .select()
+      .from(orders)
+      .orderBy(desc(orders.createdAt));
+
+    const ordersWithItems: Order[] = [];
+
+    for (const order of allOrders) {
+      const items = await db
+        .select()
+        .from(orderItems)
+        .where(eq(orderItems.orderId, order.id));
+
+      ordersWithItems.push({
+        ...order,
+        items,
+      });
+    }
+
+    return ordersWithItems;
+  }
 }
 
-// Veritabanı depolama kullanarak aktif hale getir
 export const storage = new DatabaseStorage();

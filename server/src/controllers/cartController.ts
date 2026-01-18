@@ -79,3 +79,14 @@ export const removeCartItem = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error removing cart item" });
   }
 };
+
+export const clearCart = async (req: Request, res: Response) => {
+  try {
+    const userId = (req.user as any).id;
+    await storage.clearCart(userId);
+    res.status(204).send();
+  } catch (err) {
+    console.error("[clearCart] Error:", err);
+    res.status(500).json({ message: "Error clearing cart" });
+  }
+};

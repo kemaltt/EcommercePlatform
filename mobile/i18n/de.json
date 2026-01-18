@@ -280,5 +280,21 @@
   "checkout.success.deliveryEstimated": "VORAUSSICHTLICHE LIEFERUNG",
   "checkout.success.confirmationSent": "Bestätigung wurde an {email} gesendet",
   "checkout.success.trackOrder": "Bestellung verfolgen",
-  "checkout.success.continueShopping": "Weiter einkaufen"
+  "checkout.success.continueShopping": "Weiter einkaufen",
+  "account.menu.orders": "Meine Bestellungen",
+  "orders.title": "Meine Bestellungen",
+  "orders.empty.title": "Noch keine Bestellungen",
+  "orders.empty.subtitle": "Sie haben noch keine Bestellungen aufgegeben. Beginnen Sie mit dem Einkaufen, und sie werden hier erscheinen!",
+  "orders.status.pending": "Ausstehend",
+  "orders.status.paid": "Bezahlt",
+  "orders.status.shipped": "Versandt",
+  "orders.status.delivered": "Zugestellt",
+  "orders.status.cancelled": "Storniert",
+  "orders.details.title": "Bestelldetails",
+  "orders.details.summary": "Bestellübersicht",
+  "orders.details.items": "Bestellte Artikel",
+  "orders.details.shipping": "Versandinformationen",
+  "orders.details.payment": "Zahlungsmethode",
+  "admin.menu.orders": "Bestellungen verwalten",
+  "admin.orders.title": "Bestellverwaltung"
 }

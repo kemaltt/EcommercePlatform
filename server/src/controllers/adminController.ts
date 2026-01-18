@@ -69,3 +69,13 @@ export const updateUser = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Error updating user" });
   }
 };
+
+export const getAllOrders = async (req: Request, res: Response) => {
+  try {
+    const orders = await storage.getAllOrders();
+    res.json(orders);
+  } catch (err) {
+    console.error("Error fetching all orders:", err);
+    res.status(500).json({ message: "Error fetching orders" });
+  }
+};
