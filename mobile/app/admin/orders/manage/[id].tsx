@@ -365,7 +365,10 @@ export default function ManageOrderScreen() {
                     />
                   </Text>
                   <TouchableOpacity
-                    onPress={() => setShowCarrierPicker(true)}
+                    onPress={() => {
+                      console.log("Opening carrier picker");
+                      setShowCarrierPicker(true);
+                    }}
                     className="bg-card border border-border rounded-2xl px-4 py-3 flex-row items-center justify-between"
                   >
                     <Text
@@ -454,73 +457,73 @@ export default function ManageOrderScreen() {
                 />
               </View>
             </ScrollView>
-          </View>
-        </View>
-      </Modal>
 
-      {/* Carrier Picker Modal */}
-      <Modal
-        visible={showCarrierPicker}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowCarrierPicker(false)}
-      >
-        <View className="flex-1 justify-end bg-black/50">
-          <View
-            className={`${isDark ? "bg-background" : "bg-white"} rounded-t-3xl max-h-[60%]`}
-          >
-            {/* Handle */}
-            <View className="items-center py-3">
-              <View className="w-12 h-1 bg-muted-foreground/30 rounded-full" />
-            </View>
+            {/* Carrier Picker Modal - Inside Label Modal */}
+            <Modal
+              visible={showCarrierPicker}
+              transparent
+              animationType="slide"
+              onRequestClose={() => setShowCarrierPicker(false)}
+            >
+              <View className="flex-1 justify-end bg-black/50">
+                <View
+                  className={`${isDark ? "bg-background" : "bg-white"} rounded-t-3xl max-h-[60%]`}
+                >
+                  {/* Handle */}
+                  <View className="items-center py-3">
+                    <View className="w-12 h-1 bg-muted-foreground/30 rounded-full" />
+                  </View>
 
-            <ScrollView className="px-6 pb-6">
-              <Text className="text-foreground font-bold text-xl mb-4">
-                <FormattedMessage
-                  id="admin.orders.manage.shippingCarrier"
-                  defaultMessage="Shipping Carrier"
-                />
-              </Text>
+                  <ScrollView className="px-6 pb-6">
+                    <Text className="text-foreground font-bold text-xl mb-4">
+                      <FormattedMessage
+                        id="admin.orders.manage.shippingCarrier"
+                        defaultMessage="Shipping Carrier"
+                      />
+                    </Text>
 
-              <View className="bg-card border border-border rounded-2xl">
-                {["DHL", "DPD", "UPS", "FedEx", "Hermes", "GLS"].map(
-                  (carrier, index) => (
-                    <TouchableOpacity
-                      key={carrier}
-                      onPress={() => {
-                        setShippingCarrier(carrier);
-                        setShowCarrierPicker(false);
-                      }}
-                      className={`p-4 flex-row items-center ${
-                        index !== 5 ? "border-b border-border" : ""
-                      }`}
-                    >
-                      <View
-                        className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-3 ${
-                          shippingCarrier === carrier
-                            ? "border-primary"
-                            : "border-muted-foreground/30"
-                        }`}
-                      >
-                        {shippingCarrier === carrier && (
-                          <View className="w-2.5 h-2.5 rounded-full bg-primary" />
-                        )}
-                      </View>
-                      <Text className="text-foreground font-medium">
-                        {carrier}
-                      </Text>
-                    </TouchableOpacity>
-                  ),
-                )}
+                    <View className="bg-card border border-border rounded-2xl">
+                      {["DHL", "DPD", "UPS", "FedEx", "Hermes", "GLS"].map(
+                        (carrier, index) => (
+                          <TouchableOpacity
+                            key={carrier}
+                            onPress={() => {
+                              setShippingCarrier(carrier);
+                              setShowCarrierPicker(false);
+                            }}
+                            className={`p-4 flex-row items-center ${
+                              index !== 5 ? "border-b border-border" : ""
+                            }`}
+                          >
+                            <View
+                              className={`w-5 h-5 rounded-full border-2 items-center justify-center mr-3 ${
+                                shippingCarrier === carrier
+                                  ? "border-primary"
+                                  : "border-muted-foreground/30"
+                              }`}
+                            >
+                              {shippingCarrier === carrier && (
+                                <View className="w-2.5 h-2.5 rounded-full bg-primary" />
+                              )}
+                            </View>
+                            <Text className="text-foreground font-medium">
+                              {carrier}
+                            </Text>
+                          </TouchableOpacity>
+                        ),
+                      )}
+                    </View>
+
+                    <Button
+                      title={intl.formatMessage({ id: "common.cancel" })}
+                      onPress={() => setShowCarrierPicker(false)}
+                      variant="outline"
+                      className="mt-4"
+                    />
+                  </ScrollView>
+                </View>
               </View>
-
-              <Button
-                title={intl.formatMessage({ id: "common.cancel" })}
-                onPress={() => setShowCarrierPicker(false)}
-                variant="outline"
-                className="mt-4"
-              />
-            </ScrollView>
+            </Modal>
           </View>
         </View>
       </Modal>
