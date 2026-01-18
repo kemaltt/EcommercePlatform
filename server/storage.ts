@@ -12,8 +12,14 @@ import {
   favorites,
   cartItems,
   addresses,
+  orders,
+  orderItems,
   Address,
   InsertAddress,
+  Order,
+  InsertOrder,
+  OrderItem,
+  InsertOrderItem,
 } from "../shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -76,6 +82,11 @@ export interface IStorage {
   ): Promise<Address | undefined>;
   deleteAddress(id: string): Promise<boolean>;
 
+  // Order operations
+  createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order>;
+  getOrder(id: string): Promise<Order | undefined>;
+  getOrdersByUser(userId: string): Promise<Order[]>;
+
   // Session store
   sessionStore: SessionStore;
 
@@ -90,6 +101,8 @@ export class MemStorage implements IStorage {
   private favorites: Map<string, Favorite>;
   private cartItems: Map<string, CartItem>;
   private addresses: Map<string, Address>;
+  private orders: Map<string, Order>;
+  private orderItems: Map<string, OrderItem>;
   sessionStore: SessionStore;
 
   constructor() {
@@ -98,7 +111,8 @@ export class MemStorage implements IStorage {
     this.favorites = new Map();
     this.cartItems = new Map();
     this.addresses = new Map();
-    this.addresses = new Map();
+    this.orders = new Map();
+    this.orderItems = new Map();
 
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // 24 hours
@@ -461,6 +475,73 @@ export class MemStorage implements IStorage {
 
   async deleteAddress(id: string): Promise<boolean> {
     return this.addresses.delete(id);
+  }
+
+  // Order operations
+  async createOrder(
+    order: InsertOrder,
+    items: InsertOrderItem[],
+  ): Promise<Order> {
+    const id = crypto.randomUUID();
+    const now = new Date();
+
+    const newOrder: Order = {
+      ...order,
+      id,
+      status: order.status || "pending",
+      paymentStatus: order.paymentStatus || "pending",
+      shippingCost: order.shippingCost || 0,
+      tax: order.tax || 0,
+      createdAt: now,
+      updatedAt: now,
+      items: [],
+    };
+
+    this.orders.set(id, newOrder);
+
+    const createdItems: OrderItem[] = [];
+    for (const item of items) {
+      const itemId = crypto.randomUUID();
+      const newItem: OrderItem = {
+        ...item,
+        id: itemId,
+        orderId: id,
+        options: item.options || null,
+      };
+      this.orderItems.set(itemId, newItem);
+      createdItems.push(newItem);
+    }
+
+    newOrder.items = createdItems;
+    return newOrder;
+  }
+
+  async getOrder(id: string): Promise<Order | undefined> {
+    const order = this.orders.get(id);
+    if (!order) return undefined;
+
+    const items = Array.from(this.orderItems.values()).filter(
+      (item) => item.orderId === id,
+    );
+    return { ...order, items };
+  }
+
+  async getOrdersByUser(userId: string): Promise<Order[]> {
+    const userOrders = Array.from(this.orders.values()).filter(
+      (order) => order.userId === userId,
+    );
+
+    const ordersWithItems: Order[] = [];
+    for (const order of userOrders) {
+      const items = Array.from(this.orderItems.values()).filter(
+        (item) => item.orderId === order.id,
+      );
+      ordersWithItems.push({ ...order, items });
+    }
+
+    return ordersWithItems.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    );
   }
 }
 
@@ -902,6 +983,78 @@ export class DatabaseStorage implements IStorage {
   async deleteAddress(id: string): Promise<boolean> {
     const result = await db.delete(addresses).where(eq(addresses.id, id));
     return !!result;
+  }
+
+  // Order operations
+  async createOrder(
+    order: InsertOrder,
+    items: InsertOrderItem[],
+  ): Promise<Order> {
+    return await db.transaction(async (tx) => {
+      const [newOrder] = await tx
+        .insert(orders)
+        .values({
+          ...order,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning();
+
+      const itemsToInsert = items.map((item) => ({
+        ...item,
+        orderId: newOrder.id,
+      }));
+
+      const createdItems = await tx
+        .insert(orderItems)
+        .values(itemsToInsert as any)
+        .returning();
+
+      return {
+        ...newOrder,
+        items: createdItems,
+      };
+    });
+  }
+
+  async getOrder(id: string): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+
+    if (!order) return undefined;
+
+    const items = await db
+      .select()
+      .from(orderItems)
+      .where(eq(orderItems.orderId, id));
+
+    return {
+      ...order,
+      items,
+    };
+  }
+
+  async getOrdersByUser(userId: string): Promise<Order[]> {
+    const userOrders = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.userId, userId))
+      .orderBy(desc(orders.createdAt));
+
+    const ordersWithItems: Order[] = [];
+
+    for (const order of userOrders) {
+      const items = await db
+        .select()
+        .from(orderItems)
+        .where(eq(orderItems.orderId, order.id));
+
+      ordersWithItems.push({
+        ...order,
+        items,
+      });
+    }
+
+    return ordersWithItems;
   }
 }
 

@@ -1,7 +1,24 @@
-import { View, Text, FlatList, TouchableOpacity, Alert, ScrollView, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { useCart } from "../../hooks/use-cart";
 import { Button } from "../../components/ui/Button";
-import { Trash2, Plus, Minus, ShoppingBag, X, Sparkles, ChevronLeft, ArrowRight } from "lucide-react-native";
+import {
+  Trash2,
+  Plus,
+  Minus,
+  ShoppingBag,
+  X,
+  Sparkles,
+  ChevronLeft,
+  ArrowRight,
+} from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { FormattedMessage, useIntl } from "react-intl";
 import { Image } from "expo-image";
@@ -10,7 +27,8 @@ import { StatusBar } from "expo-status-bar";
 import { useTheme } from "../../contexts/theme-context";
 
 export default function CartScreen() {
-  const { cartItems, subtotal, updateQuantity, removeFromCart, isLoading } = useCart();
+  const { cartItems, subtotal, updateQuantity, removeFromCart, isLoading } =
+    useCart();
   const router = useRouter();
   const intl = useIntl();
   const { isDark } = useTheme();
@@ -30,14 +48,14 @@ export default function CartScreen() {
           <ShoppingBag size={40} color="#6366f1" />
         </View>
         <Text className="text-2xl font-bold text-foreground mb-2">
-          {intl.formatMessage({ id: 'cart.empty.title' })}
+          {intl.formatMessage({ id: "cart.empty.title" })}
         </Text>
         <Text className="text-muted-foreground text-center mb-8 max-w-[250px]">
-          {intl.formatMessage({ id: 'cart.empty.subtitle' })}
+          {intl.formatMessage({ id: "cart.empty.subtitle" })}
         </Text>
-        <Button 
-          title={intl.formatMessage({ id: 'cart.startShopping' })}
-          onPress={() => router.push("/(tabs)")} 
+        <Button
+          title={intl.formatMessage({ id: "cart.startShopping" })}
+          onPress={() => router.push("/(tabs)")}
           className="w-full max-w-xs h-14 rounded-2xl"
           icon={<ArrowRight size={20} color="white" />}
         />
@@ -45,144 +63,188 @@ export default function CartScreen() {
     );
   }
 
-  const freeShippingThreshold = 365.00; // Example threshold
-  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - subtotal);
+  const freeShippingThreshold = 365.0; // Example threshold
+  const remainingForFreeShipping = Math.max(
+    0,
+    freeShippingThreshold - subtotal,
+  );
 
   return (
     <View className="flex-1 bg-background">
       <StatusBar style={isDark ? "light" : "dark"} />
-      <SafeAreaView className="flex-1" edges={['top']}>
-        
+      <SafeAreaView className="flex-1" edges={["top"]}>
         {/* Header */}
         <View className="px-6 py-4 flex-row justify-between items-center bg-background z-10">
-          <TouchableOpacity 
-             onPress={() => router.back()}
-             className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
-           >
-              <ChevronLeft size={20} color={isDark ? "#94a3b8" : "#52525b"} />
-           </TouchableOpacity>
-           
-           <Text className="text-xl font-bold text-foreground">{intl.formatMessage({ id: 'cart.title' })}</Text>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
+          >
+            <ChevronLeft size={20} color={isDark ? "#94a3b8" : "#52525b"} />
+          </TouchableOpacity>
 
-           <View className="w-10 h-10 items-center justify-center">
-              <ShoppingBag size={24} color={isDark ? "white" : "black"} />
-              <View className="absolute top-0 right-0 bg-[#6366f1] w-4 h-4 rounded-full items-center justify-center border border-background">
-                 <Text className="text-[9px] font-bold text-white">{cartItems.length}</Text>
-              </View>
-           </View>
+          <Text className="text-xl font-bold text-foreground">
+            {intl.formatMessage({ id: "cart.title" })}
+          </Text>
+
+          <View className="w-10 h-10 items-center justify-center">
+            <ShoppingBag size={24} color={isDark ? "white" : "black"} />
+            <View className="absolute top-0 right-0 bg-[#6366f1] w-4 h-4 rounded-full items-center justify-center border border-background">
+              <Text className="text-[9px] font-bold text-white">
+                {cartItems.length}
+              </Text>
+            </View>
+          </View>
         </View>
-        
-        <ScrollView 
-           contentContainerStyle={{ paddingBottom: 180 }}
-           showsVerticalScrollIndicator={false}
-           className="flex-1 px-6 pt-2"
+
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 180 }}
+          showsVerticalScrollIndicator={false}
+          className="flex-1 px-6 pt-2"
         >
-           {/* Free Shipping Banner */}
-           {remainingForFreeShipping > 0 ? (
-             <View className="bg-card border border-[#fbbf24]/30 rounded-2xl p-4 mb-6 flex-row items-center justify-center gap-3">
-               <Sparkles size={18} color="#fbbf24" fill="#fbbf24" />
-               <Text className="text-[#fbbf24] font-bold text-xs uppercase tracking-wider">
-                 {intl.formatMessage({ id: 'cart.freeShipping.away' }, { amount: `$${remainingForFreeShipping.toFixed(2)}` })}
-               </Text>
-             </View>
-           ) : (
-              <View className="bg-green-500/10 border border-green-500/30 rounded-2xl p-4 mb-6 flex-row items-center justify-center gap-3">
-               <Sparkles size={18} color="#22c55e" fill="#22c55e" />
-               <Text className="text-green-500 font-bold text-xs uppercase tracking-wider">
-                 {intl.formatMessage({ id: 'cart.freeShipping.unlocked' })}
-               </Text>
-             </View>
-           )}
+          {/* Free Shipping Banner */}
+          {remainingForFreeShipping > 0 ? (
+            <View className="bg-card border border-[#fbbf24]/30 rounded-2xl p-4 mb-6 flex-row items-center justify-center gap-3">
+              <Sparkles size={18} color="#fbbf24" fill="#fbbf24" />
+              <Text className="text-[#fbbf24] font-bold text-xs uppercase tracking-wider">
+                {intl.formatMessage(
+                  { id: "cart.freeShipping.away" },
+                  { amount: `$${remainingForFreeShipping.toFixed(2)}` },
+                )}
+              </Text>
+            </View>
+          ) : (
+            <View className="bg-green-500/10 border border-green-500/30 rounded-2xl p-4 mb-6 flex-row items-center justify-center gap-3">
+              <Sparkles size={18} color="#22c55e" fill="#22c55e" />
+              <Text className="text-green-500 font-bold text-xs uppercase tracking-wider">
+                {intl.formatMessage({ id: "cart.freeShipping.unlocked" })}
+              </Text>
+            </View>
+          )}
 
-           {/* Cart Items */}
-           <View className="space-y-4">
-             {cartItems.map((item) => (
-               <View key={item.id} className="flex-row bg-card rounded-3xl p-3 border border-border mb-4">
-                 {/* Image */}
-                 <View className="bg-background rounded-2xl h-24 w-24 overflow-hidden mr-4">
-                    <Image
-                      source={item.product?.imageUrl ? { uri: item.product.imageUrl } : undefined}
-                      style={{ width: "100%", height: "100%" }}
-                      contentFit="cover"
-                    />
-                 </View>
+          {/* Cart Items */}
+          <View className="space-y-4">
+            {cartItems.map((item) => (
+              <View
+                key={item.id}
+                className="flex-row bg-card rounded-3xl p-3 border border-border mb-4"
+              >
+                {/* Image */}
+                <View className="bg-background rounded-2xl h-24 w-24 overflow-hidden mr-4">
+                  <Image
+                    source={
+                      item.product?.imageUrl
+                        ? { uri: item.product.imageUrl }
+                        : undefined
+                    }
+                    style={{ width: "100%", height: "100%" }}
+                    contentFit="cover"
+                  />
+                </View>
 
-                 {/* Details */}
-                 <View className="flex-1 justify-between py-1">
-                    <View>
-                        <View className="flex-row justify-between items-start">
-                           <Text className="text-foreground font-bold text-base flex-1 mr-2" numberOfLines={1}>
-                             {item.product?.name || "Product"}
-                           </Text>
-                           <TouchableOpacity 
-                             onPress={() => removeFromCart(item.id)}
-                             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                           >
-                              <X size={16} color="#64748b" />
-                           </TouchableOpacity>
-                        </View>
-                        <Text className="text-muted-foreground text-xs mt-1">
-                           Size: M | Color: Charcoal
+                {/* Details */}
+                <View className="flex-1 justify-between py-1">
+                  <View>
+                    <View className="flex-row justify-between items-start">
+                      <Text
+                        className="text-foreground font-bold text-base flex-1 mr-2"
+                        numberOfLines={1}
+                      >
+                        {item.product?.name ||
+                          intl.formatMessage({ id: "cart.item.defaultName" })}
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => removeFromCart(item.id)}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      >
+                        <X size={16} color="#64748b" />
+                      </TouchableOpacity>
+                    </View>
+                    <Text className="text-muted-foreground text-xs mt-1">
+                      <FormattedMessage id="cart.item.size" />: M |{" "}
+                      <FormattedMessage id="cart.item.color" />: Charcoal
+                    </Text>
+                  </View>
+
+                  <View className="flex-row justify-between items-end mt-2">
+                    <Text className="text-primary text-lg font-bold">
+                      ${Number(item.product?.price || 0).toFixed(2)}
+                    </Text>
+
+                    {/* Qty Control - Modern Pill Shape */}
+                    <View className="flex-row items-center bg-secondary/50 rounded-full p-1 border border-border/50">
+                      <TouchableOpacity
+                        className="w-8 h-8 items-center justify-center rounded-full bg-background/80 shadow-sm"
+                        onPress={() =>
+                          updateQuantity(
+                            item.id,
+                            Math.max(1, item.quantity - 1),
+                          )
+                        }
+                        activeOpacity={0.6}
+                      >
+                        <Minus
+                          size={14}
+                          color={isDark ? "#94a3b8" : "#64748b"}
+                        />
+                      </TouchableOpacity>
+
+                      <View className="px-3 min-w-[32px] items-center">
+                        <Text className="text-foreground font-bold text-sm">
+                          {item.quantity}
                         </Text>
-                    </View>
-                    
-                    <View className="flex-row justify-between items-end mt-2">
-                       <Text className="text-primary text-lg font-bold">
-                          ${Number(item.product?.price || 0).toFixed(2)}
-                       </Text>
-                       
-                       {/* Qty Control - Modern Pill Shape */}
-                       <View className="flex-row items-center bg-secondary/50 rounded-full p-1 border border-border/50">
-                          <TouchableOpacity 
-                            className="w-8 h-8 items-center justify-center rounded-full bg-background/80 shadow-sm"
-                            onPress={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                            activeOpacity={0.6}
-                          >
-                             <Minus size={14} color={isDark ? "#94a3b8" : "#64748b"} />
-                          </TouchableOpacity>
-                          
-                          <View className="px-3 min-w-[32px] items-center">
-                             <Text className="text-foreground font-bold text-sm">{item.quantity}</Text>
-                          </View>
-                          
-                          <TouchableOpacity 
-                             className="w-8 h-8 items-center justify-center rounded-full bg-[#6366f1] shadow-md shadow-indigo-500/30"
-                             onPress={() => updateQuantity(item.id, item.quantity + 1)}
-                             activeOpacity={0.7}
-                          >
-                             <Plus size={14} color="white" />
-                          </TouchableOpacity>
-                       </View>
-                    </View>
-                 </View>
-               </View>
-             ))}
-           </View>
+                      </View>
 
+                      <TouchableOpacity
+                        className="w-8 h-8 items-center justify-center rounded-full bg-[#6366f1] shadow-md shadow-indigo-500/30"
+                        onPress={() =>
+                          updateQuantity(item.id, item.quantity + 1)
+                        }
+                        activeOpacity={0.7}
+                      >
+                        <Plus size={14} color="white" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
         </ScrollView>
       </SafeAreaView>
 
-       <View className="absolute bottom-0 left-0 right-0 bg-background rounded-t-[32px] p-6 pb-10 border-t border-border shadow-2xl">
-          <View className="flex-row justify-between mb-2">
-             <Text className="text-muted-foreground text-sm">{intl.formatMessage({ id: 'cart.subtotal' })}</Text>
-             <Text className="text-foreground font-bold text-sm">${subtotal.toFixed(2)}</Text>
-          </View>
-         <View className="flex-row justify-between mb-6">
-            <Text className="text-muted-foreground text-sm">{intl.formatMessage({ id: 'cart.shipping' })}</Text>
-            <Text className="text-green-500 font-bold text-sm">{intl.formatMessage({ id: 'cart.shipping.free' })}</Text>
-         </View>
-                  <View className="flex-row justify-between items-center mb-6 pt-4 border-t border-border/50">
-              <Text className="text-foreground text-xl font-bold">{intl.formatMessage({ id: 'cart.total' })}</Text>
-              <Text className="text-primary text-2xl font-black">${subtotal.toFixed(2)}</Text>
-          </View>
+      <View className="absolute bottom-0 left-0 right-0 bg-background rounded-t-[32px] p-6 pb-10 border-t border-border shadow-2xl">
+        <View className="flex-row justify-between mb-2">
+          <Text className="text-muted-foreground text-sm">
+            {intl.formatMessage({ id: "cart.subtotal" })}
+          </Text>
+          <Text className="text-foreground font-bold text-sm">
+            ${subtotal.toFixed(2)}
+          </Text>
+        </View>
+        <View className="flex-row justify-between mb-6">
+          <Text className="text-muted-foreground text-sm">
+            {intl.formatMessage({ id: "cart.shipping" })}
+          </Text>
+          <Text className="text-green-500 font-bold text-sm">
+            {intl.formatMessage({ id: "cart.shipping.free" })}
+          </Text>
+        </View>
+        <View className="flex-row justify-between items-center mb-6 pt-4 border-t border-border/50">
+          <Text className="text-foreground text-xl font-bold">
+            {intl.formatMessage({ id: "cart.total" })}
+          </Text>
+          <Text className="text-primary text-2xl font-black">
+            ${subtotal.toFixed(2)}
+          </Text>
+        </View>
 
-          <Button
-            title={intl.formatMessage({ id: 'cart.checkout' })}
-            onPress={() => Alert.alert(intl.formatMessage({ id: 'cart.checkout' }), intl.formatMessage({ id: 'cart.checkout.processing' }))}
-            variant="primary"
-            className="h-14 rounded-2xl"
-            icon={<ArrowRight size={20} color="white" />}
-          />
+        <Button
+          title={intl.formatMessage({ id: "cart.checkout" })}
+          onPress={() => router.push("/checkout")}
+          variant="primary"
+          className="h-14 rounded-2xl"
+          icon={<ArrowRight size={20} color="white" />}
+        />
       </View>
     </View>
   );

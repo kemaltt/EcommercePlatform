@@ -147,6 +147,49 @@ export const insertAddressSchema = createInsertSchema(addresses).omit({
   createdAt: true,
 });
 
+// Orders schema
+export const orders = pgTable("orders", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  orderNumber: text("order_number").notNull().unique(),
+  status: text("status").notNull().default("pending"), // pending, paid, shipped, delivered, cancelled
+  total: doublePrecision("total").notNull(),
+  subtotal: doublePrecision("subtotal").notNull(),
+  shippingCost: doublePrecision("shipping_cost").notNull().default(0),
+  tax: doublePrecision("tax").notNull().default(0),
+  shippingAddress: json("shipping_address").notNull(), // Snapshot of address
+  shippingMethod: text("shipping_method").notNull(),
+  paymentMethod: text("payment_method").notNull(),
+  paymentStatus: text("payment_status").notNull().default("pending"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const orderItems = pgTable("order_items", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  orderId: uuid("order_id")
+    .notNull()
+    .references(() => orders.id, { onDelete: "cascade" }),
+  productId: uuid("product_id").notNull(),
+  productName: text("product_name").notNull(),
+  productImage: text("product_image").notNull(),
+  quantity: integer("quantity").notNull(),
+  price: doublePrecision("price").notNull(),
+  options: json("options"), // Size, color etc.
+});
+
+export const insertOrderSchema = createInsertSchema(orders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
+  id: true,
+});
+
 // Type exports
 export type User = typeof users.$inferSelect & {
   defaultAddress?: Address | null;
@@ -160,5 +203,11 @@ export type Favorite = typeof favorites.$inferSelect;
 export type InsertFavorite = z.infer<typeof insertFavoriteSchema>;
 export type CartItem = typeof cartItems.$inferSelect;
 export type InsertCartItem = z.infer<typeof insertCartItemSchema>;
+export type Order = typeof orders.$inferSelect & {
+  items?: OrderItem[];
+};
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type OrderItem = typeof orderItems.$inferSelect;
+export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 export type PasswordReset = typeof passwordResets.$inferSelect;
 export type InsertPasswordReset = z.infer<typeof insertPasswordResetSchema>;

@@ -11,6 +11,7 @@ interface CartContextType {
   addToCart: (product: Product, quantity?: number) => Promise<void>;
   updateQuantity: (id: string, quantity: number) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
+  clearCart: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -20,7 +21,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: cartItems = [], isLoading } = useQuery<(CartItem & { product: Product })[]>({
+  const { data: cartItems = [], isLoading } = useQuery<
+    (CartItem & { product: Product })[]
+  >({
     queryKey: ["/api/cart"],
     queryFn: async () => {
       if (!user) return [];
@@ -32,11 +35,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
-    0
+    0,
   );
 
   const addToCartMutation = useMutation({
-    mutationFn: async ({ product, quantity }: { product: Product; quantity: number }) => {
+    mutationFn: async ({
+      product,
+      quantity,
+    }: {
+      product: Product;
+      quantity: number;
+    }) => {
       await api.post("/cart", { productId: product.id, quantity });
     },
     onSuccess: () => {
@@ -62,6 +71,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const clearCartMutation = useMutation({
+    mutationFn: async () => {
+      await api.delete("/cart");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/cart"] });
+    },
+  });
+
   return (
     <CartContext.Provider
       value={{
@@ -79,6 +97,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         },
         removeFromCart: async (id) => {
           await removeMutation.mutateAsync(id);
+        },
+        clearCart: async () => {
+          await clearCartMutation.mutateAsync();
         },
         isLoading,
       }}

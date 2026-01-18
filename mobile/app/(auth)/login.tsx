@@ -1,4 +1,15 @@
-import { View, Text, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, SafeAreaView, Image, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import { useState } from "react";
 import { Link, useRouter } from "expo-router";
 import { useAuth } from "../../hooks/use-auth";
@@ -8,7 +19,16 @@ import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
 import { useIntl } from "react-intl";
 import { StatusBar } from "expo-status-bar";
-import { ShoppingBag, Mail, Lock, Eye, EyeOff, ArrowRight, ChevronLeft, ScanFace } from "lucide-react-native";
+import {
+  ShoppingBag,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  ChevronLeft,
+  ScanFace,
+} from "lucide-react-native";
 import { VerificationModal } from "../../components/VerificationModal";
 import { SuccessModal } from "../../components/SuccessModal";
 import { BiometricService } from "../../lib/biometric";
@@ -21,21 +41,23 @@ export default function LoginScreen() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {},
+  );
   const [showVerification, setShowVerification] = useState(false);
 
   const [biometricLoading, setBiometricLoading] = useState(false);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
-  const [statusModal, setStatusModal] = useState<{ 
-    visible: boolean; 
-    type: 'success' | 'error'; 
-    title: string; 
-    message: string; 
+  const [statusModal, setStatusModal] = useState<{
+    visible: boolean;
+    type: "success" | "error";
+    title: string;
+    message: string;
   }>({
     visible: false,
-    type: 'success',
-    title: '',
-    message: '',
+    type: "success",
+    title: "",
+    message: "",
   });
 
   const { login } = useAuth();
@@ -43,13 +65,17 @@ export default function LoginScreen() {
     onSuccess: () => {
       HapticService.success();
       router.replace("/(tabs)");
-    }
+    },
   });
-  const { signIn: appleSignIn, loading: appleLoading, isAvailable: appleAvailable } = useAppleAuth({
+  const {
+    signIn: appleSignIn,
+    loading: appleLoading,
+    isAvailable: appleAvailable,
+  } = useAppleAuth({
     onSuccess: () => {
       HapticService.success();
       router.replace("/(tabs)");
-    }
+    },
   });
   const { isDark } = useTheme();
   const router = useRouter();
@@ -69,16 +95,21 @@ export default function LoginScreen() {
       if (!credentials) {
         setStatusModal({
           visible: true,
-          type: 'error',
-          title: intl.formatMessage({ id: 'auth.error.input' }),
-          message: intl.formatMessage({ id: 'auth.error.biometricNotFound' }),
+          type: "error",
+          title: intl.formatMessage({ id: "auth.error.input" }),
+          message: intl.formatMessage({ id: "auth.error.biometricNotFound" }),
         });
         return;
       }
 
-      const success = await BiometricService.authenticate(intl.formatMessage({ id: 'auth.login.biometric' }));
+      const success = await BiometricService.authenticate(
+        intl.formatMessage({ id: "auth.login.biometric" }),
+      );
       if (success) {
-        await login({ username: credentials.username, password: credentials.password });
+        await login({
+          username: credentials.username,
+          password: credentials.password,
+        });
         HapticService.success(); // Success haptic
         router.replace("/(tabs)");
       } else {
@@ -86,11 +117,13 @@ export default function LoginScreen() {
       }
     } catch (error: any) {
       HapticService.error(); // Error haptic
-      const message = error?.response?.data?.message || intl.formatMessage({ id: 'auth.error.loginFailed' });
+      const message =
+        error?.response?.data?.message ||
+        intl.formatMessage({ id: "auth.error.loginFailed" });
       setStatusModal({
         visible: true,
-        type: 'error',
-        title: intl.formatMessage({ id: 'auth.error.loginFailed' }),
+        type: "error",
+        title: intl.formatMessage({ id: "auth.error.loginFailed" }),
         message: message,
       });
     } finally {
@@ -100,8 +133,10 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     const newErrors: { email?: string; password?: string } = {};
-    if (!email) newErrors.email = intl.formatMessage({ id: 'auth.error.required' });
-    if (!password) newErrors.password = intl.formatMessage({ id: 'auth.error.required' });
+    if (!email)
+      newErrors.email = intl.formatMessage({ id: "auth.error.required" });
+    if (!password)
+      newErrors.password = intl.formatMessage({ id: "auth.error.required" });
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -116,17 +151,22 @@ export default function LoginScreen() {
       HapticService.success(); // Success haptic
       router.replace("/(tabs)");
     } catch (error: any) {
-      const message = error?.response?.data?.message || "Invalid credentials";
-      
-      if (error?.response?.status === 403 && message.includes("verify your email")) {
-         // Show verification modal instead of alert
-         setShowVerification(true);
+      const message =
+        error?.response?.data?.message ||
+        intl.formatMessage({ id: "auth.error.invalidCredentials" });
+
+      if (
+        error?.response?.status === 403 &&
+        message.includes("verify your email")
+      ) {
+        // Show verification modal instead of alert
+        setShowVerification(true);
       } else {
         HapticService.error(); // Error haptic
         setStatusModal({
           visible: true,
-          type: 'error',
-          title: intl.formatMessage({ id: 'common.error' }),
+          type: "error",
+          title: intl.formatMessage({ id: "common.error" }),
           message: message,
         });
       }
@@ -136,46 +176,45 @@ export default function LoginScreen() {
   };
 
   const handleVerificationSuccess = async () => {
-     setShowVerification(false);
-     // Retry login automatically
-     handleLogin();
+    setShowVerification(false);
+    // Retry login automatically
+    handleLogin();
   };
 
   return (
     <View className="flex-1 bg-background">
       <StatusBar style={isDark ? "light" : "dark"} />
       <SafeAreaView className="flex-1">
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           className="flex-1"
         >
-          <ScrollView 
+          <ScrollView
             contentContainerStyle={{ flexGrow: 1 }}
             className="flex-1"
             showsVerticalScrollIndicator={false}
           >
             <View className="flex-1 px-6">
-              
               {/* Top Navigation */}
               <View className="mt-2 mb-6">
-                 <TouchableOpacity 
-                   onPress={() => router.back()}
-                   className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border"
-                 >
-                    <ChevronLeft size={20} color="#94a3b8" />
-                 </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => router.back()}
+                  className="w-10 h-10 rounded-full bg-card items-center justify-center border border-border"
+                >
+                  <ChevronLeft size={20} color="#94a3b8" />
+                </TouchableOpacity>
               </View>
 
               {/* Logo Area */}
               <View className="items-center mb-6">
                 <View className="w-20 h-20 bg-card rounded-[24px] items-center justify-center mb-6 border border-border/50 shadow-sm">
-                   <ShoppingBag size={40} color="#fbbf24" strokeWidth={2.5} />
+                  <ShoppingBag size={40} color="#fbbf24" strokeWidth={2.5} />
                 </View>
                 <Text className="text-3xl font-extrabold text-foreground mb-2">
-                  {intl.formatMessage({ id: 'auth.login.title' })}
+                  {intl.formatMessage({ id: "auth.login.title" })}
                 </Text>
                 <Text className="text-muted-foreground text-center text-sm leading-5 max-w-[260px]">
-                  {intl.formatMessage({ id: 'auth.login.subtitle' })}
+                  {intl.formatMessage({ id: "auth.login.subtitle" })}
                 </Text>
               </View>
 
@@ -183,36 +222,50 @@ export default function LoginScreen() {
               <View className="bg-card border border-border rounded-[32px] p-6 shadow-2xl">
                 <View className="space-y-4">
                   <Input
-                    label={intl.formatMessage({ id: 'auth.login.email.label' })}
+                    label={intl.formatMessage({ id: "auth.login.email.label" })}
                     value={email}
                     onChangeText={(text) => {
                       setEmail(text);
                       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                       if (text.length > 0 && !emailRegex.test(text)) {
-                         setErrors(prev => ({ ...prev, email: intl.formatMessage({ id: 'validation.email.invalid' }) }));
+                        setErrors((prev) => ({
+                          ...prev,
+                          email: intl.formatMessage({
+                            id: "validation.email.invalid",
+                          }),
+                        }));
                       } else {
-                         setErrors(prev => ({ ...prev, email: undefined }));
+                        setErrors((prev) => ({ ...prev, email: undefined }));
                       }
                     }}
-                    placeholder={intl.formatMessage({ id: 'auth.login.email.placeholder' })}
+                    placeholder={intl.formatMessage({
+                      id: "auth.login.email.placeholder",
+                    })}
                     autoCapitalize="none"
                     icon={<Mail size={18} color="#64748b" />}
                     className="mb-4"
                     error={errors.email}
                   />
                   <Input
-                    label={intl.formatMessage({ id: 'auth.login.password.label' })}
+                    label={intl.formatMessage({
+                      id: "auth.login.password.label",
+                    })}
                     value={password}
                     onChangeText={(text) => {
                       setPassword(text);
-                      if (errors.password) setErrors({ ...errors, password: undefined });
+                      if (errors.password)
+                        setErrors({ ...errors, password: undefined });
                     }}
-                    placeholder={intl.formatMessage({ id: 'auth.login.password.placeholder' })}
+                    placeholder={intl.formatMessage({
+                      id: "auth.login.password.placeholder",
+                    })}
                     secureTextEntry={!showPassword}
                     icon={<Lock size={18} color="#64748b" />}
                     error={errors.password}
                     rightIcon={
-                      <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                      <TouchableOpacity
+                        onPress={() => setShowPassword(!showPassword)}
+                      >
                         {showPassword ? (
                           <EyeOff size={18} color="#64748b" />
                         ) : (
@@ -226,23 +279,23 @@ export default function LoginScreen() {
                 <Link href="/(auth)/forgot-password" asChild>
                   <TouchableOpacity className="self-end mt-2 mb-6">
                     <Text className="text-[#fbbf24] font-semibold text-xs">
-                      {intl.formatMessage({ id: 'auth.login.forgot' })}
+                      {intl.formatMessage({ id: "auth.login.forgot" })}
                     </Text>
                   </TouchableOpacity>
                 </Link>
 
                 <View className="space-y-4">
                   <Button
-                    title={intl.formatMessage({ id: 'auth.login.button' })}
+                    title={intl.formatMessage({ id: "auth.login.button" })}
                     onPress={handleLogin}
                     loading={loading}
                     variant="primary"
                     className="rounded-2xl h-14"
                     icon={<ArrowRight size={18} color="white" />}
                   />
-                  
+
                   {(isBiometricEnabled || __DEV__) && (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       onPress={handleBiometricLogin}
                       disabled={loading || biometricLoading}
                       activeOpacity={0.7}
@@ -252,8 +305,14 @@ export default function LoginScreen() {
                         <ActivityIndicator size="small" color="#6366f1" />
                       ) : (
                         <>
-                          <ScanFace size={20} color="#6366f1" className="mr-2" />
-                          <Text className="text-primary font-semibold text-sm">{intl.formatMessage({ id: 'auth.login.biometric' })}</Text>
+                          <ScanFace
+                            size={20}
+                            color="#6366f1"
+                            className="mr-2"
+                          />
+                          <Text className="text-primary font-semibold text-sm">
+                            {intl.formatMessage({ id: "auth.login.biometric" })}
+                          </Text>
                         </>
                       )}
                     </TouchableOpacity>
@@ -262,13 +321,15 @@ export default function LoginScreen() {
 
                 <View className="flex-row items-center mb-6 mt-6 gap-4 opacity-50">
                   <View className="flex-1 h-[1px] bg-border" />
-                  <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">{intl.formatMessage({ id: 'auth.login.orConnect' })}</Text>
+                  <Text className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
+                    {intl.formatMessage({ id: "auth.login.orConnect" })}
+                  </Text>
                   <View className="flex-1 h-[1px] bg-border" />
                 </View>
 
                 <View className="flex-row gap-4 mb-4">
-                   {/* Google Button */}
-                  <TouchableOpacity 
+                  {/* Google Button */}
+                  <TouchableOpacity
                     onPress={googleSignIn}
                     disabled={loading || googleLoading}
                     className="flex-1 bg-white h-12 rounded-xl flex-row items-center justify-center gap-2 border border-border/10"
@@ -277,19 +338,23 @@ export default function LoginScreen() {
                       <ActivityIndicator size="small" color="#4285F4" />
                     ) : (
                       <>
-                        <Image 
-                          source={{ uri: "https://img.icons8.com/color/48/google-logo.png" }} 
-                          style={{ width: 20, height: 20 }} 
+                        <Image
+                          source={{
+                            uri: "https://img.icons8.com/color/48/google-logo.png",
+                          }}
+                          style={{ width: 20, height: 20 }}
                           resizeMode="contain"
                         />
-                        <Text className="text-black font-bold text-sm">{intl.formatMessage({ id: 'auth.login.google' })}</Text>
+                        <Text className="text-black font-bold text-sm">
+                          {intl.formatMessage({ id: "auth.login.google" })}
+                        </Text>
                       </>
                     )}
                   </TouchableOpacity>
-                  
+
                   {/* Apple Button */}
                   {appleAvailable && (
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       onPress={appleSignIn}
                       disabled={loading || appleLoading}
                       className="flex-1 bg-[#3f3f46] h-12 rounded-xl flex-row items-center justify-center gap-2"
@@ -298,52 +363,54 @@ export default function LoginScreen() {
                         <ActivityIndicator size="small" color="#ffffff" />
                       ) : (
                         <>
-                          <Image 
-                            source={{ uri: "https://img.icons8.com/ios-filled/50/ffffff/mac-os.png" }} 
-                            style={{ width: 20, height: 20 }} 
+                          <Image
+                            source={{
+                              uri: "https://img.icons8.com/ios-filled/50/ffffff/mac-os.png",
+                            }}
+                            style={{ width: 20, height: 20 }}
                             resizeMode="contain"
                           />
-                          <Text className="text-white font-bold text-sm">{intl.formatMessage({ id: 'auth.login.apple' })}</Text>
+                          <Text className="text-white font-bold text-sm">
+                            {intl.formatMessage({ id: "auth.login.apple" })}
+                          </Text>
                         </>
                       )}
                     </TouchableOpacity>
                   )}
                 </View>
-
               </View>
 
               {/* Footer */}
               <View className="flex-row justify-center mt-4 mb-4 gap-1">
                 <Text className="text-muted-foreground font-medium text-sm">
-                  {intl.formatMessage({ id: 'auth.login.noAccount' })}
+                  {intl.formatMessage({ id: "auth.login.noAccount" })}
                 </Text>
                 <Link href="/(auth)/register" asChild>
                   <TouchableOpacity>
                     <Text className="text-[#fbbf24] font-bold text-sm">
-                      {intl.formatMessage({ id: 'auth.login.signUp' })}
+                      {intl.formatMessage({ id: "auth.login.signUp" })}
                     </Text>
                   </TouchableOpacity>
                 </Link>
               </View>
-
             </View>
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
 
-      <VerificationModal 
-         visible={showVerification} 
-         email={email} 
-         onClose={() => setShowVerification(false)}
-         onSuccess={handleVerificationSuccess}
+      <VerificationModal
+        visible={showVerification}
+        email={email}
+        onClose={() => setShowVerification(false)}
+        onSuccess={handleVerificationSuccess}
       />
 
-      <SuccessModal 
+      <SuccessModal
         visible={statusModal.visible}
         type={statusModal.type}
         title={statusModal.title}
         message={statusModal.message}
-        onClose={() => setStatusModal(prev => ({ ...prev, visible: false }))}
+        onClose={() => setStatusModal((prev) => ({ ...prev, visible: false }))}
       />
     </View>
   );
