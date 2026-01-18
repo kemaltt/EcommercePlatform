@@ -145,10 +145,10 @@ export default function PaymentStep() {
           onPress={() => setSelectedMethod("paypal")}
           className={`bg-card border rounded-3xl p-5 mb-4 flex-row items-center gap-4 ${selectedMethod === "paypal" ? "border-primary bg-primary/5" : "border-border"}`}
         >
-          <View className="bg-white w-12 h-12 rounded-2xl items-center justify-center shadow-sm">
+          <View className="bg-white w-12 h-12 rounded-2xl items-center justify-center shadow-sm border border-border/50">
             <Image
-              source={{ uri: "https://img.icons8.com/color/48/paypal.png" }}
-              style={{ width: 30, height: 30 }}
+              source={{ uri: "https://img.icons8.com/color/96/paypal.png" }}
+              style={{ width: 28, height: 28 }}
               resizeMode="contain"
             />
           </View>
@@ -172,12 +172,10 @@ export default function PaymentStep() {
           onPress={() => setSelectedMethod("klarna")}
           className={`bg-card border rounded-3xl p-5 mb-4 flex-row items-center gap-4 ${selectedMethod === "klarna" ? "border-primary bg-primary/5" : "border-border"}`}
         >
-          <View className="bg-[#FFB3C7] w-12 h-12 rounded-2xl items-center justify-center">
+          <View className="bg-[#FFB3C7]/20 w-12 h-12 rounded-2xl items-center justify-center border border-[#FFB3C7]/30">
             <Image
-              source={{
-                uri: "https://img.icons8.com/external-tal-revivo-shadow-tal-revivo/48/external-klarna-is-a-swedish-fintech-company-that-provides-online-financial-services-logo-shadow-tal-revivo.png",
-              }}
-              style={{ width: 30, height: 30 }}
+              source={require("../../assets/klarna-icon.png")}
+              style={{ width: 32, height: 32 }}
               resizeMode="contain"
             />
           </View>
