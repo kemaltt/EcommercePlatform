@@ -390,17 +390,30 @@ export default function PaymentMethodsScreen() {
                   variant="outline"
                   className="justify-start pl-6 h-14"
                   icon={
-                    <CreditCard size={20} color={isDark ? "white" : "black"} />
+                    <CreditCard size={24} color={isDark ? "white" : "black"} />
                   }
                   onPress={() => handleSelectMethod("visa")}
                 />
+
+                <Button
+                  title={intl.formatMessage({
+                    id: "paymentMethods.type.debit",
+                  })}
+                  variant="outline"
+                  className="justify-start pl-6 h-14"
+                  icon={
+                    <CreditCard size={24} color={isDark ? "white" : "black"} />
+                  }
+                  onPress={() => handleSelectMethod("mastercard")}
+                />
+
                 <Button
                   title={intl.formatMessage({
                     id: "paymentMethods.type.apple_pay",
                   })}
                   variant="outline"
                   className="justify-start pl-6 h-14"
-                  icon={<Apple size={20} color={isDark ? "white" : "black"} />}
+                  icon={<Apple size={24} color={isDark ? "white" : "black"} />}
                   onPress={() => handleSelectMethod("apple_pay")}
                 />
 
@@ -411,7 +424,15 @@ export default function PaymentMethodsScreen() {
                   variant="outline"
                   className="justify-start pl-6 h-14"
                   onPress={() => handleSelectMethod("paypal")}
-                  // Using text icon for simplicity in button or ideally passing image
+                  icon={
+                    <Image
+                      source={{
+                        uri: "https://img.icons8.com/color/96/paypal.png",
+                      }}
+                      style={{ width: 24, height: 24 }}
+                      resizeMode="contain"
+                    />
+                  }
                 />
 
                 <Button
@@ -421,6 +442,13 @@ export default function PaymentMethodsScreen() {
                   variant="outline"
                   className="justify-start pl-6 h-14"
                   onPress={() => handleSelectMethod("klarna")}
+                  icon={
+                    <Image
+                      source={require("../../../assets/klarna-icon.png")}
+                      style={{ width: 28, height: 28 }}
+                      resizeMode="contain"
+                    />
+                  }
                 />
               </View>
 
