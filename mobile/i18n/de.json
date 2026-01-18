@@ -265,6 +265,8 @@
   "checkout.payment.otherMethods": "ANDERE METHODEN",
   "checkout.payment.paypal.desc": "SICHERE & EINFACHE ZAHLUNG",
   "checkout.payment.klarna.desc": "IN RATEN ZAHLEN",
+  "checkout.payment.debitCard": "Debitkarte",
+  "checkout.payment.debitCard.desc": "DIREKT VOM BANKKONTO",
   "checkout.payment.continueToReview": "Weiter zur Übersicht",
   "checkout.review.deliverTo": "LIEFERUNG AN",
   "checkout.review.payment": "ZAHLUNG",

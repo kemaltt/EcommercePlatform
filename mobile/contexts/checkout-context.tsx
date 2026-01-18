@@ -10,7 +10,7 @@ interface CheckoutState {
     days: string;
   } | null;
   paymentMethod: {
-    type: "credit_card" | "paypal" | "klarna";
+    type: "credit_card" | "paypal" | "klarna" | "debit_card";
     last4?: string;
     expiry?: string;
   } | null;

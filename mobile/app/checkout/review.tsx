@@ -106,8 +106,9 @@ export default function ReviewStep() {
               <FormattedMessage id="checkout.review.payment" />
             </Text>
             <Text className="text-foreground font-bold text-base mt-1">
-              {state.paymentMethod?.type === "credit_card"
-                ? `Mastercard ending in ${state.paymentMethod.last4}`
+              {state.paymentMethod?.type === "credit_card" ||
+              state.paymentMethod?.type === "debit_card"
+                ? `${state.paymentMethod.type === "credit_card" ? "Mastercard" : intl.formatMessage({ id: "checkout.payment.debitCard" })} ending in ${state.paymentMethod.last4}`
                 : state.paymentMethod?.type.toUpperCase()}
             </Text>
           </View>

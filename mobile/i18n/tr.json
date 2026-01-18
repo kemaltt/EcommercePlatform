@@ -265,6 +265,8 @@
   "checkout.payment.otherMethods": "DİĞER YÖNTEMLER",
   "checkout.payment.paypal.desc": "GÜVENLİ VE KOLAY ÖDEME",
   "checkout.payment.klarna.desc": "TAKSİTLE ÖDE",
+  "checkout.payment.debitCard": "Banka Kartı",
+  "checkout.payment.debitCard.desc": "BANKA HESABINDAN DOĞRUDAN ÖDEME",
   "checkout.payment.continueToReview": "İncelemeye Devam Et",
   "checkout.review.deliverTo": "TESLİMAT ADRESİ",
   "checkout.review.payment": "ÖDEME",

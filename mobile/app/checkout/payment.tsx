@@ -25,14 +25,14 @@ export default function PaymentStep() {
   const [cvv, setCvv] = useState("");
   const [saveCard, setSaveCard] = useState(true);
   const [selectedMethod, setSelectedMethod] = useState<
-    "credit_card" | "paypal" | "klarna"
+    "credit_card" | "paypal" | "klarna" | "debit_card"
   >("credit_card");
 
   const handleNext = () => {
-    if (selectedMethod === "credit_card") {
+    if (selectedMethod === "credit_card" || selectedMethod === "debit_card") {
       if (cardNumber.length < 16) return; // Simple validation
       setPaymentMethod({
-        type: "credit_card",
+        type: selectedMethod,
         last4: cardNumber.slice(-4),
         expiry: expiry,
       });
@@ -145,8 +145,12 @@ export default function PaymentStep() {
           onPress={() => setSelectedMethod("paypal")}
           className={`bg-card border rounded-3xl p-5 mb-4 flex-row items-center gap-4 ${selectedMethod === "paypal" ? "border-primary bg-primary/5" : "border-border"}`}
         >
-          <View className="bg-blue-500/10 w-12 h-12 rounded-2xl items-center justify-center">
-            <CreditCard size={24} color="#3b82f6" />
+          <View className="bg-white w-12 h-12 rounded-2xl items-center justify-center shadow-sm">
+            <Image
+              source={{ uri: "https://img.icons8.com/color/48/paypal.png" }}
+              style={{ width: 30, height: 30 }}
+              resizeMode="contain"
+            />
           </View>
           <View className="flex-1">
             <Text className="text-foreground font-bold text-base">PayPal</Text>
@@ -168,8 +172,14 @@ export default function PaymentStep() {
           onPress={() => setSelectedMethod("klarna")}
           className={`bg-card border rounded-3xl p-5 mb-4 flex-row items-center gap-4 ${selectedMethod === "klarna" ? "border-primary bg-primary/5" : "border-border"}`}
         >
-          <View className="bg-pink-500/10 w-12 h-12 rounded-2xl items-center justify-center">
-            <CreditCard size={24} color="#ec4899" />
+          <View className="bg-[#FFB3C7] w-12 h-12 rounded-2xl items-center justify-center">
+            <Image
+              source={{
+                uri: "https://img.icons8.com/external-tal-revivo-shadow-tal-revivo/48/external-klarna-is-a-swedish-fintech-company-that-provides-online-financial-services-logo-shadow-tal-revivo.png",
+              }}
+              style={{ width: 30, height: 30 }}
+              resizeMode="contain"
+            />
           </View>
           <View className="flex-1">
             <Text className="text-foreground font-bold text-base">Klarna</Text>
@@ -181,6 +191,35 @@ export default function PaymentStep() {
             className={`w-6 h-6 rounded-full border-2 items-center justify-center ${selectedMethod === "klarna" ? "border-primary" : "border-muted-foreground/30"}`}
           >
             {selectedMethod === "klarna" && (
+              <View className="w-3 h-3 rounded-full bg-primary" />
+            )}
+          </View>
+        </TouchableOpacity>
+
+        {/* Debit Card */}
+        <TouchableOpacity
+          onPress={() => setSelectedMethod("debit_card")}
+          className={`bg-card border rounded-3xl p-5 mb-4 flex-row items-center gap-4 ${selectedMethod === "debit_card" ? "border-primary bg-primary/5" : "border-border"}`}
+        >
+          <View className="bg-blue-500/10 w-12 h-12 rounded-2xl items-center justify-center">
+            <Image
+              source={{ uri: "https://img.icons8.com/color/48/visa.png" }}
+              style={{ width: 30, height: 30 }}
+              resizeMode="contain"
+            />
+          </View>
+          <View className="flex-1">
+            <Text className="text-foreground font-bold text-base">
+              <FormattedMessage id="checkout.payment.debitCard" />
+            </Text>
+            <Text className="text-muted-foreground text-xs">
+              <FormattedMessage id="checkout.payment.debitCard.desc" />
+            </Text>
+          </View>
+          <View
+            className={`w-6 h-6 rounded-full border-2 items-center justify-center ${selectedMethod === "debit_card" ? "border-primary" : "border-muted-foreground/30"}`}
+          >
+            {selectedMethod === "debit_card" && (
               <View className="w-3 h-3 rounded-full bg-primary" />
             )}
           </View>

@@ -210,6 +210,8 @@
   "checkout.payment.otherMethods": "OTHER METHODS",
   "checkout.payment.paypal.desc": "SAFE & EASY PAYMENT",
   "checkout.payment.klarna.desc": "PAY IN INSTALLMENTS",
+  "checkout.payment.debitCard": "Debit Card",
+  "checkout.payment.debitCard.desc": "DIRECT FROM BANK ACCOUNT",
   "checkout.payment.continueToReview": "Continue to Review",
   "checkout.review.deliverTo": "DELIVER TO",
   "checkout.review.payment": "PAYMENT",
