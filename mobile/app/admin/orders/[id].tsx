@@ -27,14 +27,14 @@ import { format } from "date-fns";
 import { tr, de, enUS } from "date-fns/locale";
 
 type OrderDetail = Order & {
-  items: (OrderItem & { product?: Product })[];
+  items: OrderItem[];
   customer?: {
     id: string;
     fullName: string;
     email: string;
     username: string;
-    address?: any;
   };
+  shippingAddress?: any;
 };
 
 export default function AdminOrderDetailsScreen() {
@@ -97,6 +97,7 @@ export default function AdminOrderDetailsScreen() {
   }
 
   const statusStyle = getStatusColor(order.status);
+  const address = order.shippingAddress;
 
   return (
     <View className="flex-1 bg-background">
@@ -167,7 +168,7 @@ export default function AdminOrderDetailsScreen() {
             </View>
           </View>
 
-          {/* Shipping Address (Mocked for now as we need address snapshot) */}
+          {/* Shipping Address */}
           <View className="bg-card p-5 rounded-3xl border border-border/50 mb-4">
             <View className="flex-row items-center mb-4">
               <MapPin size={20} color={isDark ? "#818cf8" : "#4f46e5"} />
@@ -179,15 +180,26 @@ export default function AdminOrderDetailsScreen() {
               </Text>
             </View>
             <Text className="text-muted-foreground leading-6">
-              {/* Fallback mock address since we didn't store snapshot yet */}
-              {order.customer?.fullName} {"\n"}
-              123 Main Street, {"\n"}
-              Apartment 4B {"\n"}
-              New York, NY 10001
+              {address ? (
+                <>
+                  <Text className="font-bold text-foreground">
+                    {address.fullName}
+                  </Text>
+                  {"\n"}
+                  {address.addressLine1}
+                  {"\n"}
+                  {address.addressLine2 ? `${address.addressLine2}\n` : ""}
+                  {address.city}, {address.zipCode}
+                  {"\n"}
+                  {address.country}
+                </>
+              ) : (
+                <Text className="italic">No shipping address provided</Text>
+              )}
             </Text>
           </View>
 
-          {/* Order Items */}
+          {/* Order Items (Positions) */}
           <View className="bg-card p-5 rounded-3xl border border-border/50 mb-4">
             <View className="flex-row items-center mb-4">
               <Package size={20} color={isDark ? "#818cf8" : "#4f46e5"} />
@@ -205,9 +217,9 @@ export default function AdminOrderDetailsScreen() {
                 className={`flex-row items-center py-3 ${index !== order.items.length - 1 ? "border-b border-border/30" : ""}`}
               >
                 <View className="w-16 h-16 bg-background rounded-xl items-center justify-center mr-4 border border-border/30">
-                  {item.product?.imageUrl ? (
+                  {item.productImage ? (
                     <Image
-                      source={{ uri: item.product.imageUrl }}
+                      source={{ uri: item.productImage }}
                       className="w-full h-full rounded-xl"
                       resizeMode="cover"
                     />
@@ -217,7 +229,7 @@ export default function AdminOrderDetailsScreen() {
                 </View>
                 <View className="flex-1">
                   <Text className="text-foreground font-bold text-sm mb-1">
-                    {item.product?.name || "Unknown Product"}
+                    {item.productName || "Unknown Product"}
                   </Text>
                   <Text className="text-muted-foreground text-xs">
                     Qty: {item.quantity} x ${Number(item.price).toFixed(2)}
