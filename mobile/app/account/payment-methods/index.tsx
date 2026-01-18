@@ -177,29 +177,39 @@ export default function PaymentMethodsScreen() {
     method: PaymentMethod;
     isPrimary?: boolean;
   }) => (
-    <View className="bg-[#1e2029] p-4 rounded-2xl mb-4 flex-row items-center justify-between border border-white/5">
+    <View
+      className={`p-4 rounded-2xl mb-4 flex-row items-center justify-between border shadow-sm ${isDark ? "bg-[#1e2029] border-white/5" : "bg-white border-gray-200"}`}
+    >
       <View className="flex-row items-center flex-1">
         {/* Icon Container */}
         <View
-          className={`w-12 h-10 rounded-md items-center justify-center mr-4 overflow-hidden ${method.type === "apple_pay" ? "bg-black" : method.type === "klarna" ? "bg-[#FFB3C7]" : method.type === "visa" ? "bg-[#1a1f71]" : "bg-white/10"}`}
+          className={`w-12 h-10 rounded-md items-center justify-center mr-4 overflow-hidden ${method.type === "apple_pay" ? (isDark ? "bg-black" : "bg-gray-100") : method.type === "klarna" ? "bg-[#FFB3C7]" : method.type === "visa" ? "bg-[#1a1f71]" : isDark ? "bg-white/10" : "bg-gray-100"}`}
         >
           {getMethodIcon(method.type)}
         </View>
 
         <View>
           <View className="flex-row items-center gap-2">
-            <Text className="text-white font-bold text-base">
+            <Text
+              className={`font-bold text-base ${isDark ? "text-white" : "text-gray-900"}`}
+            >
               {getMethodLabel(method)}
             </Text>
             {isPrimary && (
-              <View className="bg-[#3b3589] px-2 py-0.5 rounded-md">
-                <Text className="text-[#818cf8] text-[10px] font-bold uppercase">
+              <View
+                className={`px-2 py-0.5 rounded-md ${isDark ? "bg-[#3b3589]" : "bg-indigo-100"}`}
+              >
+                <Text
+                  className={`text-[10px] font-bold uppercase ${isDark ? "text-[#818cf8]" : "text-indigo-600"}`}
+                >
                   Default
                 </Text>
               </View>
             )}
           </View>
-          <Text className="text-muted-foreground text-sm">
+          <Text
+            className={`text-sm ${isDark ? "text-gray-400" : "text-gray-500"}`}
+          >
             {getMethodSubLabel(method)}
           </Text>
         </View>
@@ -207,7 +217,7 @@ export default function PaymentMethodsScreen() {
 
       <View className="flex-row items-center gap-4">
         <TouchableOpacity onPress={() => handleEdit(method.id)}>
-          <Pencil size={18} color="#94a3b8" />
+          <Pencil size={18} color={isDark ? "#94a3b8" : "#9ca3af"} />
         </TouchableOpacity>
         {!isPrimary && (
           <TouchableOpacity onPress={() => handleDelete(method.id)}>
@@ -228,7 +238,7 @@ export default function PaymentMethodsScreen() {
         <View className="px-6 py-4 flex-row items-center justify-between z-10">
           <TouchableOpacity
             onPress={() => router.back()}
-            className="w-10 h-10 rounded-full bg-card/50 items-center justify-center border border-white/5"
+            className={`w-10 h-10 rounded-full items-center justify-center border ${isDark ? "bg-card/50 border-white/5" : "bg-white border-gray-200 shadow-sm"}`}
           >
             <ChevronLeft size={20} color={isDark ? "white" : "black"} />
           </TouchableOpacity>
@@ -263,11 +273,15 @@ export default function PaymentMethodsScreen() {
           </View>
 
           {/* Secure Payments Footer */}
-          <View className="border border-dashed border-white/10 rounded-3xl p-6 items-center mb-32 bg-white/5">
+          <View
+            className={`border border-dashed rounded-3xl p-6 items-center mb-32 ${isDark ? "border-white/10 bg-white/5" : "border-gray-200 bg-gray-50"}`}
+          >
             <View className="mb-3">
-              <ShieldCheck size={28} color="#6366f1" />
+              <ShieldCheck size={28} color={isDark ? "#6366f1" : "#4f46e5"} />
             </View>
-            <Text className="text-white font-bold text-base mb-2 text-center">
+            <Text
+              className={`font-bold text-base mb-2 text-center ${isDark ? "text-white" : "text-gray-900"}`}
+            >
               Secure Payments
             </Text>
             <Text className="text-muted-foreground text-xs text-center leading-5 px-4">
