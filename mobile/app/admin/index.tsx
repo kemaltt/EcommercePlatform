@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
+  Image as RNImage,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -48,13 +49,22 @@ export default function AdminConsoleScreen() {
     }, [refetch]),
   );
 
-  // Mock Data for Chart
+  // Data processing for Chart
+  const salesTrends = stats?.salesTrends || [];
   const lineChartData = {
-    labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    labels: salesTrends.map((s: any) => {
+      const date = new Date(s.date);
+      return date
+        .toLocaleDateString(intl.locale, { weekday: "short" })
+        .toUpperCase();
+    }),
     datasets: [
       {
-        data: [20, 45, 28, 80, 40, 95, 10],
-        strokeWidth: 2, // optional
+        data:
+          salesTrends.length > 0
+            ? salesTrends.map((s: any) => Number(s.total))
+            : [0, 0, 0, 0, 0, 0, 0],
+        strokeWidth: 2,
       },
     ],
   };
@@ -211,7 +221,7 @@ export default function AdminConsoleScreen() {
             </View>
           </View>
 
-          <View className="bg-card rounded-3xl p-4 mb-8 border border-border/50 items-center">
+          <View className="bg-card rounded-3xl p-4 mb-4 border border-border/50 items-center">
             <LineChart
               data={lineChartData}
               width={width - 80}
@@ -232,7 +242,9 @@ export default function AdminConsoleScreen() {
                   borderRadius: 16,
                 },
                 propsForDots: {
-                  r: "0",
+                  r: "4",
+                  strokeWidth: "2",
+                  stroke: "#6366f1",
                 },
                 propsForBackgroundLines: {
                   strokeDasharray: "", // solid lines
@@ -246,27 +258,57 @@ export default function AdminConsoleScreen() {
                 borderRadius: 16,
               }}
               withVerticalLines={false}
-              withHorizontalLines={false}
+              withHorizontalLines={true}
             />
-            <View className="flex-row justify-between w-full px-4 mt-2">
-              {["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"].map(
-                (day, i) => (
-                  <Text
-                    key={i}
-                    className="text-muted-foreground text-[10px] font-bold"
-                  >
-                    {day}
-                  </Text>
-                ),
-              )}
-            </View>
           </View>
+
+          {/* Top Selling Products */}
+          {stats?.topProducts && stats.topProducts.length > 0 && (
+            <View className="mb-6">
+              <Text className="text-foreground font-bold text-lg mb-4">
+                Top Sellers
+              </Text>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                className="flex-row"
+              >
+                {stats.topProducts.map((item: any, idx: number) => (
+                  <View
+                    key={idx}
+                    className="bg-card p-4 rounded-3xl mr-4 border border-border/50 w-40"
+                  >
+                    <View className="w-full aspect-square bg-muted rounded-2xl mb-3 items-center justify-center overflow-hidden">
+                      {item.productImage ? (
+                        <RNImage
+                          source={{ uri: item.productImage }}
+                          className="w-full h-full"
+                          resizeMode="cover"
+                        />
+                      ) : (
+                        <Package size={30} color="#6366f1" />
+                      )}
+                    </View>
+                    <Text
+                      className="text-foreground font-bold text-sm mb-1"
+                      numberOfLines={1}
+                    >
+                      {item.productName}
+                    </Text>
+                    <Text className="text-primary font-bold text-xs">
+                      {item.quantity} sold
+                    </Text>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          )}
 
           <View className="flex-row justify-between items-center mb-4">
             <Text className="text-foreground font-bold text-lg">
-              {intl.formatMessage({ id: "admin.activeInventory" })}
+              Low Stock Alerts
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/admin/products")}>
               <Text className="text-muted-foreground text-xs flex-row items-center">
                 {intl.formatMessage({ id: "admin.seeAll" })}{" "}
                 <ChevronRight size={10} />
@@ -274,16 +316,22 @@ export default function AdminConsoleScreen() {
             </TouchableOpacity>
           </View>
 
-          <ActiveInventoryItem
-            title="Leather Weekend Bag"
-            stock={12}
-            price="320.00"
-          />
-          <ActiveInventoryItem
-            title="Indigo Denim Jacket"
-            stock={48}
-            price="185.00"
-          />
+          {stats?.lowStockItems && stats.lowStockItems.length > 0 ? (
+            stats.lowStockItems.map((item: any, idx: number) => (
+              <ActiveInventoryItem
+                key={idx}
+                title={item.name}
+                stock={item.stock}
+                price={item.price}
+              />
+            ))
+          ) : (
+            <View className="bg-card p-6 rounded-3xl border border-border/50 items-center justify-center">
+              <Text className="text-muted-foreground text-sm">
+                All products adequately stocked
+              </Text>
+            </View>
+          )}
 
           <View className="h-20" />
         </ScrollView>

@@ -37,7 +37,7 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import connectPg from "connect-pg-simple";
 import { db, pool } from "./src/config/db";
-import { eq, and, desc, sql, asc, gte, lte } from "drizzle-orm";
+import { eq, and, desc, sql, asc, gte, lte, ne, sum } from "drizzle-orm";
 import crypto from "crypto";
 
 const MemoryStore = createMemoryStore(session);
@@ -144,6 +144,12 @@ export interface IStorage {
   createNotification(notification: InsertNotification): Promise<Notification>;
   getUserNotifications(userId: string): Promise<Notification[]>;
   markNotificationAsRead(id: string): Promise<Notification | undefined>;
+  markAllNotificationsAsRead(userId: string): Promise<void>;
+
+  // Analytics operations
+  getSalesTrends(days?: number): Promise<{ date: string; total: number }[]>;
+  getTopSellingProducts(limit?: number): Promise<any[]>;
+  getInventoryStats(): Promise<any[]>;
 }
 
 // MemStorage kodunu koruyoruz (gerekirse tekrar kullanabiliriz)
@@ -889,6 +895,25 @@ export class MemStorage implements IStorage {
       return updated;
     }
     return undefined;
+  }
+
+  async markAllNotificationsAsRead(userId: string): Promise<void> {
+    Array.from(this.notifications.values())
+      .filter((n) => n.userId === userId)
+      .forEach((n) => (n.isRead = true));
+  }
+
+  // Analytics operations
+  async getSalesTrends(
+    days?: number,
+  ): Promise<{ date: string; total: number }[]> {
+    return [];
+  }
+  async getTopSellingProducts(limit?: number): Promise<any[]> {
+    return [];
+  }
+  async getInventoryStats(): Promise<any[]> {
+    return [];
   }
 }
 
@@ -1785,6 +1810,73 @@ export class DatabaseStorage implements IStorage {
       .update(notifications as any)
       .set({ isRead: true } as any)
       .where(eq((notifications as any).userId, userId) as any);
+  }
+
+  async getSalesTrends(
+    days: number = 7,
+  ): Promise<{ date: string; total: number }[]> {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+
+    const allOrders = (await db
+      .select({
+        total: (orders as any).total,
+        createdAt: (orders as any).createdAt,
+      })
+      .from(orders as any)
+      .where(
+        and(
+          gte((orders as any).createdAt, startDate),
+          ne((orders as any).status, "cancelled") as any,
+        ) as any,
+      )) as any[];
+
+    const trends: Record<string, number> = {};
+    for (let i = 0; i < days; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      trends[d.toISOString().split("T")[0]] = 0;
+    }
+
+    allOrders.forEach((order) => {
+      const dateKey = new Date(order.createdAt).toISOString().split("T")[0];
+      if (trends[dateKey] !== undefined) {
+        trends[dateKey] += Number(order.total);
+      }
+    });
+
+    return Object.entries(trends)
+      .map(([date, total]) => ({ date, total }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+  }
+
+  async getTopSellingProducts(limit: number = 5): Promise<any[]> {
+    const items = (await db
+      .select({
+        productId: (orderItems as any).productId,
+        productName: (orderItems as any).productName,
+        productImage: (orderItems as any).productImage,
+        quantity: sum((orderItems as any).quantity),
+      })
+      .from(orderItems as any)
+      .groupBy(
+        (orderItems as any).productId,
+        (orderItems as any).productName,
+        (orderItems as any).productImage,
+      )
+      .orderBy(desc(sum((orderItems as any).quantity)))
+      .limit(limit)) as any[];
+
+    return items;
+  }
+
+  async getInventoryStats(): Promise<any[]> {
+    return (await db
+      .select()
+      .from(products as any)
+      .where(lte((products as any).stock, 10) as any)
+      .orderBy(asc((products as any).stock) as any)
+      .limit(10)) as any[];
   }
 }
 

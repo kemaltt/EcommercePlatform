@@ -6,12 +6,21 @@ export const getStats = async (req: Request, res: Response) => {
     const allUsers = await storage.getUsers();
     const allProducts = await storage.getProducts();
     const allOrders = await storage.getAllOrders();
+    const allCoupons = await storage.getAllCoupons();
+
+    const salesTrends = await storage.getSalesTrends(7);
+    const topProducts = await storage.getTopSellingProducts(5);
+    const lowStockItems = await storage.getInventoryStats();
 
     res.json({
       totalUsers: allUsers.length,
       totalProducts: allProducts.length,
       totalOrders: allOrders.length,
+      totalCoupons: allCoupons.length,
       activeSessions: 0,
+      salesTrends,
+      topProducts,
+      lowStockItems,
     });
   } catch (err) {
     console.error("Error in getStats:", err);
