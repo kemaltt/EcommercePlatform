@@ -346,5 +346,14 @@
   "admin.coupons.inactive": "Inactive",
   "admin.coupons.percentage": "Percentage",
   "admin.coupons.fixed": "Fixed Amount",
-  "admin.coupons.save": "Save Coupon"
+  "admin.coupons.save": "Save Coupon",
+  "product.reviews.empty": "No reviews yet.",
+  "product.reviews.beFirst": "Be the first to review this product!",
+  "product.reviews.thankYou": "Thank you for your review!",
+  "review.write.title": "Write a Review",
+  "review.write.rating": "Tap to Rate:",
+  "review.write.comment": "Your Review",
+  "review.write.placeholder": "Share your experience...",
+  "review.submit": "Submit Review",
+  "review.add": "Write a Review"
 }

@@ -32,6 +32,11 @@ import { useAuth } from "../../hooks/use-auth";
 import { useState } from "react";
 import { useCart } from "@/hooks/use-cart";
 import { useTheme } from "../../contexts/theme-context";
+import { ReviewList } from "../../components/ReviewList";
+import { AddReviewModal } from "../../components/AddReviewModal";
+import { StarRating } from "../../components/StarRating";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { MessageSquarePlus } from "lucide-react-native";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -44,7 +49,9 @@ export default function ProductDetailsScreen() {
   const intl = useIntl();
   const [selectedSize, setSelectedSize] = useState("M");
   const [isAdded, setIsAdded] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const { isDark } = useTheme();
+  const queryClient = useQueryClient();
 
   // Find if item is in cart
   // id from params is string, productId is also string now
@@ -57,6 +64,73 @@ export default function ProductDetailsScreen() {
       return res.data;
     },
   });
+
+  const { data: reviews = [], isLoading: isLoadingReviews } = useQuery({
+    queryKey: ["/api/products", id, "reviews"],
+    queryFn: async () => {
+      const res = await api.get(`/products/${id}/reviews`);
+      return res.data;
+    },
+    enabled: !!id,
+  });
+
+  const createReviewMutation = useMutation({
+    mutationFn: async ({
+      rating,
+      comment,
+    }: {
+      rating: number;
+      comment: string;
+    }) => {
+      const res = await api.post(`/products/${id}/reviews`, {
+        rating,
+        comment,
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["/api/products", id, "reviews"],
+      });
+      // Optionally invalidate product to update rating
+      queryClient.invalidateQueries({ queryKey: ["/api/products", id] });
+      setShowReviewModal(false);
+      Alert.alert(
+        intl.formatMessage({ id: "common.success" }),
+        intl.formatMessage(
+          { id: "product.reviews.thankYou" },
+          { defaultMessage: "Thank you for your review!" },
+        ),
+      );
+    },
+    onError: (error: any) => {
+      Alert.alert(
+        intl.formatMessage({ id: "common.error" }),
+        error.response?.data?.message || "Failed to submit review",
+      );
+    },
+  });
+
+  const handleSubmitReview = async (rating: number, comment: string) => {
+    if (!user) {
+      Alert.alert(
+        intl.formatMessage({ id: "product.loginRequired.title" }),
+        intl.formatMessage({ id: "product.loginRequired.message" }),
+        [
+          {
+            text: intl.formatMessage({ id: "common.cancel" }),
+            style: "cancel",
+          },
+          {
+            text: intl.formatMessage({ id: "auth.register.login" }),
+            onPress: () => router.push("/(auth)/login"),
+          },
+        ],
+      );
+      return;
+    }
+    await createReviewMutation.mutateAsync({ rating, comment });
+  };
 
   const handleAddToCart = async () => {
     if (!user) {
@@ -182,7 +256,8 @@ export default function ProductDetailsScreen() {
               <Text className="text-muted-foreground text-sm font-medium">
                 4.9{" "}
                 <Text className="text-muted-foreground/50">
-                  (124 {intl.formatMessage({ id: "product.reviews" })})
+                  ({reviews.length}{" "}
+                  {intl.formatMessage({ id: "product.reviews" })})
                 </Text>
               </Text>
             </View>
@@ -345,8 +420,36 @@ export default function ProductDetailsScreen() {
               </View>
             </View>
           </View>
+
+          {/* Reviews Section */}
+          <View className="mb-8">
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-xl font-bold text-foreground">
+                {intl.formatMessage({ id: "product.reviews" })} (
+                {reviews.length})
+              </Text>
+              <TouchableOpacity
+                onPress={() => setShowReviewModal(true)}
+                className="flex-row items-center gap-2 bg-[#6366f1]/10 px-3 py-1.5 rounded-full"
+              >
+                <MessageSquarePlus size={16} color="#6366f1" />
+                <Text className="text-[#6366f1] text-xs font-bold">
+                  {intl.formatMessage({ id: "review.add" })}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+            <ReviewList reviews={reviews} isLoading={isLoadingReviews} />
+          </View>
         </ScrollView>
       </View>
+
+      <AddReviewModal
+        visible={showReviewModal}
+        onClose={() => setShowReviewModal(false)}
+        onSubmit={handleSubmitReview}
+        isLoading={createReviewMutation.isPending}
+      />
     </View>
   );
 }

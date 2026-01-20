@@ -412,5 +412,13 @@
   "admin.coupons.inactive": "Pasif",
   "admin.coupons.percentage": "Yüzde",
   "admin.coupons.fixed": "Sabit Tutar",
-  "admin.coupons.save": "Kuponu Kaydet"
+  "admin.coupons.save": "Kuponu Kaydet",
+  "product.reviews.empty": "Henüz değerlendirme yok.",
+  "product.reviews.beFirst": "İlk değerlendirmeyi siz yapın!",
+  "review.write.title": "Değerlendirme Yaz",
+  "review.write.rating": "Puanla:",
+  "review.write.comment": "Yorumunuz",
+  "review.write.placeholder": "Deneyiminizi paylaşın...",
+  "review.submit": "Gönder",
+  "review.add": "Değerlendirme Yaz"
 }

@@ -20,9 +20,12 @@ import {
   InsertOrder,
   OrderItem,
   InsertOrderItem,
-  coupons,
   Coupon,
   InsertCoupon,
+  coupons,
+  Review,
+  InsertReview,
+  reviews,
 } from "../shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -106,6 +109,11 @@ export interface IStorage {
   getAllCoupons(): Promise<Coupon[]>;
   updateCoupon(id: string, data: Partial<Coupon>): Promise<Coupon | undefined>;
   deleteCoupon(id: string): Promise<boolean>;
+
+  // Review operations
+  createReview(review: InsertReview): Promise<Review>;
+  getReviewsByProduct(productId: string): Promise<Review[]>;
+  deleteReview(id: string): Promise<boolean>;
 }
 
 // MemStorage kodunu koruyoruz (gerekirse tekrar kullanabiliriz)
@@ -118,7 +126,9 @@ export class MemStorage implements IStorage {
   private orders: Map<string, Order>;
   private orderItems: Map<string, OrderItem>;
   private coupons: Map<string, Coupon>;
+  private reviews: Map<string, Review>;
   sessionStore: SessionStore;
+  private currentId: number;
 
   constructor() {
     this.users = new Map();
@@ -128,7 +138,10 @@ export class MemStorage implements IStorage {
     this.addresses = new Map();
     this.orders = new Map();
     this.orderItems = new Map();
+    this.orderItems = new Map();
     this.coupons = new Map();
+    this.reviews = new Map();
+    this.currentId = 1;
 
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // 24 hours
@@ -577,6 +590,14 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async updateOrder(id: string, data: Partial<Order>): Promise<Order> {
+    const order = await this.getOrder(id);
+    if (!order) throw new Error("Order not found");
+    const updatedOrder = { ...order, ...data };
+    this.orders.set(id, updatedOrder);
+    return updatedOrder;
+  }
+
   // Coupon operations
   async createCoupon(coupon: InsertCoupon): Promise<Coupon> {
     const id = crypto.randomUUID();
@@ -624,6 +645,29 @@ export class MemStorage implements IStorage {
 
   async deleteCoupon(id: string): Promise<boolean> {
     return this.coupons.delete(id);
+  }
+
+  async createReview(review: InsertReview): Promise<Review> {
+    const id = (this.currentId++).toString();
+    const newReview: Review = {
+      ...review,
+      id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      comment: review.comment || null,
+    };
+    this.reviews.set(id, newReview);
+    return newReview;
+  }
+
+  async getReviewsByProduct(productId: string): Promise<Review[]> {
+    return Array.from(this.reviews.values()).filter(
+      (r) => r.productId === productId,
+    );
+  }
+
+  async deleteReview(id: string): Promise<boolean> {
+    return this.reviews.delete(id);
   }
 }
 
@@ -1230,6 +1274,26 @@ export class DatabaseStorage implements IStorage {
   async deleteCoupon(id: string): Promise<boolean> {
     const result = await db.delete(coupons).where(eq(coupons.id, id));
     return !!result;
+  }
+
+  async createReview(review: InsertReview): Promise<Review> {
+    const [newReview] = await db.insert(reviews).values(review).returning();
+    return newReview;
+  }
+
+  async getReviewsByProduct(productId: string): Promise<Review[]> {
+    return await db
+      .select()
+      .from(reviews)
+      .where(eq(reviews.productId, productId));
+  }
+
+  async deleteReview(id: string): Promise<boolean> {
+    const [deleted] = await db
+      .delete(reviews)
+      .where(eq(reviews.id, id))
+      .returning();
+    return !!deleted;
   }
 }
 

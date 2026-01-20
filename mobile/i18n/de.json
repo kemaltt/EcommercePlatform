@@ -398,5 +398,13 @@
   "admin.coupons.inactive": "Inaktiv",
   "admin.coupons.percentage": "Prozent",
   "admin.coupons.fixed": "Fester Betrag",
-  "admin.coupons.save": "Gutschein speichern"
+  "admin.coupons.save": "Gutschein speichern",
+  "product.reviews.empty": "Noch keine Bewertungen.",
+  "product.reviews.beFirst": "Seien Sie der Erste!",
+  "review.write.title": "Bewertung schreiben",
+  "review.write.rating": "Bewerten:",
+  "review.write.comment": "Ihre Bewertung",
+  "review.write.placeholder": "Teilen Sie Ihre Erfahrung...",
+  "review.submit": "Absenden",
+  "review.add": "Bewertung schreiben"
 }
