@@ -20,23 +20,27 @@ import {
   Trash2,
 } from "lucide-react-native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "../../../lib/api";
+import { api } from "@/lib/api";
 import { User as UserType } from "@shared/schema";
 import { useState, useEffect } from "react";
-import { useTheme } from "../../../contexts/theme-context";
-import { SuccessModal } from "../../../components/SuccessModal";
+import { useTheme } from "@/contexts/theme-context";
+import { PasswordConfirmModal } from "@/components/PasswordConfirmModal";
+import { SuccessModal } from "@/components/SuccessModal";
+import { useIntl } from "react-intl";
 
 export default function EditUserScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { isDark } = useTheme();
+  const intl = useIntl();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState("active");
   const [isAdmin, setIsAdmin] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { data: user, isLoading } = useQuery<UserType>({
     queryKey: [`/api/admin/users/${id}`],
@@ -67,15 +71,42 @@ export default function EditUserScreen() {
     },
     onError: (error: any) => {
       Alert.alert(
-        "Error",
-        error.response?.data?.message || "Failed to update user",
+        intl.formatMessage({ id: "common.error" }),
+        error.response?.data?.message ||
+          intl.formatMessage({ id: "admin.users.errors.updateFailed" }),
+      );
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (password: string) => {
+      const res = await api.post(`/admin/users/${id}/delete`, { password });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      setShowDeleteModal(false);
+      router.back();
+      Alert.alert(
+        intl.formatMessage({ id: "common.success" }),
+        intl.formatMessage({ id: "admin.users.deleteSuccess" }),
+      );
+    },
+    onError: (error: any) => {
+      Alert.alert(
+        intl.formatMessage({ id: "common.error" }),
+        error.response?.data?.message ||
+          intl.formatMessage({ id: "admin.users.errors.deleteFailed" }),
       );
     },
   });
 
   const handleSave = () => {
     if (!fullName.trim() || !email.trim()) {
-      Alert.alert("Error", "Full Name and Email are required");
+      Alert.alert(
+        intl.formatMessage({ id: "common.error" }),
+        intl.formatMessage({ id: "admin.users.errors.requiredFields" }),
+      );
       return;
     }
     updateMutation.mutate({
@@ -106,7 +137,9 @@ export default function EditUserScreen() {
           >
             <ChevronLeft size={20} color={isDark ? "white" : "black"} />
           </TouchableOpacity>
-          <Text className="text-foreground text-lg font-bold">Edit User</Text>
+          <Text className="text-foreground text-lg font-bold">
+            {intl.formatMessage({ id: "admin.users.editTitle" })}
+          </Text>
           <View className="w-10" />
         </View>
 
@@ -117,14 +150,14 @@ export default function EditUserScreen() {
           {/* Form */}
           <View className="mb-6">
             <Text className="text-muted-foreground text-xs font-bold mb-2 uppercase tracking-widest">
-              Full Name
+              {intl.formatMessage({ id: "admin.users.fullName" })}
             </Text>
             <View className="bg-card h-14 rounded-2xl flex-row items-center px-4 border border-border">
               <User size={20} color="#6366f1" />
               <TextInput
                 value={fullName}
                 onChangeText={setFullName}
-                placeholder="Full Name"
+                placeholder={intl.formatMessage({ id: "admin.users.fullName" })}
                 placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
                 className="flex-1 ml-3 px-2 text-foreground font-medium"
                 style={{ height: "100%" }}
@@ -135,14 +168,14 @@ export default function EditUserScreen() {
 
           <View className="mb-6">
             <Text className="text-muted-foreground text-xs font-bold mb-2 uppercase tracking-widest">
-              Email Address
+              {intl.formatMessage({ id: "admin.users.email" })}
             </Text>
             <View className="bg-card h-14 rounded-2xl flex-row items-center px-4 border border-border">
               <Mail size={20} color="#6366f1" />
               <TextInput
                 value={email}
                 onChangeText={setEmail}
-                placeholder="Email Address"
+                placeholder={intl.formatMessage({ id: "admin.users.email" })}
                 placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -155,7 +188,7 @@ export default function EditUserScreen() {
 
           <View className="mb-6">
             <Text className="text-muted-foreground text-xs font-bold mb-2 uppercase tracking-widest">
-              Account Status
+              {intl.formatMessage({ id: "admin.users.status" })}
             </Text>
             <View className="flex-row flex-wrap gap-2">
               {[
@@ -174,7 +207,7 @@ export default function EditUserScreen() {
                   <Text
                     className={`font-bold text-[10px] uppercase ${status === s ? "text-primary" : "text-muted-foreground"}`}
                   >
-                    {s.replace("_", " ")}
+                    {intl.formatMessage({ id: `admin.users.statusTypes.${s}` })}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -189,10 +222,10 @@ export default function EditUserScreen() {
                 </View>
                 <View>
                   <Text className="text-foreground font-bold">
-                    Admin Access
+                    {intl.formatMessage({ id: "admin.users.adminAccess" })}
                   </Text>
                   <Text className="text-muted-foreground text-xs">
-                    Grant administrator privileges
+                    {intl.formatMessage({ id: "admin.users.grantAdmin" })}
                   </Text>
                 </View>
               </View>
@@ -211,7 +244,7 @@ export default function EditUserScreen() {
           <TouchableOpacity
             onPress={handleSave}
             disabled={updateMutation.isPending}
-            className="bg-primary h-16 rounded-2xl items-center justify-center flex-row mb-8"
+            className="bg-primary h-16 rounded-2xl items-center justify-center flex-row mb-4"
           >
             {updateMutation.isPending ? (
               <ActivityIndicator color="white" />
@@ -219,21 +252,45 @@ export default function EditUserScreen() {
               <>
                 <Save size={20} color="white" className="mr-2" />
                 <Text className="text-white font-bold text-lg">
-                  Save Changes
+                  {intl.formatMessage({ id: "admin.users.saveChanges" })}
                 </Text>
               </>
             )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setShowDeleteModal(true)}
+            className="bg-red-500/10 h-16 rounded-2xl items-center justify-center flex-row mb-8 border border-red-500/20"
+          >
+            <Trash2 size={20} color="#ef4444" className="mr-2" />
+            <Text className="text-red-500 font-bold text-lg">
+              {intl.formatMessage({ id: "admin.users.deleteUser" })}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
 
       <SuccessModal
         visible={showSuccessModal}
-        title="User Updated"
-        message="The user account has been successfully updated."
+        title={intl.formatMessage({ id: "admin.users.updateSuccess" })}
+        message={intl.formatMessage({ id: "admin.users.updateSuccessMessage" })}
         onClose={() => {
           setShowSuccessModal(false);
           router.back();
+        }}
+      />
+
+      <PasswordConfirmModal
+        visible={showDeleteModal}
+        title={intl.formatMessage({ id: "admin.users.deleteTitle" })}
+        subtitle={intl.formatMessage({
+          id: "admin.users.deleteConfirmMessage",
+        })}
+        confirmLabel={intl.formatMessage({ id: "admin.users.deleteUser" })}
+        loading={deleteMutation.isPending}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={async (password) => {
+          await deleteMutation.mutateAsync(password);
         }}
       />
     </View>

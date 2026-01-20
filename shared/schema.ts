@@ -24,6 +24,7 @@ export const users = pgTable("users", {
   googleId: text("google_id").unique(),
   appleId: text("apple_id").unique(),
   isAdmin: boolean("is_admin").default(false).notNull(),
+  isSuperAdmin: boolean("is_super_admin").default(false).notNull(),
   status: text("status").default("active").notNull(), // active, passive, cancellation_request, cancelled, deleted
   address: text("address"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -50,6 +51,7 @@ export const insertUserSchema = createInsertSchema(users, {
     ),
 }).omit({
   isAdmin: true,
+  isSuperAdmin: true,
   status: true,
 });
 

@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 export const isAuthenticated = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   if (req.isAuthenticated()) {
     return next();
@@ -12,10 +12,27 @@ export const isAuthenticated = (
 };
 
 export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
-  if (req.isAuthenticated() && req.user && (req.user as any).isAdmin) {
+  if (
+    req.isAuthenticated() &&
+    req.user &&
+    ((req.user as any).isAdmin || (req.user as any).isSuperAdmin)
+  ) {
     return next();
   }
   return res
     .status(403)
     .json({ message: "Unauthorized: Admin access required" });
+};
+
+export const isSuperAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  if (req.isAuthenticated() && req.user && (req.user as any).isSuperAdmin) {
+    return next();
+  }
+  return res
+    .status(403)
+    .json({ message: "Unauthorized: Super Admin access required" });
 };

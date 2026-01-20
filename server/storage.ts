@@ -239,6 +239,7 @@ export class MemStorage implements IStorage {
       password: user.password || null,
       id,
       isAdmin: false,
+      isSuperAdmin: false,
       status: "active",
       createdAt: now,
       emailVerified: false,
