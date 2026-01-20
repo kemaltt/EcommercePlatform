@@ -13,7 +13,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { api } from "../../lib/api";
-import { Product } from "@shared/schema";
+import { Product, Notification } from "@shared/schema";
 import { Input } from "../../components/ui/Input";
 import {
   Search,
@@ -75,6 +75,17 @@ export default function HomeScreen() {
       return res.data;
     },
   });
+
+  const { data: notifications } = useQuery<Notification[]>({
+    queryKey: ["/api/notifications"],
+    queryFn: async () => {
+      const res = await api.get("/notifications");
+      return res.data;
+    },
+    enabled: !!user,
+  });
+
+  const unreadCount = notifications?.filter((n) => !n.isRead).length || 0;
 
   const { toggleFavorite, isFavorite } = useFavorites();
 
@@ -198,13 +209,25 @@ export default function HomeScreen() {
           </View>
           <View className="flex-row items-center gap-3">
             <TouchableOpacity
-              className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
+              className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border relative"
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 router.push("/notifications");
               }}
             >
               <Bell size={20} color={isDark ? "white" : "black"} />
+              {unreadCount > 0 && (
+                <View
+                  className="absolute top-0 right-0 bg-red-500 rounded-full items-center justify-center border-2"
+                  style={{
+                    borderColor: isDark ? "#1e2029" : "#ffffff",
+                    width: 14,
+                    height: 14,
+                  }}
+                >
+                  <View className="w-1.5 h-1.5 rounded-full bg-white" />
+                </View>
+              )}
             </TouchableOpacity>
 
             {user && (

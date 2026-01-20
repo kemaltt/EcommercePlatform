@@ -61,6 +61,22 @@ router.patch("/:id/read", async (req, res) => {
 });
 
 /**
+ * PATCH /api/notifications/mark-all-read
+ * Marks all notifications for the current user as read.
+ */
+router.patch("/mark-all-read", async (req, res) => {
+  try {
+    await storage.markAllNotificationsAsRead(req.user!.id);
+    res.json({ success: true, message: "All notifications marked as read" });
+  } catch (error) {
+    console.error("Error marking all notifications as read:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to mark all notifications as read" });
+  }
+});
+
+/**
  * DELETE /api/notifications/unregister
  * Removes the push token for the current user (e.g., on logout).
  */

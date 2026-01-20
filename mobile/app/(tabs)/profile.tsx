@@ -10,6 +10,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useAuth } from "../../hooks/use-auth";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "../../lib/api";
 import { Button } from "../../components/ui/Button";
 import {
   User,
@@ -40,6 +42,17 @@ export default function ProfileScreen() {
   const { locale, setLocale } = useI18n();
   const { isDark } = useTheme();
   const [loggingOut, setLoggingOut] = useState(false);
+  const { data: notifications } = useQuery({
+    queryKey: ["/api/notifications"],
+    queryFn: async () => {
+      const res = await api.get("/notifications");
+      return res.data;
+    },
+    enabled: !!user,
+  });
+
+  const unreadCount =
+    (notifications as any[])?.filter((n) => !n.isRead).length || 0;
 
   // --- Actions ---
   const handleLogout = async () => {
@@ -219,6 +232,16 @@ export default function ProfileScreen() {
               label={intl.formatMessage({ id: "profile.loyaltyPoints" })}
               subLabel={`${user.points || 0} ${intl.formatMessage({ id: "profile.points" })}`}
               onPress={() => {}}
+            />
+            <GridMenuItem
+              icon={<Bell size={22} color={isDark ? "white" : "black"} />}
+              label={intl.formatMessage({ id: "notifications.title" })}
+              subLabel={
+                unreadCount > 0
+                  ? `${unreadCount} ${intl.formatMessage({ id: "notifications.new" })}`
+                  : intl.formatMessage({ id: "profile.notifications.sub" })
+              }
+              onPress={() => router.push("/notifications")}
             />
 
             {(user.isAdmin || user.isSuperAdmin) && (

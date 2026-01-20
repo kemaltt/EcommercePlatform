@@ -1779,6 +1779,13 @@ export class DatabaseStorage implements IStorage {
       .returning()) as any;
     return updated as Notification | undefined;
   }
+
+  async markAllNotificationsAsRead(userId: string): Promise<void> {
+    await db
+      .update(notifications as any)
+      .set({ isRead: true } as any)
+      .where(eq((notifications as any).userId, userId) as any);
+  }
 }
 
 export const storage = new DatabaseStorage();
