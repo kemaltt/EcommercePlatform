@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { storage } from "../../storage";
 import { isAuthenticated } from "../middleware/authMiddleware";
+import { sendPushNotification } from "../lib/expo";
 
 const router = Router();
 
@@ -14,14 +15,23 @@ router.use(isAuthenticated);
 router.post("/register", async (req, res) => {
   try {
     const { token } = req.body;
+    console.log(
+      `[Push Server] Registration request from user ${req.user!.id}, token:`,
+      token,
+    );
+
     if (!token) {
+      console.log("[Push Server] Registration failed: No token provided");
       return res.status(400).json({ message: "Push token is required" });
     }
 
     await storage.updatePushToken(req.user!.id, token);
+    console.log(
+      `[Push Server] Token registered successfully for user ${req.user!.id}`,
+    );
     res.json({ success: true, message: "Push token registered successfully" });
   } catch (error) {
-    console.error("Error registering push token:", error);
+    console.error("[Push Server] Error registering push token:", error);
     res.status(500).json({ message: "Failed to register push token" });
   }
 });
@@ -86,7 +96,35 @@ router.delete("/unregister", async (req, res) => {
     res.json({ success: true, message: "Push token removed successfully" });
   } catch (error) {
     console.error("Error unregistering push token:", error);
-    res.status(500).json({ message: "Failed to unregister push token" });
+    return res.status(500).json({ message: "Failed to unregister push token" });
+  }
+});
+
+/**
+ * POST /api/notifications/test-me
+ * Sends a test push notification to the current user.
+ */
+router.post("/test-me", async (req, res) => {
+  try {
+    const user = await storage.getUser(req.user!.id);
+    if (!user || !user.pushToken) {
+      return res.status(400).json({
+        message:
+          "No push token found. Please register for notifications first.",
+      });
+    }
+
+    await sendPushNotification(
+      user.id,
+      "Test Push",
+      "Bu bir test bildirimdir!",
+      { type: "test", timestamp: new Date().toISOString() },
+    );
+
+    res.json({ success: true, message: "Test notification sent" });
+  } catch (error) {
+    console.error("Error sending test notification:", error);
+    res.status(500).json({ message: "Failed to send test notification" });
   }
 });
 

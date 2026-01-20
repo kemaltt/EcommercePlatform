@@ -130,11 +130,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (user) {
-      registerForPushNotificationsAsync().then((token) => {
-        if (token) {
-          updatePushTokenMutation.mutate(token);
-        }
-      });
+      console.log(
+        "[Push] User logged in, attempting to register for push notifications...",
+      );
+      registerForPushNotificationsAsync()
+        .then((token) => {
+          if (token) {
+            console.log("[Push] Token received:", token);
+            updatePushTokenMutation.mutate(token, {
+              onSuccess: () =>
+                console.log("[Push] Token registered successfully"),
+              onError: (error) =>
+                console.error("[Push] Token registration failed:", error),
+            });
+          } else {
+            console.log(
+              "[Push] No token received - check permissions or device type",
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("[Push] Error getting token:", error);
+        });
 
       // Handle notifications when the app is in foreground
       const notificationListener =
