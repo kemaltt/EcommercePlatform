@@ -217,6 +217,29 @@ export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 export type PasswordReset = typeof passwordResets.$inferSelect;
 export type InsertPasswordReset = z.infer<typeof insertPasswordResetSchema>;
 
+// Coupon schema
+export const coupons = pgTable("coupons", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  code: text("code").notNull().unique(),
+  discountType: text("discount_type").notNull(), // 'percentage', 'fixed'
+  discountValue: doublePrecision("discount_value").notNull(),
+  minPurchaseAmount: doublePrecision("min_purchase_amount").default(0),
+  expirationDate: timestamp("expiration_date"),
+  isActive: boolean("is_active").default(true).notNull(),
+  usageLimit: integer("usage_limit"),
+  usedCount: integer("used_count").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCouponSchema = createInsertSchema(coupons).omit({
+  id: true,
+  usedCount: true,
+  createdAt: true,
+});
+
+export type Coupon = typeof coupons.$inferSelect;
+export type InsertCoupon = z.infer<typeof insertCouponSchema>;
+
 // Session schema (required for connect-pg-simple)
 export const session = pgTable("session", {
   sid: text("sid").primaryKey(),

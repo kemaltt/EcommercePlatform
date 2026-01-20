@@ -172,14 +172,25 @@ export default function AdminConsoleScreen() {
             </View>
           </View>
 
-          <View className="mb-4">
-            <ManagementCard
-              title={intl.formatMessage({ id: "admin.orders.title" })}
-              count={stats?.totalOrders || "0"}
-              subtitle={intl.formatMessage({ id: "admin.menu.orders" })}
-              icon={<Box size={20} color="#6366f1" />}
-              onPress={() => router.push("/admin/orders")}
-            />
+          <View className="mb-4 flex-row">
+            <View className="flex-1 mr-4">
+              <ManagementCard
+                title={intl.formatMessage({ id: "admin.orders.title" })}
+                count={stats?.totalOrders || "0"}
+                subtitle={intl.formatMessage({ id: "admin.menu.orders" })}
+                icon={<Box size={20} color="#6366f1" />}
+                onPress={() => router.push("/admin/orders")}
+              />
+            </View>
+            <View className="flex-1">
+              <ManagementCard
+                title={intl.formatMessage({ id: "admin.coupons.title" })}
+                count={stats?.totalCoupons || "0"}
+                subtitle={intl.formatMessage({ id: "admin.coupons.manage" })}
+                icon={<Box size={20} color="#6366f1" />}
+                onPress={() => router.push("/admin/coupons")}
+              />
+            </View>
           </View>
 
           <View className="flex-row justify-between items-center mb-4">

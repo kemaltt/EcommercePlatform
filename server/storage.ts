@@ -20,6 +20,9 @@ import {
   InsertOrder,
   OrderItem,
   InsertOrderItem,
+  coupons,
+  Coupon,
+  InsertCoupon,
 } from "../shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -94,6 +97,15 @@ export interface IStorage {
   // New method
   getUsers(): Promise<User[]>;
   getAllOrders(): Promise<Order[]>;
+  updateOrder(id: string, data: Partial<Order>): Promise<Order>;
+
+  // Coupon operations
+  createCoupon(coupon: InsertCoupon): Promise<Coupon>;
+  getCoupon(id: string): Promise<Coupon | undefined>;
+  getCouponByCode(code: string): Promise<Coupon | undefined>;
+  getAllCoupons(): Promise<Coupon[]>;
+  updateCoupon(id: string, data: Partial<Coupon>): Promise<Coupon | undefined>;
+  deleteCoupon(id: string): Promise<boolean>;
 }
 
 // MemStorage kodunu koruyoruz (gerekirse tekrar kullanabiliriz)
@@ -105,6 +117,7 @@ export class MemStorage implements IStorage {
   private addresses: Map<string, Address>;
   private orders: Map<string, Order>;
   private orderItems: Map<string, OrderItem>;
+  private coupons: Map<string, Coupon>;
   sessionStore: SessionStore;
 
   constructor() {
@@ -115,6 +128,7 @@ export class MemStorage implements IStorage {
     this.addresses = new Map();
     this.orders = new Map();
     this.orderItems = new Map();
+    this.coupons = new Map();
 
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000, // 24 hours
@@ -561,6 +575,55 @@ export class MemStorage implements IStorage {
     return ordersWithItems.sort(
       (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
     );
+  }
+
+  // Coupon operations
+  async createCoupon(coupon: InsertCoupon): Promise<Coupon> {
+    const id = crypto.randomUUID();
+    const now = new Date();
+    const newCoupon: Coupon = {
+      ...coupon,
+      id,
+      createdAt: now,
+      minPurchaseAmount: coupon.minPurchaseAmount || 0,
+      expirationDate: coupon.expirationDate || null,
+      isActive: coupon.isActive ?? true,
+      usageLimit: coupon.usageLimit || null,
+      usedCount: 0,
+    };
+    this.coupons.set(id, newCoupon);
+    return newCoupon;
+  }
+
+  async getCoupon(id: string): Promise<Coupon | undefined> {
+    return this.coupons.get(id);
+  }
+
+  async getCouponByCode(code: string): Promise<Coupon | undefined> {
+    return Array.from(this.coupons.values()).find(
+      (c) => c.code.toUpperCase() === code.toUpperCase(),
+    );
+  }
+
+  async getAllCoupons(): Promise<Coupon[]> {
+    return Array.from(this.coupons.values()).sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    );
+  }
+
+  async updateCoupon(
+    id: string,
+    data: Partial<Coupon>,
+  ): Promise<Coupon | undefined> {
+    const coupon = await this.getCoupon(id);
+    if (!coupon) return undefined;
+    const updatedCoupon = { ...coupon, ...data };
+    this.coupons.set(id, updatedCoupon);
+    return updatedCoupon;
+  }
+
+  async deleteCoupon(id: string): Promise<boolean> {
+    return this.coupons.delete(id);
   }
 }
 
@@ -1120,6 +1183,53 @@ export class DatabaseStorage implements IStorage {
       ...updatedOrder,
       items,
     };
+  }
+
+  // Coupon operations
+  async createCoupon(coupon: InsertCoupon): Promise<Coupon> {
+    const [newCoupon] = await db
+      .insert(coupons)
+      .values({
+        ...coupon,
+        createdAt: new Date(),
+        usedCount: 0,
+      } as any)
+      .returning();
+    return newCoupon;
+  }
+
+  async getCoupon(id: string): Promise<Coupon | undefined> {
+    const [coupon] = await db.select().from(coupons).where(eq(coupons.id, id));
+    return coupon;
+  }
+
+  async getCouponByCode(code: string): Promise<Coupon | undefined> {
+    const [coupon] = await db
+      .select()
+      .from(coupons)
+      .where(eq(coupons.code, code));
+    return coupon;
+  }
+
+  async getAllCoupons(): Promise<Coupon[]> {
+    return await db.select().from(coupons).orderBy(desc(coupons.createdAt));
+  }
+
+  async updateCoupon(
+    id: string,
+    data: Partial<Coupon>,
+  ): Promise<Coupon | undefined> {
+    const [updatedCoupon] = await db
+      .update(coupons)
+      .set(data)
+      .where(eq(coupons.id, id))
+      .returning();
+    return updatedCoupon;
+  }
+
+  async deleteCoupon(id: string): Promise<boolean> {
+    const result = await db.delete(coupons).where(eq(coupons.id, id));
+    return !!result;
   }
 }
 

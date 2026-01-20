@@ -13,6 +13,11 @@ interface CartContextType {
   removeFromCart: (id: string) => Promise<void>;
   clearCart: () => Promise<void>;
   isLoading: boolean;
+  couponCode: string | null;
+  discountAmount: number;
+  total: number;
+  applyCoupon: (code: string) => Promise<void>;
+  removeCoupon: () => void;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -33,10 +38,77 @@ export function CartProvider({ children }: { children: ReactNode }) {
     enabled: !!user,
   });
 
+  const [couponCode, setCouponCode] = React.useState<string | null>(null);
+  const [discountAmount, setDiscountAmount] = React.useState(0);
+
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0,
   );
+
+  const total = Math.max(0, subtotal - discountAmount);
+
+  // Reset coupon if cart is empty
+  React.useEffect(() => {
+    if (cartItems.length === 0) {
+      setCouponCode(null);
+      setDiscountAmount(0);
+    }
+  }, [cartItems]);
+
+  // Re-validate coupon if subtotal changes (to ensure minPurchase etc) - simplified: just remove if invalid?
+  // For now, simpler approach: if subtotal changes, we might want to re-validate, but let's keep it simple.
+  // Actually, let's reset discount if subtotal drops below coupon logic?
+  // We'll trust the user to re-apply or validate on checkout.
+  // Better: Re-run validation effect if couponCode exists.
+  React.useEffect(() => {
+    if (couponCode) {
+      validateCoupon(couponCode);
+    }
+  }, [subtotal]);
+
+  const validateCoupon = async (code: string) => {
+    try {
+      const res = await api.post("/cart/validate-coupon", {
+        code,
+        cartTotal: subtotal,
+      });
+      if (res.data.valid) {
+        setDiscountAmount(res.data.discountAmount);
+      } else {
+        setCouponCode(null);
+        setDiscountAmount(0);
+      }
+    } catch (e) {
+      // If validation fails (e.g. min purchase requirement no longer met), remove coupon
+      setCouponCode(null);
+      setDiscountAmount(0);
+    }
+  };
+
+  const applyCoupon = async (code: string) => {
+    try {
+      const res = await api.post("/cart/validate-coupon", {
+        code,
+        cartTotal: subtotal,
+      });
+      setCouponCode(code);
+      setDiscountAmount(res.data.discountAmount);
+      Alert.alert(
+        "Success",
+        `Coupon ${code} applied! Saved $${res.data.discountAmount}`,
+      );
+    } catch (error: any) {
+      const msg = error.response?.data?.message || "Invalid coupon";
+      Alert.alert("Error", msg);
+      throw error;
+    }
+  };
+
+  const removeCoupon = () => {
+    setCouponCode(null);
+    setDiscountAmount(0);
+  };
 
   const addToCartMutation = useMutation({
     mutationFn: async ({
@@ -102,6 +174,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
           await clearCartMutation.mutateAsync();
         },
         isLoading,
+        couponCode,
+        discountAmount,
+        total,
+        applyCoupon,
+        removeCoupon,
       }}
     >
       {children}
