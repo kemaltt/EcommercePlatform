@@ -27,6 +27,8 @@ import { Image } from "expo-image";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useTheme } from "../../contexts/theme-context";
+import { useAuth } from "../../hooks/use-auth";
+import { useCheckout } from "../../contexts/checkout-context";
 
 export default function CartScreen() {
   const {
@@ -40,10 +42,14 @@ export default function CartScreen() {
     isLoading,
     applyCoupon,
     removeCoupon,
+    pointsUsed,
+    applyPoints,
+    removePoints,
   } = useCart();
   const router = useRouter();
   const intl = useIntl();
   const { isDark } = useTheme();
+  const { setPointsUsed } = useCheckout();
 
   if (isLoading) {
     return (
@@ -135,6 +141,66 @@ export default function CartScreen() {
                     {intl.formatMessage({ id: "cart.coupon.apply" })}
                   </Text>
                 )}
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      </View>
+    );
+  };
+
+  const PointsSection = () => {
+    const { user } = useAuth();
+    const [pointsToApply, setPointsToApply] = useState("");
+
+    if (!user || !user.points || user.points <= 0) return null;
+
+    return (
+      <View className="mb-6">
+        <View className="flex-row justify-between items-center mb-2">
+          <Text className="text-muted-foreground text-sm">
+            {intl.formatMessage({ id: "cart.points.title" })}
+          </Text>
+          <Text className="text-primary text-xs font-bold">
+            {intl.formatMessage(
+              { id: "cart.points.available" },
+              { points: user.points },
+            )}
+          </Text>
+        </View>
+        <View className="flex-row gap-3">
+          {pointsUsed > 0 ? (
+            <View className="flex-1 bg-primary/10 border border-primary/30 rounded-xl px-4 py-3 flex-row justify-between items-center">
+              <Text className="text-primary font-bold">
+                {pointsUsed} {intl.formatMessage({ id: "profile.points" })}
+              </Text>
+              <TouchableOpacity onPress={removePoints}>
+                <X size={16} color="#6366f1" />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <>
+              <TextInput
+                className="flex-1 bg-card border border-border rounded-xl px-4 py-3 text-foreground"
+                placeholder={user.points.toString()}
+                placeholderTextColor={isDark ? "#94a3b8" : "#9ca3af"}
+                value={pointsToApply}
+                onChangeText={setPointsToApply}
+                keyboardType="number-pad"
+              />
+              <TouchableOpacity
+                className="bg-[#6366f1] px-5 rounded-xl items-center justify-center"
+                onPress={() => {
+                  const pts = parseInt(pointsToApply);
+                  if (pts > 0) {
+                    applyPoints(pts);
+                    setPointsToApply("");
+                  }
+                }}
+              >
+                <Text className="text-white font-bold">
+                  {intl.formatMessage({ id: "cart.points.use" })}
+                </Text>
               </TouchableOpacity>
             </>
           )}
@@ -313,6 +379,8 @@ export default function CartScreen() {
         */
         {/* We need local state for the input field. The couponCode from hook is the APPLIED one. */}
         {/* Let's wrap this in a component or just use local state inside CartScreen */}
+        {/* Points Selection */}
+        <PointsSection />
         <CouponSection />
         <View className="flex-row justify-between mb-2">
           <Text className="text-muted-foreground text-sm">
@@ -334,6 +402,17 @@ export default function CartScreen() {
             </Text>
           </View>
         )}
+        {/* Points Discount Row */}
+        {pointsUsed > 0 && (
+          <View className="flex-row justify-between mb-2">
+            <Text className="text-blue-500 text-sm font-bold">
+              {intl.formatMessage({ id: "cart.points.discount" })}
+            </Text>
+            <Text className="text-blue-500 font-bold text-sm">
+              -${pointsUsed.toFixed(2)}
+            </Text>
+          </View>
+        )}
         <View className="flex-row justify-between mb-6">
           <Text className="text-muted-foreground text-sm">
             {intl.formatMessage({ id: "cart.shipping" })}
@@ -352,7 +431,10 @@ export default function CartScreen() {
         </View>
         <Button
           title={intl.formatMessage({ id: "cart.checkout" })}
-          onPress={() => router.push("/checkout")}
+          onPress={() => {
+            setPointsUsed(pointsUsed);
+            router.push("/checkout");
+          }}
           variant="primary"
           className="h-14 rounded-2xl"
           icon={<ArrowRight size={20} color="white" />}

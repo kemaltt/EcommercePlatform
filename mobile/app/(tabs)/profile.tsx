@@ -216,8 +216,8 @@ export default function ProfileScreen() {
             />
             <GridMenuItem
               icon={<Trophy size={22} color={isDark ? "white" : "black"} />}
-              label={intl.formatMessage({ id: "profile.achievements" })}
-              subLabel={intl.formatMessage({ id: "profile.achievements.sub" })}
+              label={intl.formatMessage({ id: "profile.loyaltyPoints" })}
+              subLabel={`${user.points || 0} ${intl.formatMessage({ id: "profile.points" })}`}
               onPress={() => {}}
             />
 

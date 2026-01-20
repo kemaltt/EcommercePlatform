@@ -33,6 +33,7 @@ export const users = pgTable("users", {
   verificationTokenExpiresAt: timestamp("verification_token_expires_at", {
     mode: "date",
   }),
+  points: integer("points").default(0).notNull(),
 });
 
 export const insertUserSchema = z.object({
@@ -53,6 +54,7 @@ export const insertUserSchema = z.object({
   address: z.string().optional().nullable(),
   googleId: z.string().optional().nullable(),
   appleId: z.string().optional().nullable(),
+  points: z.number().optional(),
 });
 
 // Product schema
@@ -170,6 +172,8 @@ export const orders = pgTable("orders", {
   shippedAt: timestamp("shipped_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  discount: doublePrecision("discount").default(0),
+  couponId: uuid("coupon_id").references(() => coupons.id),
 });
 
 export const orderItems = pgTable("order_items", {
@@ -263,6 +267,25 @@ export const insertReviewSchema = createInsertSchema(reviews).omit({
 
 export type Review = typeof reviews.$inferSelect;
 export type InsertReview = z.infer<typeof insertReviewSchema>;
+
+// Point History schema
+export const pointHistory = pgTable("point_history", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  change: integer("change").notNull(), // Positive for earn, negative for spend
+  reason: text("reason").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPointHistorySchema = createInsertSchema(pointHistory).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type PointHistory = typeof pointHistory.$inferSelect;
+export type InsertPointHistory = z.infer<typeof insertPointHistorySchema>;
 
 // Session schema (required for connect-pg-simple)
 export const session = pgTable("session", {

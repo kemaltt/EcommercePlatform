@@ -18,6 +18,7 @@ interface CheckoutState {
   subtotal: number;
   shippingCost: number;
   tax: number;
+  pointsUsed: number;
   total: number;
 }
 
@@ -27,6 +28,7 @@ interface CheckoutContextType {
   setShippingMethod: (method: CheckoutState["shippingMethod"]) => void;
   setPaymentMethod: (method: CheckoutState["paymentMethod"]) => void;
   setItems: (items: InsertOrderItem[]) => void;
+  setPointsUsed: (points: number) => void;
   resetCheckout: () => void;
 }
 
@@ -43,6 +45,7 @@ const initialState: CheckoutState = {
   subtotal: 0,
   shippingCost: 0,
   tax: 0,
+  pointsUsed: 0,
   total: 0,
 };
 
@@ -60,7 +63,11 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
       ...prev,
       shippingMethod: method,
       shippingCost: method?.price || 0,
-      total: prev.subtotal + (method?.price || 0) + prev.tax,
+      total:
+        prev.subtotal +
+        (method?.price || 0) +
+        prev.tax -
+        (prev.pointsUsed || 0),
     }));
   };
 
@@ -77,7 +84,15 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
       ...prev,
       items,
       subtotal,
-      total: subtotal + prev.shippingCost + prev.tax,
+      total: subtotal + prev.shippingCost + prev.tax - (prev.pointsUsed || 0),
+    }));
+  };
+
+  const setPointsUsed = (points: number) => {
+    setState((prev) => ({
+      ...prev,
+      pointsUsed: points,
+      total: prev.subtotal + prev.shippingCost + prev.tax - points,
     }));
   };
 
@@ -93,6 +108,7 @@ export function CheckoutProvider({ children }: { children: ReactNode }) {
         setShippingMethod,
         setPaymentMethod,
         setItems,
+        setPointsUsed,
         resetCheckout,
       }}
     >

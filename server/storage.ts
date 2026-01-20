@@ -26,6 +26,9 @@ import {
   Review,
   InsertReview,
   reviews,
+  PointHistory,
+  InsertPointHistory,
+  pointHistory,
 } from "../shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -90,7 +93,11 @@ export interface IStorage {
   deleteAddress(id: string): Promise<boolean>;
 
   // Order operations
-  createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order>;
+  createOrder(
+    order: InsertOrder,
+    items: InsertOrderItem[],
+    pointsUsed?: number,
+  ): Promise<Order>;
   getOrder(id: string): Promise<Order | undefined>;
   getOrdersByUser(userId: string): Promise<Order[]>;
 
@@ -116,6 +123,11 @@ export interface IStorage {
   getReview(id: string): Promise<Review | undefined>;
   getReviewsByUser(userId: string): Promise<Review[]>;
   deleteReview(id: string): Promise<boolean>;
+
+  // Point operations
+  addPoints(userId: string, amount: number, reason: string): Promise<User>;
+  redeemPoints(userId: string, amount: number, orderId: string): Promise<User>;
+  getPointHistory(userId: string): Promise<PointHistory[]>;
 }
 
 // MemStorage kodunu koruyoruz (gerekirse tekrar kullanabiliriz)
@@ -129,6 +141,7 @@ export class MemStorage implements IStorage {
   private orderItems: Map<string, OrderItem>;
   private coupons: Map<string, Coupon>;
   private reviews: Map<string, Review>;
+  private pointHistory: Map<string, PointHistory>;
   sessionStore: SessionStore;
   private currentId: number;
 
@@ -143,6 +156,7 @@ export class MemStorage implements IStorage {
     this.orderItems = new Map();
     this.coupons = new Map();
     this.reviews = new Map();
+    this.pointHistory = new Map();
     this.currentId = 1;
 
     this.sessionStore = new MemoryStore({
@@ -278,6 +292,7 @@ export class MemStorage implements IStorage {
       avatarUrl: user.avatarUrl || null,
       googleId: user.googleId || null,
       appleId: user.appleId || null,
+      points: 0,
     };
     this.users.set(id, newUser);
     return newUser;
@@ -526,23 +541,37 @@ export class MemStorage implements IStorage {
   async createOrder(
     order: InsertOrder,
     items: InsertOrderItem[],
+    pointsUsed?: number,
   ): Promise<Order> {
     const id = crypto.randomUUID();
-    const now = new Date();
+    const now = new Date(); // Ensure 'now' is defined if not already in scope, or reuse existing logic
+
+    // Note: 'now' was used in the previous code block, assuming it's defined inside function or class.
+    // Wait, the previous view showed 'createdAt: now'. 'now' must be defined inside the function.
+    // Let's verify the full function context. defining it here to be safe if I'm replacing the whole start.
 
     const newOrder: Order = {
       ...order,
       id,
+      userId: order.userId, // Ensure userId is string
       status: order.status || "pending",
       paymentStatus: order.paymentStatus || "pending",
+      subtotal: order.subtotal,
       shippingCost: order.shippingCost || 0,
-      tax: order.tax || 0,
-      trackingNumber: order.trackingNumber ?? null,
-      shippingCarrier: order.shippingCarrier ?? null,
-      shippedAt: order.shippedAt ?? null,
-      createdAt: now,
-      updatedAt: now,
+      discount: order.discount || 0,
+      total: order.total,
+      shippingAddress: order.shippingAddress,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      orderNumber: order.orderNumber,
+      trackingNumber: null,
+      shippingCarrier: null,
+      shippedAt: null,
+      couponId: order.couponId || null,
       items: [],
+      shippingMethod: order.shippingMethod,
+      paymentMethod: order.paymentMethod,
+      tax: order.tax || 0,
     };
 
     this.orders.set(id, newOrder);
@@ -561,6 +590,14 @@ export class MemStorage implements IStorage {
     }
 
     newOrder.items = createdItems;
+
+    if (pointsUsed && pointsUsed > 0) {
+      await this.redeemPoints(order.userId, pointsUsed, id);
+    }
+
+    // Clear cart (simple implementation)
+    await this.clearCart(order.userId);
+
     return newOrder;
   }
 
@@ -703,6 +740,59 @@ export class MemStorage implements IStorage {
       this.updateProductRating(review.productId);
     }
     return deleted;
+  }
+
+  async addPoints(
+    userId: string,
+    amount: number,
+    reason: string,
+  ): Promise<User> {
+    const user = this.users.get(userId);
+    if (!user) throw new Error("User not found");
+
+    const updatedUser = { ...user, points: user.points + amount };
+    this.users.set(userId, updatedUser);
+
+    const historyId = crypto.randomUUID();
+    this.pointHistory.set(historyId, {
+      id: historyId,
+      userId,
+      change: amount,
+      reason,
+      createdAt: new Date(),
+    });
+
+    return updatedUser;
+  }
+
+  async redeemPoints(
+    userId: string,
+    amount: number,
+    orderId: string,
+  ): Promise<User> {
+    const user = this.users.get(userId);
+    if (!user) throw new Error("User not found");
+    if (user.points < amount) throw new Error("Insufficient points");
+
+    const updatedUser = { ...user, points: user.points - amount };
+    this.users.set(userId, updatedUser);
+
+    const historyId = crypto.randomUUID();
+    this.pointHistory.set(historyId, {
+      id: historyId,
+      userId,
+      change: -amount,
+      reason: `Redeemed on Order #${orderId}`, // Basic reason, could be better
+      createdAt: new Date(),
+    });
+
+    return updatedUser;
+  }
+
+  async getPointHistory(userId: string): Promise<PointHistory[]> {
+    return Array.from(this.pointHistory.values())
+      .filter((h) => h.userId === userId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 }
 
@@ -1155,6 +1245,7 @@ export class DatabaseStorage implements IStorage {
   async createOrder(
     order: InsertOrder,
     items: InsertOrderItem[],
+    pointsUsed?: number,
   ): Promise<Order> {
     return await db.transaction(async (tx) => {
       const [newOrder] = await tx
@@ -1175,6 +1266,35 @@ export class DatabaseStorage implements IStorage {
         .insert(orderItems)
         .values(itemsToInsert as any)
         .returning();
+
+      if (pointsUsed && pointsUsed > 0) {
+        // Verify user has points
+        const [user] = await tx
+          .select()
+          .from(users)
+          .where(eq(users.id, order.userId));
+
+        if (!user || user.points < pointsUsed) {
+          throw new Error("Insufficient points for this transaction");
+        }
+
+        // Deduct points
+        await tx
+          .update(users)
+          .set({
+            points: sql`${users.points} - ${pointsUsed}`,
+          })
+          .where(eq(users.id, order.userId));
+
+        // Create history record
+        await tx.insert(pointHistory).values({
+          userId: order.userId,
+          change: -pointsUsed,
+          reason: `Redeemed on Order #${newOrder.orderNumber}`,
+        });
+      }
+
+      await tx.delete(cartItems).where(eq(cartItems.userId, order.userId));
 
       return {
         ...newOrder,
@@ -1364,6 +1484,66 @@ export class DatabaseStorage implements IStorage {
     }
 
     return !!deleted;
+  }
+
+  async addPoints(
+    userId: string,
+    amount: number,
+    reason: string,
+  ): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        points: sql`${users.points} + ${amount}`,
+      })
+      .where(eq(users.id, userId))
+      .returning();
+
+    await db.insert(pointHistory).values({
+      userId,
+      change: amount,
+      reason,
+    });
+
+    return updatedUser;
+  }
+
+  async redeemPoints(
+    userId: string,
+    amount: number,
+    orderId: string,
+  ): Promise<User> {
+    return await db.transaction(async (tx) => {
+      const [user] = await tx.select().from(users).where(eq(users.id, userId));
+
+      if (!user || user.points < amount) {
+        throw new Error("Insufficient points");
+      }
+
+      const [updatedUser] = await tx
+        .update(users)
+        .set({
+          points: sql`${users.points} - ${amount}`,
+        })
+        .where(eq(users.id, userId))
+        .returning();
+
+      await tx.insert(pointHistory).values({
+        userId,
+        change: -amount,
+        reason: `Redeemed on Order #${orderId}`,
+      });
+
+      return updatedUser;
+    });
+  }
+
+  async getPointHistory(userId: string): Promise<PointHistory[]> {
+    return await db
+      .select()
+      .from(pointHistory)
+      .where(eq(pointHistory.userId, userId))
+      .orderBy(desc(pointHistory.createdAt));
   }
 }
 

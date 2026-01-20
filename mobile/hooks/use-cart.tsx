@@ -18,6 +18,9 @@ interface CartContextType {
   total: number;
   applyCoupon: (code: string) => Promise<void>;
   removeCoupon: () => void;
+  pointsUsed: number;
+  applyPoints: (points: number) => void;
+  removePoints: () => void;
 }
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -40,13 +43,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const [couponCode, setCouponCode] = React.useState<string | null>(null);
   const [discountAmount, setDiscountAmount] = React.useState(0);
+  const [pointsUsed, setPointsUsed] = React.useState(0);
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0,
   );
 
-  const total = Math.max(0, subtotal - discountAmount);
+  const pointsDiscount = pointsUsed; // 1 point = $1
+  const total = Math.max(0, subtotal - discountAmount - pointsDiscount);
 
   // Reset coupon if cart is empty
   React.useEffect(() => {
@@ -108,6 +113,22 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const removeCoupon = () => {
     setCouponCode(null);
     setDiscountAmount(0);
+  };
+
+  const applyPoints = (points: number) => {
+    if (!user) return;
+    if (points > (user.points || 0)) {
+      Alert.alert("Error", "You don't have enough points");
+      return;
+    }
+    // Limit points to subtotal - discount
+    const maxPoints = Math.floor(Math.max(0, subtotal - discountAmount));
+    const finalPoints = Math.min(points, maxPoints);
+    setPointsUsed(finalPoints);
+  };
+
+  const removePoints = () => {
+    setPointsUsed(0);
   };
 
   const addToCartMutation = useMutation({
@@ -179,6 +200,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         total,
         applyCoupon,
         removeCoupon,
+        pointsUsed,
+        applyPoints,
+        removePoints,
       }}
     >
       {children}

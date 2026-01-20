@@ -355,5 +355,11 @@
   "review.write.comment": "Your Review",
   "review.write.placeholder": "Share your experience...",
   "review.submit": "Submit Review",
-  "review.add": "Write a Review"
+  "review.add": "Write a Review",
+  "profile.loyaltyPoints": "Loyalty Points",
+  "profile.points": "Points",
+  "cart.points.title": "Use Loyalty Points",
+  "cart.points.use": "Use Points",
+  "cart.points.available": "You have {points} points",
+  "cart.points.discount": "Points Discount"
 }

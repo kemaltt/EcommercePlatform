@@ -38,6 +38,7 @@ export default function ReviewStep() {
         tax: state.tax,
         total: state.total,
         items: state.items,
+        pointsUsed: state.pointsUsed,
       });
       return res.data;
     },
@@ -190,6 +191,16 @@ export default function ReviewStep() {
               ${state.tax.toFixed(2)}
             </Text>
           </View>
+          {state.pointsUsed > 0 && (
+            <View className="flex-row justify-between">
+              <Text className="text-green-500 font-medium">
+                <FormattedMessage id="cart.points.discount" />
+              </Text>
+              <Text className="text-green-500 font-bold">
+                -${state.pointsUsed.toFixed(2)}
+              </Text>
+            </View>
+          )}
         </View>
       </ScrollView>
 

@@ -420,5 +420,11 @@
   "review.write.comment": "Yorumunuz",
   "review.write.placeholder": "Deneyiminizi paylaşın...",
   "review.submit": "Gönder",
-  "review.add": "Değerlendirme Yaz"
+  "review.add": "Değerlendirme Yaz",
+  "profile.loyaltyPoints": "Sadakat Puanları",
+  "profile.points": "Puan",
+  "cart.points.title": "Sadakat Puanlarını Kullan",
+  "cart.points.use": "Puan Kullan",
+  "cart.points.available": "{points} puanınız var",
+  "cart.points.discount": "Puan İndirimi"
 }

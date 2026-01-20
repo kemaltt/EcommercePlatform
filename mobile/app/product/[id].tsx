@@ -254,7 +254,7 @@ export default function ProductDetailsScreen() {
             <View className="flex-row items-center gap-1">
               <Star size={16} color="#fbbf24" fill="#fbbf24" />
               <Text className="text-muted-foreground text-sm font-medium">
-                4.9{" "}
+                {product.rating ? Number(product.rating).toFixed(1) : "0.0"}{" "}
                 <Text className="text-muted-foreground/50">
                   ({reviews.length}{" "}
                   {intl.formatMessage({ id: "product.reviews" })})

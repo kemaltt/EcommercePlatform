@@ -240,6 +240,21 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
 
     const updatedOrder = await storage.updateOrder(orderId, updateData);
 
+    if (updatedOrder) {
+      // Award points if status changed to 'delivered' and it wasn't already delivered
+      if (updateData.status === "delivered" && order.status !== "delivered") {
+        // Earn 1 point per $10 spent
+        const pointsToEarn = Math.floor(updatedOrder.total / 10);
+        if (pointsToEarn > 0) {
+          await storage.addPoints(
+            updatedOrder.userId,
+            pointsToEarn,
+            `Order Reward: #${updatedOrder.orderNumber}`,
+          );
+        }
+      }
+    }
+
     res.json(updatedOrder);
   } catch (err) {
     console.error("Error updating order status:", err);
