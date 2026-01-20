@@ -28,12 +28,16 @@ import { PasswordConfirmModal } from "@/components/PasswordConfirmModal";
 import { SuccessModal } from "@/components/SuccessModal";
 import { useIntl } from "react-intl";
 
+import { useAuth } from "@/hooks/use-auth";
+
 export default function EditUserScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { isDark } = useTheme();
   const intl = useIntl();
+  const { user: currentUser } = useAuth();
+  const canEdit = currentUser?.isSuperAdmin;
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -102,6 +106,7 @@ export default function EditUserScreen() {
   });
 
   const handleSave = () => {
+    if (!canEdit) return;
     if (!fullName.trim() || !email.trim()) {
       Alert.alert(
         intl.formatMessage({ id: "common.error" }),
@@ -152,11 +157,14 @@ export default function EditUserScreen() {
             <Text className="text-muted-foreground text-xs font-bold mb-2 uppercase tracking-widest">
               {intl.formatMessage({ id: "admin.users.fullName" })}
             </Text>
-            <View className="bg-card h-14 rounded-2xl flex-row items-center px-4 border border-border">
+            <View
+              className={`bg-card h-14 rounded-2xl flex-row items-center px-4 border border-border ${!canEdit ? "opacity-50" : ""}`}
+            >
               <User size={20} color="#6366f1" />
               <TextInput
                 value={fullName}
                 onChangeText={setFullName}
+                editable={canEdit}
                 placeholder={intl.formatMessage({ id: "admin.users.fullName" })}
                 placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
                 className="flex-1 ml-3 px-2 text-foreground font-medium"
@@ -170,11 +178,14 @@ export default function EditUserScreen() {
             <Text className="text-muted-foreground text-xs font-bold mb-2 uppercase tracking-widest">
               {intl.formatMessage({ id: "admin.users.email" })}
             </Text>
-            <View className="bg-card h-14 rounded-2xl flex-row items-center px-4 border border-border">
+            <View
+              className={`bg-card h-14 rounded-2xl flex-row items-center px-4 border border-border ${!canEdit ? "opacity-50" : ""}`}
+            >
               <Mail size={20} color="#6366f1" />
               <TextInput
                 value={email}
                 onChangeText={setEmail}
+                editable={canEdit}
                 placeholder={intl.formatMessage({ id: "admin.users.email" })}
                 placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
                 keyboardType="email-address"
@@ -201,7 +212,8 @@ export default function EditUserScreen() {
                 <TouchableOpacity
                   key={s}
                   onPress={() => setStatus(s)}
-                  className={`px-4 py-3 rounded-xl border ${status === s ? "bg-primary/10 border-primary" : "bg-card border-border"} items-center mb-2`}
+                  disabled={!canEdit}
+                  className={`px-4 py-3 rounded-xl border ${status === s ? "bg-primary/10 border-primary" : "bg-card border-border"} items-center mb-2 ${!canEdit ? "opacity-50" : ""}`}
                   style={{ minWidth: "30%" }}
                 >
                   <Text
@@ -214,7 +226,9 @@ export default function EditUserScreen() {
             </View>
           </View>
 
-          <View className="bg-card border border-border rounded-3xl p-5 mb-10">
+          <View
+            className={`bg-card border border-border rounded-3xl p-5 mb-10 ${!canEdit ? "opacity-50" : ""}`}
+          >
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center">
                 <View className="w-10 h-10 bg-amber-500/20 rounded-xl items-center justify-center mr-4">
@@ -232,6 +246,7 @@ export default function EditUserScreen() {
               <Switch
                 value={isAdmin}
                 onValueChange={setIsAdmin}
+                disabled={!canEdit}
                 trackColor={{
                   false: isDark ? "#334155" : "#e2e8f0",
                   true: "#6366f1",
@@ -241,32 +256,36 @@ export default function EditUserScreen() {
             </View>
           </View>
 
-          <TouchableOpacity
-            onPress={handleSave}
-            disabled={updateMutation.isPending}
-            className="bg-primary h-16 rounded-2xl items-center justify-center flex-row mb-4"
-          >
-            {updateMutation.isPending ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <>
-                <Save size={20} color="white" className="mr-2" />
-                <Text className="text-white font-bold text-lg">
-                  {intl.formatMessage({ id: "admin.users.saveChanges" })}
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
+          {canEdit && (
+            <>
+              <TouchableOpacity
+                onPress={handleSave}
+                disabled={updateMutation.isPending}
+                className="bg-primary h-16 rounded-2xl items-center justify-center flex-row mb-4"
+              >
+                {updateMutation.isPending ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <>
+                    <Save size={20} color="white" className="mr-2" />
+                    <Text className="text-white font-bold text-lg">
+                      {intl.formatMessage({ id: "admin.users.saveChanges" })}
+                    </Text>
+                  </>
+                )}
+              </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => setShowDeleteModal(true)}
-            className="bg-red-500/10 h-16 rounded-2xl items-center justify-center flex-row mb-8 border border-red-500/20"
-          >
-            <Trash2 size={20} color="#ef4444" className="mr-2" />
-            <Text className="text-red-500 font-bold text-lg">
-              {intl.formatMessage({ id: "admin.users.deleteUser" })}
-            </Text>
-          </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowDeleteModal(true)}
+                className="bg-red-500/10 h-16 rounded-2xl items-center justify-center flex-row mb-8 border border-red-500/20"
+              >
+                <Trash2 size={20} color="#ef4444" className="mr-2" />
+                <Text className="text-red-500 font-bold text-lg">
+                  {intl.formatMessage({ id: "admin.users.deleteUser" })}
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
         </ScrollView>
       </SafeAreaView>
 

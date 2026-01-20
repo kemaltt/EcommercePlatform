@@ -221,7 +221,7 @@ export default function ProfileScreen() {
               onPress={() => {}}
             />
 
-            {user.isAdmin && (
+            {(user.isAdmin || user.isSuperAdmin) && (
               <GridMenuItem
                 icon={<ShieldCheck size={22} color="#fbbf24" />}
                 label={intl.formatMessage({ id: "profile.adminDashboard" })}

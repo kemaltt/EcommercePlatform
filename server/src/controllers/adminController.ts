@@ -63,10 +63,10 @@ export const updateUser = async (req: Request, res: Response) => {
     const userData = req.body;
     const currentUser = req.user as any;
 
-    // Check if updating sensitive fields (status) requires Super Admin
-    if (userData.status && !currentUser.isSuperAdmin) {
+    // Strict check: Only Super Admin can update users
+    if (!currentUser.isSuperAdmin) {
       return res.status(403).json({
-        message: "Only Super Admin can change account status",
+        message: "Unauthorized: Only Super Admin can modify user accounts",
       });
     }
 
