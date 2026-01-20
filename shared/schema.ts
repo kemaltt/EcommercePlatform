@@ -39,6 +39,7 @@ export const users = pgTable("users", {
 
 export const insertUserSchema = createInsertSchema(users).extend({
   id: z.string().optional(),
+  username: z.string().optional(),
   createdAt: z.date().optional(),
   isAdmin: z.boolean().optional(),
   isSuperAdmin: z.boolean().optional(),

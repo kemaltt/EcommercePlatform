@@ -201,7 +201,7 @@ export default function HomeScreen() {
               className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                // Notification navigation logic could go here
+                router.push("/notifications");
               }}
             >
               <Bell size={20} color={isDark ? "white" : "black"} />

@@ -319,10 +319,10 @@ async function seed() {
 
   for (const product of sampleProducts) {
     try {
-      await db.insert(products).values({
+      await db.insert(products as any).values({
         ...product,
         createdAt: new Date(),
-      });
+      } as any);
       console.log(`Added product: ${product.name}`);
     } catch (error) {
       console.error(`Error adding product ${product.name}:`, error);

@@ -1,7 +1,10 @@
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../lib/api";
 import { User, InsertUser } from "@shared/schema";
+import { registerForPushNotificationsAsync } from "../lib/notifications";
+import * as Notifications from "expo-notifications";
+import { useRouter } from "expo-router";
 
 interface AuthContextType {
   user: User | null;
@@ -13,13 +16,17 @@ interface AuthContextType {
   verifyResetCode: (token: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<void>;
   googleLogin: (idToken: string) => Promise<void>;
-  appleLogin: (data: { identityToken: string; fullName?: { firstName?: string; lastName?: string } | null }) => Promise<void>;
+  appleLogin: (data: {
+    identityToken: string;
+    fullName?: { firstName?: string; lastName?: string } | null;
+  }) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const { data: user, isLoading } = useQuery<User | null>({
     queryKey: ["/api/auth/me"],
@@ -82,7 +89,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const resetPasswordMutation = useMutation({
-    mutationFn: async ({ token, password }: { token: string; password: string }) => {
+    mutationFn: async ({
+      token,
+      password,
+    }: {
+      token: string;
+      password: string;
+    }) => {
       await api.post("/auth/reset-password", { token, password });
     },
   });
@@ -98,7 +111,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const appleLoginMutation = useMutation({
-    mutationFn: async (data: { identityToken: string; fullName?: { firstName?: string; lastName?: string } | null }) => {
+    mutationFn: async (data: {
+      identityToken: string;
+      fullName?: { firstName?: string; lastName?: string } | null;
+    }) => {
       const res = await api.post("/auth/apple", data);
       return res.data;
     },
@@ -106,6 +122,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/auth/me"], data.user);
     },
   });
+
+  const updatePushTokenMutation = useMutation({
+    mutationFn: async (token: string) => {
+      await api.post("/notifications/register", { token });
+    },
+  });
+
+  useEffect(() => {
+    if (user) {
+      registerForPushNotificationsAsync().then((token) => {
+        if (token) {
+          updatePushTokenMutation.mutate(token);
+        }
+      });
+
+      // Handle notifications when the app is in foreground
+      const notificationListener =
+        Notifications.addNotificationReceivedListener((notification) => {
+          // You could show a custom in-app banner here or just invalidate the query
+          queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
+        });
+
+      // Handle notification clicks (app in background or killed)
+      const responseListener =
+        Notifications.addNotificationResponseReceivedListener((response) => {
+          const data = response.notification.request.content.data;
+          // Example: Navigate to specific screen based on notification data
+          if (data.screen) {
+            router.push(data.screen as any);
+          } else {
+            router.push("/notifications");
+          }
+        });
+
+      return () => {
+        notificationListener.remove();
+        responseListener.remove();
+      };
+    }
+  }, [user?.id]);
 
   return (
     <AuthContext.Provider

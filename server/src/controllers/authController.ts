@@ -68,7 +68,7 @@ export const register = async (
     ).toString();
     const tokenExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    await db.insert(users).values({
+    await db.insert(users as any).values({
       username,
       email,
       password: hashedPassword,
@@ -181,8 +181,8 @@ export const googleLogin = async (
     const { sub: googleId, email, name, picture } = payload;
 
     // Check if user exists with this googleId
-    let user = await db.query.users.findFirst({
-      where: eq(users.googleId, googleId),
+    let user = await (db.query as any).users.findFirst({
+      where: eq((users as any).googleId, googleId) as any,
     });
 
     if (!user) {
@@ -192,9 +192,9 @@ export const googleLogin = async (
       if (user) {
         // Link googleId to existing user
         await db
-          .update(users)
-          .set({ googleId, avatarUrl: picture || user.avatarUrl })
-          .where(eq(users.id, user.id));
+          .update(users as any)
+          .set({ googleId, avatarUrl: picture || user.avatarUrl } as any)
+          .where(eq((users as any).id, user.id) as any);
 
         // Refresh user object
         user = await storage.getUser(user.id);
@@ -206,8 +206,8 @@ export const googleLogin = async (
           username = `${username}_${Math.floor(Math.random() * 1000)}`;
         }
 
-        const [newUser] = await db
-          .insert(users)
+        const [newUser] = (await db
+          .insert(users as any)
           .values({
             username,
             email,
@@ -216,8 +216,8 @@ export const googleLogin = async (
             avatarUrl: picture,
             emailVerified: true,
             password: null, // Allow login without password
-          })
-          .returning();
+          } as any)
+          .returning()) as any;
 
         user = newUser;
       }
@@ -298,8 +298,8 @@ export const appleLogin = async (
     const { sub: appleId, email } = ticket;
 
     // Check if user exists with this appleId
-    let user = await db.query.users.findFirst({
-      where: eq(users.appleId, appleId),
+    let user = await (db.query as any).users.findFirst({
+      where: eq((users as any).appleId, appleId) as any,
     });
 
     if (!user) {
@@ -308,7 +308,10 @@ export const appleLogin = async (
 
       if (user) {
         // Link appleId to existing user
-        await db.update(users).set({ appleId }).where(eq(users.id, user.id));
+        await db
+          .update(users as any)
+          .set({ appleId } as any)
+          .where(eq((users as any).id, user.id) as any);
 
         // Refresh user object
         user = await storage.getUser(user.id);
@@ -324,8 +327,8 @@ export const appleLogin = async (
           ? `${fullName.firstName || ""} ${fullName.lastName || ""}`.trim()
           : username;
 
-        const [newUser] = await db
-          .insert(users)
+        const [newUser] = (await db
+          .insert(users as any)
           .values({
             username,
             email,
@@ -333,8 +336,8 @@ export const appleLogin = async (
             appleId,
             emailVerified: true,
             password: null,
-          })
-          .returning();
+          } as any)
+          .returning()) as any;
 
         user = newUser;
       }
@@ -441,11 +444,11 @@ export const verifyEmail = async (
   }
 
   try {
-    const user = await db.query.users.findFirst({
+    const user = await (db.query as any).users.findFirst({
       where: and(
-        eq(users.emailVerificationToken, token),
-        gt(users.verificationTokenExpiresAt, new Date()),
-      ),
+        eq((users as any).emailVerificationToken, token) as any,
+        gt((users as any).verificationTokenExpiresAt, new Date()) as any,
+      ) as any,
     });
 
     if (!user) {
@@ -455,13 +458,13 @@ export const verifyEmail = async (
     }
 
     await db
-      .update(users)
+      .update(users as any)
       .set({
         emailVerified: true,
         emailVerificationToken: null,
         verificationTokenExpiresAt: null,
-      })
-      .where(eq(users.id, user.id));
+      } as any)
+      .where(eq((users as any).id, user.id) as any);
 
     return res.redirect(`${frontendUrl}/email-verified?success=true`);
   } catch (error) {
@@ -490,7 +493,7 @@ export const forgotPassword = async (req: Request, res: Response) => {
     const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
     const tokenExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    await db.insert(passwordResets).values({
+    await db.insert(passwordResets as any).values({
       token: resetCode, // Store code as token
       userId: user.id,
       expiresAt: tokenExpiry,
@@ -524,16 +527,18 @@ export const verifyResetToken = async (req: Request, res: Response) => {
   try {
     const { token } = req.body;
 
-    const resetRequest = await db.query.passwordResets.findFirst({
-      where: eq(passwordResets.token, token),
-    });
+    const resetRequest = (await (db.query as any).passwordResets.findFirst({
+      where: eq((passwordResets as any).token, token) as any,
+    })) as any;
 
     if (!resetRequest) {
       return res.status(400).json({ message: "Invalid or expired token" });
     }
 
     if (resetRequest.expiresAt < new Date()) {
-      await db.delete(passwordResets).where(eq(passwordResets.token, token));
+      await db
+        .delete(passwordResets as any)
+        .where(eq((passwordResets as any).token, token) as any);
       return res.status(400).json({ message: "Token has expired" });
     }
 
@@ -548,16 +553,18 @@ export const resetPassword = async (req: Request, res: Response) => {
   try {
     const { token, password } = req.body;
 
-    const resetRequest = await db.query.passwordResets.findFirst({
-      where: eq(passwordResets.token, token),
-    });
+    const resetRequest = (await (db.query as any).passwordResets.findFirst({
+      where: eq((passwordResets as any).token, token) as any,
+    })) as any;
 
     if (!resetRequest) {
       return res.status(400).json({ message: "Invalid or expired token" });
     }
 
     if (resetRequest.expiresAt < new Date()) {
-      await db.delete(passwordResets).where(eq(passwordResets.token, token));
+      await db
+        .delete(passwordResets as any)
+        .where(eq((passwordResets as any).token, token) as any);
       return res.status(400).json({ message: "Token has expired" });
     }
 
@@ -574,9 +581,9 @@ export const resetPassword = async (req: Request, res: Response) => {
     const hashedPassword = await hashPassword(password);
 
     await db
-      .update(users)
-      .set({ password: hashedPassword })
-      .where(eq(users.id, resetRequest.userId));
+      .update(users as any)
+      .set({ password: hashedPassword } as any)
+      .where(eq((users as any).id, resetRequest.userId) as any);
 
     res.json({ message: "Password has been reset successfully" });
   } catch (error) {
@@ -615,13 +622,13 @@ export const verifyEmailCode = async (req: Request, res: Response) => {
     }
 
     await db
-      .update(users)
+      .update(users as any)
       .set({
         emailVerified: true,
         emailVerificationToken: null,
         verificationTokenExpiresAt: null,
-      })
-      .where(eq(users.id, user.id));
+      } as any)
+      .where(eq((users as any).id, user.id) as any);
 
     req.login(user, async (err) => {
       if (err) {
@@ -675,12 +682,12 @@ export const resendVerificationCode = async (req: Request, res: Response) => {
     const tokenExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     await db
-      .update(users)
+      .update(users as any)
       .set({
         emailVerificationToken: verificationToken,
         verificationTokenExpiresAt: tokenExpiry,
-      })
-      .where(eq(users.id, user.id));
+      } as any)
+      .where(eq((users as any).id, user.id) as any);
 
     try {
       await sendVerificationEmail(email, verificationToken);
@@ -718,12 +725,12 @@ export const requestPasswordChange = async (req: Request, res: Response) => {
     const tokenExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     // We can reuse the passwordResets table for this purpose as it stores a token (code) linked to a user
-    await db.insert(passwordResets).values({
+    await db.insert(passwordResets as any).values({
       token: verificationCode,
       userId: user.id,
       expiresAt: tokenExpiry,
       createdAt: new Date(),
-    });
+    } as any);
 
     // Generate email
     const { html, text } = generateChangePasswordEmail({

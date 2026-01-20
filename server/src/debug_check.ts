@@ -4,13 +4,13 @@ import { users, type User } from "../../shared/schema";
 async function checkUsers() {
   try {
     console.log("Fetching users from DB...");
-    const allUsers = await db.select().from(users);
+    const allUsers = await db.select().from(users as any);
     console.log("Users in DB:");
-    allUsers.forEach((u: User) => {
+    allUsers.forEach((u: any) => {
       console.log(
         `- ID: ${u.id}, Email: ${u.email}, FullName: ${u.fullName}, isAdmin: ${
           u.isAdmin
-        } (${typeof u.isAdmin})`
+        } (${typeof u.isAdmin})`,
       );
     });
     process.exit(0);
