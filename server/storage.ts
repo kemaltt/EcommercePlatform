@@ -34,7 +34,7 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import connectPg from "connect-pg-simple";
 import { db, pool } from "./src/config/db";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc, sql, asc, gte, lte } from "drizzle-orm";
 import crypto from "crypto";
 
 const MemoryStore = createMemoryStore(session);
@@ -54,7 +54,14 @@ export interface IStorage {
 
   // Product operations
   getProduct(id: string): Promise<Product | undefined>;
-  getProducts(category?: string, search?: string): Promise<Product[]>;
+  getProducts(
+    category?: string,
+    search?: string,
+    minPrice?: number,
+    maxPrice?: number,
+    minRating?: number,
+    sortBy?: string,
+  ): Promise<Product[]>;
   createProduct(product: InsertProduct): Promise<Product>;
   updateProduct(
     id: string,
@@ -315,7 +322,14 @@ export class MemStorage implements IStorage {
     return this.products.get(id);
   }
 
-  async getProducts(category?: string, search?: string): Promise<Product[]> {
+  async getProducts(
+    category?: string,
+    search?: string,
+    minPrice?: number,
+    maxPrice?: number,
+    minRating?: number,
+    sortBy?: string,
+  ): Promise<Product[]> {
     let products = Array.from(this.products.values());
 
     if (category && category !== "all") {
@@ -329,6 +343,37 @@ export class MemStorage implements IStorage {
           p.name.toLowerCase().includes(searchLower) ||
           p.description.toLowerCase().includes(searchLower),
       );
+    }
+
+    if (minPrice !== undefined) {
+      products = products.filter((p) => p.price >= minPrice);
+    }
+
+    if (maxPrice !== undefined) {
+      products = products.filter((p) => p.price <= maxPrice);
+    }
+
+    if (minRating !== undefined) {
+      products = products.filter((p) => (p.rating || 0) >= minRating);
+    }
+
+    if (sortBy) {
+      switch (sortBy) {
+        case "price_asc":
+          products.sort((a, b) => a.price - b.price);
+          break;
+        case "price_desc":
+          products.sort((a, b) => b.price - a.price);
+          break;
+        case "rating_desc":
+          products.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+          break;
+        case "newest":
+          products.sort(
+            (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+          );
+          break;
+      }
     }
 
     return products;
@@ -974,27 +1019,68 @@ export class DatabaseStorage implements IStorage {
     return product;
   }
 
-  async getProducts(category?: string, search?: string): Promise<Product[]> {
+  async getProducts(
+    category?: string,
+    search?: string,
+    minPrice?: number,
+    maxPrice?: number,
+    minRating?: number,
+    sortBy?: string,
+  ): Promise<Product[]> {
     let query: any = db.select().from(products);
 
+    const filters: any[] = [];
+
     if (category && category !== "all") {
-      query = query.where(eq(products.category, category)) as any;
+      filters.push(eq(products.category, category));
     }
 
-    // Basit arama için içerik araması yaparız
-    // Daha gelişmiş aramalar için tam metin araması eklenebilir
     if (search) {
-      // PostgreSQL'de ILIKE büyük/küçük harf duyarlı olmadan arama yapar
-      query = query.where(
+      filters.push(
         sql`${products.name} ILIKE ${`%${search}%`} OR ${
           products.description
         } ILIKE ${`%${search}%`}`,
       );
     }
 
-    const results = (await query.orderBy(
-      desc(products.createdAt),
-    )) as unknown as Product[];
+    if (minPrice !== undefined) {
+      filters.push(gte(products.price, minPrice));
+    }
+
+    if (maxPrice !== undefined) {
+      filters.push(lte(products.price, maxPrice));
+    }
+
+    if (minRating !== undefined) {
+      filters.push(gte(products.rating, minRating));
+    }
+
+    if (filters.length > 0) {
+      query = query.where(and(...filters));
+    }
+
+    if (sortBy) {
+      switch (sortBy) {
+        case "price_asc":
+          query = query.orderBy(asc(products.price));
+          break;
+        case "price_desc":
+          query = query.orderBy(desc(products.price));
+          break;
+        case "rating_desc":
+          query = query.orderBy(desc(products.rating));
+          break;
+        case "newest":
+          query = query.orderBy(desc(products.createdAt));
+          break;
+        default:
+          query = query.orderBy(desc(products.createdAt));
+      }
+    } else {
+      query = query.orderBy(desc(products.createdAt));
+    }
+
+    const results = (await query) as unknown as Product[];
 
     // Debug logging to verify imageUrl consistency
     if (results.length > 0) {

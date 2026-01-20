@@ -75,7 +75,13 @@ export const products = pgTable("products", {
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
-});
+} as any);
+
+export type Product = typeof products.$inferSelect;
+export type InsertProduct = Omit<
+  typeof products.$inferInsert,
+  "id" | "createdAt"
+>;
 
 // Favorites schema
 export const favorites = pgTable("favorites", {
@@ -86,7 +92,10 @@ export const favorites = pgTable("favorites", {
 
 export const insertFavoriteSchema = createInsertSchema(favorites).omit({
   id: true,
-});
+} as any);
+
+export type Favorite = typeof favorites.$inferSelect;
+export type InsertFavorite = Omit<typeof favorites.$inferInsert, "id">;
 
 // Cart schema
 export const cartItems = pgTable("cart_items", {
@@ -98,7 +107,10 @@ export const cartItems = pgTable("cart_items", {
 
 export const insertCartItemSchema = createInsertSchema(cartItems).omit({
   id: true,
-});
+} as any);
+
+export type CartItem = typeof cartItems.$inferSelect;
+export type InsertCartItem = Omit<typeof cartItems.$inferInsert, "id">;
 
 // Password Reset schema
 export const passwordResets = pgTable(
@@ -206,12 +218,7 @@ export type User = typeof users.$inferSelect & {
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Address = typeof addresses.$inferSelect;
 export type InsertAddress = z.infer<typeof insertAddressSchema>;
-export type Product = typeof products.$inferSelect;
-export type InsertProduct = z.infer<typeof insertProductSchema>;
-export type Favorite = typeof favorites.$inferSelect;
-export type InsertFavorite = z.infer<typeof insertFavoriteSchema>;
-export type CartItem = typeof cartItems.$inferSelect;
-export type InsertCartItem = z.infer<typeof insertCartItemSchema>;
+// Product, Favorite, CartItem types moved to schema definition section
 export type Order = typeof orders.$inferSelect & {
   items?: OrderItem[];
 };

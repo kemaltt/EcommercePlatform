@@ -7,7 +7,25 @@ export const getProducts = async (req: Request, res: Response) => {
   try {
     const category = req.query.category as string | undefined;
     const search = req.query.search as string | undefined;
-    const products = await storage.getProducts(category, search);
+    const minPrice = req.query.minPrice
+      ? Number(req.query.minPrice)
+      : undefined;
+    const maxPrice = req.query.maxPrice
+      ? Number(req.query.maxPrice)
+      : undefined;
+    const minRating = req.query.minRating
+      ? Number(req.query.minRating)
+      : undefined;
+    const sortBy = req.query.sortBy as string | undefined;
+
+    const products = await storage.getProducts(
+      category,
+      search,
+      minPrice,
+      maxPrice,
+      minRating,
+      sortBy,
+    );
     res.json(products);
   } catch (err) {
     res.status(500).json({ message: "Error fetching products" });
@@ -31,7 +49,7 @@ export const getProductById = async (req: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const productData = insertProductSchema.parse(req.body);
+    const productData = insertProductSchema.parse(req.body) as any;
     const newProduct = await storage.createProduct(productData);
     res.status(201).json(newProduct);
   } catch (err) {
