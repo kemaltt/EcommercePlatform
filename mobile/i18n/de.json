@@ -362,6 +362,8 @@
   "admin.users.status": "Kontostatus",
   "admin.users.adminAccess": "Admin-Zugriff",
   "admin.users.grantAdmin": "Administratorrechte gewähren",
+  "admin.users.superAdmin": "Super Admin",
+  "admin.users.admin": "Admin",
   "admin.users.saveChanges": "Änderungen speichern",
   "admin.users.deleteUser": "Benutzer löschen",
   "admin.users.updateSuccess": "Benutzer aktualisiert",

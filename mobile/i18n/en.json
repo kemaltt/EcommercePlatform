@@ -312,6 +312,8 @@
   "admin.users.grantAdmin": "Grant administrator privileges",
   "admin.users.saveChanges": "Save Changes",
   "admin.users.deleteUser": "Delete User",
+  "admin.users.superAdmin": "Super Admin",
+  "admin.users.admin": "Admin",
   "admin.users.updateSuccess": "User Updated",
   "admin.users.updateSuccessMessage": "The user account has been successfully updated.",
   "admin.users.deleteTitle": "Delete User",

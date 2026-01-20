@@ -945,6 +945,7 @@ export class DatabaseStorage implements IStorage {
           fullName: users.fullName,
           status: users.status,
           isAdmin: users.isAdmin,
+          isSuperAdmin: users.isSuperAdmin,
           address: users.address,
           createdAt: users.createdAt,
           emailVerified: users.emailVerified,

@@ -1,24 +1,42 @@
-
-import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, Image as RNImage, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  Image as RNImage,
+  TextInput,
+} from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import { User } from "@shared/schema";
 import { Image } from "expo-image";
-import { Edit2, Search, Filter, ShieldCheck, Mail, ShoppingCart, Lock, ChevronLeft } from "lucide-react-native";
+import {
+  Edit2,
+  Search,
+  Filter,
+  ShieldCheck,
+  Mail,
+  ShoppingCart,
+  Lock,
+  ChevronLeft,
+} from "lucide-react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useTheme } from "../../contexts/theme-context";
+import { useIntl } from "react-intl";
 
 export default function AdminUsersScreen() {
   const router = useRouter();
   const { isDark } = useTheme();
+  const intl = useIntl();
 
   // We need to fetch users. Assuming an endpoint /api/users exists or we need to add one.
   // Ideally, the backend should expose GET /api/users for admins.
   // I will assume it does or I will create it. Given the context, I might need to check if it exists.
   // For now, I'll use /api/users and if it fails I'll add it to the backend.
-  
+
   const { data: users, isLoading } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
     queryFn: async () => {
@@ -30,45 +48,63 @@ export default function AdminUsersScreen() {
   const renderUser = ({ item }: { item: User }) => (
     <View className="bg-card border border-border/50 rounded-3xl p-4 mb-4 shadow-sm">
       <View className="flex-row items-center mb-4">
-          <View className="w-12 h-12 bg-background rounded-full items-center justify-center mr-4 overflow-hidden border border-border/50">
-              {/* Avatar placeholder */}
-              <Image 
-                 source={`https://ui-avatars.com/api/?name=${item.fullName}&background=6366f1&color=fff`} 
-                 style={{ width: '100%', height: '100%' }}
-                 contentFit="cover"
-              />
-          </View>
-          <View className="flex-1">
-             <View className="flex-row items-center">
-                <Text className="text-foreground font-bold text-lg mr-2">{item.fullName}</Text>
-                {item.isAdmin && (
-                  <View className="bg-amber-500/20 px-2 py-0.5 rounded-md border border-amber-500/30">
-                     <Text className="text-amber-500 text-[8px] font-bold uppercase tracking-tighter">Admin</Text>
-                  </View>
-                )}
+        <View className="w-12 h-12 bg-background rounded-full items-center justify-center mr-4 overflow-hidden border border-border/50">
+          {/* Avatar placeholder */}
+          <Image
+            source={`https://ui-avatars.com/api/?name=${item.fullName}&background=6366f1&color=fff`}
+            style={{ width: "100%", height: "100%" }}
+            contentFit="cover"
+          />
+        </View>
+        <View className="flex-1">
+          <View className="flex-row items-center">
+            <Text className="text-foreground font-bold text-lg mr-2">
+              {item.fullName}
+            </Text>
+            {(item.isAdmin || item.isSuperAdmin) && (
+              <View
+                className={`px-2 py-0.5 rounded-md border ${item.isSuperAdmin ? "bg-purple-500/20 border-purple-500/30" : "bg-amber-500/20 border-amber-500/30"}`}
+              >
+                <Text
+                  className={`${item.isSuperAdmin ? "text-purple-500" : "text-amber-500"} text-[8px] font-bold uppercase tracking-tighter`}
+                >
+                  {item.isSuperAdmin
+                    ? intl.formatMessage({ id: "admin.users.superAdmin" })
+                    : intl.formatMessage({ id: "admin.users.admin" })}
+                </Text>
               </View>
-              <Text className="text-muted-foreground text-sm">{item.email}</Text>
-           </View>
-           <View className={`px-2 py-1 rounded-md ${item.status === 'active' || !item.status ? (isDark ? 'bg-green-500/20' : 'bg-green-100') : (isDark ? 'bg-red-500/20' : 'bg-red-100')}`}>
-              <Text className={`text-[10px] font-bold uppercase ${item.status === 'active' || !item.status ? 'text-green-500' : 'text-red-500'}`}>
-                 {item.status || 'ACTIVE'}
-              </Text>
+            )}
           </View>
-      </View>
-      
-       <View className="flex-row gap-3">
-          <TouchableOpacity 
-            onPress={() => router.push(`/admin/users/${item.id}`)}
-            className="flex-1 bg-secondary border border-border/50 py-3 rounded-xl flex-row items-center justify-center"
+          <Text className="text-muted-foreground text-sm">{item.email}</Text>
+        </View>
+        <View
+          className={`px-2 py-1 rounded-md ${item.status === "active" || !item.status ? (isDark ? "bg-green-500/20" : "bg-green-100") : isDark ? "bg-red-500/20" : "bg-red-100"}`}
+        >
+          <Text
+            className={`text-[10px] font-bold uppercase ${item.status === "active" || !item.status ? "text-green-500" : "text-red-500"}`}
           >
-             <Edit2 size={14} color={isDark ? "white" : "black"} className="mr-2" />
-             <Text className="text-foreground text-xs font-bold">Edit User</Text>
-          </TouchableOpacity>
-         
-         <TouchableOpacity className="flex-1 bg-[#6366f1] py-3 rounded-xl flex-row items-center justify-center">
-            <ShoppingCart size={14} color="white" className="mr-2" />
-            <Text className="text-white text-xs font-bold">View Orders</Text>
-         </TouchableOpacity>
+            {item.status || "ACTIVE"}
+          </Text>
+        </View>
+      </View>
+
+      <View className="flex-row gap-3">
+        <TouchableOpacity
+          onPress={() => router.push(`/admin/users/${item.id}`)}
+          className="flex-1 bg-secondary border border-border/50 py-3 rounded-xl flex-row items-center justify-center"
+        >
+          <Edit2
+            size={14}
+            color={isDark ? "white" : "black"}
+            className="mr-2"
+          />
+          <Text className="text-foreground text-xs font-bold">Edit User</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity className="flex-1 bg-[#6366f1] py-3 rounded-xl flex-row items-center justify-center">
+          <ShoppingCart size={14} color="white" className="mr-2" />
+          <Text className="text-white text-xs font-bold">View Orders</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -76,35 +112,37 @@ export default function AdminUsersScreen() {
   return (
     <View className="flex-1 bg-background">
       <StatusBar style={isDark ? "light" : "dark"} />
-      <SafeAreaView className="flex-1" edges={['top']}>
+      <SafeAreaView className="flex-1" edges={["top"]}>
         {/* Header */}
-         <View className="px-6 py-4 flex-row items-center mb-2">
-            <TouchableOpacity 
-              onPress={() => router.back()}
-              className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
-            >
-               <ChevronLeft size={20} color={isDark ? "white" : "black"} />
-            </TouchableOpacity>
-            <View className="flex-1 items-center">
-               <Text className="text-foreground text-lg font-bold">User Management</Text>
-            </View>
-            <TouchableOpacity className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border">
-               <Filter size={20} color={isDark ? "white" : "black"} />
-            </TouchableOpacity>
-         </View>
+        <View className="px-6 py-4 flex-row items-center mb-2">
+          <TouchableOpacity
+            onPress={() => router.back()}
+            className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border"
+          >
+            <ChevronLeft size={20} color={isDark ? "white" : "black"} />
+          </TouchableOpacity>
+          <View className="flex-1 items-center">
+            <Text className="text-foreground text-lg font-bold">
+              User Management
+            </Text>
+          </View>
+          <TouchableOpacity className="w-10 h-10 bg-card rounded-full items-center justify-center border border-border">
+            <Filter size={20} color={isDark ? "white" : "black"} />
+          </TouchableOpacity>
+        </View>
 
         {/* Search */}
         <View className="px-6 mb-6">
-           <View className="bg-card h-12 rounded-xl flex-row items-center px-4 border border-border">
-              <Search size={20} color={isDark ? "#94a3b8" : "#64748b"} />
-              <TextInput 
-                 placeholder="Search users by name or email..." 
-                 placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
-                 className="flex-1 ml-3 px-2 text-foreground"
-                 style={{ height: '100%' }}
-                 textAlignVertical="center"
-              />
-           </View>
+          <View className="bg-card h-12 rounded-xl flex-row items-center px-4 border border-border">
+            <Search size={20} color={isDark ? "#94a3b8" : "#64748b"} />
+            <TextInput
+              placeholder="Search users by name or email..."
+              placeholderTextColor={isDark ? "#64748b" : "#94a3b8"}
+              className="flex-1 ml-3 px-2 text-foreground"
+              style={{ height: "100%" }}
+              textAlignVertical="center"
+            />
+          </View>
         </View>
 
         {isLoading ? (
@@ -113,10 +151,10 @@ export default function AdminUsersScreen() {
           </View>
         ) : (
           <FlatList
-             data={users}
-             keyExtractor={(item) => item.id.toString()}
-             contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
-             renderItem={renderUser}
+            data={users}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 40 }}
+            renderItem={renderUser}
           />
         )}
       </SafeAreaView>

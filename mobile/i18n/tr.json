@@ -378,6 +378,8 @@
   "admin.users.grantAdmin": "Yönetici ayrıcalıkları ver",
   "admin.users.saveChanges": "Değişiklikleri Kaydet",
   "admin.users.deleteUser": "Kullanıcıyı Sil",
+  "admin.users.superAdmin": "Süper Admin",
+  "admin.users.admin": "Admin",
   "admin.users.updateSuccess": "Kullanıcı Güncellendi",
   "admin.users.updateSuccessMessage": "Kullanıcı hesabı başarıyla güncellendi.",
   "admin.users.deleteTitle": "Kullanıcıyı Sil",
