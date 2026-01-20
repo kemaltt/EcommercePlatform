@@ -5,7 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Image as RNImage,
   Dimensions,
   Alert,
   TextInput,

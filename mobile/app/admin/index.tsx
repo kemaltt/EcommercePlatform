@@ -20,7 +20,8 @@ import {
   Users,
   ChevronRight,
   Plus,
-  Box,
+  ShoppingBag,
+  Tag,
 } from "lucide-react-native";
 import { useAuth } from "../../hooks/use-auth";
 import { LineChart } from "react-native-chart-kit";
@@ -52,12 +53,15 @@ export default function AdminConsoleScreen() {
   // Data processing for Chart
   const salesTrends = stats?.salesTrends || [];
   const lineChartData = {
-    labels: salesTrends.map((s: any) => {
-      const date = new Date(s.date);
-      return date
-        .toLocaleDateString(intl.locale, { weekday: "short" })
-        .toUpperCase();
-    }),
+    labels:
+      salesTrends.length > 0
+        ? salesTrends.map((s: any) => {
+            const date = new Date(s.date);
+            return date
+              .toLocaleDateString(intl.locale, { weekday: "short" })
+              .toUpperCase();
+          })
+        : ["-", "-", "-", "-", "-", "-", "-"], // Fallback labels to match data length
     datasets: [
       {
         data:
@@ -111,7 +115,7 @@ export default function AdminConsoleScreen() {
           <Plus size={20} color={isDark ? "#94a3b8" : "#64748b"} />
         </TouchableOpacity>
         <TouchableOpacity hitSlop={10}>
-          <Box size={20} color={isDark ? "#94a3b8" : "#64748b"} />
+          <ShoppingBag size={20} color={isDark ? "#94a3b8" : "#64748b"} />
         </TouchableOpacity>
       </View>
     </View>
@@ -188,7 +192,7 @@ export default function AdminConsoleScreen() {
                 title={intl.formatMessage({ id: "admin.orders.title" })}
                 count={stats?.totalOrders || "0"}
                 subtitle={intl.formatMessage({ id: "admin.menu.orders" })}
-                icon={<Box size={20} color="#6366f1" />}
+                icon={<ShoppingBag size={20} color="#6366f1" />}
                 onPress={() => router.push("/admin/orders")}
               />
             </View>
@@ -197,7 +201,7 @@ export default function AdminConsoleScreen() {
                 title={intl.formatMessage({ id: "admin.coupons.title" })}
                 count={stats?.totalCoupons || "0"}
                 subtitle={intl.formatMessage({ id: "admin.coupons.manage" })}
-                icon={<Box size={20} color="#6366f1" />}
+                icon={<Tag size={20} color="#6366f1" />}
                 onPress={() => router.push("/admin/coupons")}
               />
             </View>
