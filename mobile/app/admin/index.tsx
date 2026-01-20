@@ -5,11 +5,11 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
-  Image as RNImage,
 } from "react-native";
+import { Image } from "expo-image";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import { useRouter, Stack, useFocusEffect } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "../../lib/api";
 import {
@@ -242,8 +242,8 @@ export default function AdminConsoleScreen() {
                   borderRadius: 16,
                 },
                 propsForDots: {
-                  r: "4",
-                  strokeWidth: "2",
+                  r: 4,
+                  strokeWidth: 2,
                   stroke: "#6366f1",
                 },
                 propsForBackgroundLines: {
@@ -280,10 +280,10 @@ export default function AdminConsoleScreen() {
                   >
                     <View className="w-full aspect-square bg-muted rounded-2xl mb-3 items-center justify-center overflow-hidden">
                       {item.productImage ? (
-                        <RNImage
-                          source={{ uri: item.productImage }}
+                        <Image
+                          source={item.productImage}
                           className="w-full h-full"
-                          resizeMode="cover"
+                          contentFit="cover"
                         />
                       ) : (
                         <Package size={30} color="#6366f1" />
