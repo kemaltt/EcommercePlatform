@@ -4,7 +4,7 @@ import { api } from "../lib/api";
 import { User, InsertUser } from "@shared/schema";
 import { registerForPushNotificationsAsync } from "../lib/notifications";
 import * as Notifications from "expo-notifications";
-import { useRouter } from "expo-router";
+import { useRouter, router } from "expo-router";
 
 interface AuthContextType {
   user: User | null;
@@ -26,7 +26,6 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   const { data: user, isLoading } = useQuery<User | null>({
     queryKey: ["/api/auth/me"],

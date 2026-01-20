@@ -1,6 +1,13 @@
 import React from "react";
-import { Tabs, useRouter } from "expo-router";
-import { Home, ShoppingBag, User, Compass, ShoppingCart, Heart } from "lucide-react-native";
+import { Tabs, useRouter, router } from "expo-router";
+import {
+  Home,
+  ShoppingBag,
+  User,
+  Compass,
+  ShoppingCart,
+  Heart,
+} from "lucide-react-native";
 import { useAuth } from "../../hooks/use-auth";
 import { useCart } from "../../hooks/use-cart";
 import { useFavorites } from "../../hooks/use-favorites";
@@ -13,9 +20,8 @@ export default function TabsLayout() {
   const { cartItems } = useCart();
   const { favorites } = useFavorites();
   const intl = useIntl();
-  const router = useRouter();
   const { isDark } = useTheme();
-  
+
   // Use a ref to ensure the listener always has the latest user state
   const userRef = React.useRef(user);
   React.useEffect(() => {
@@ -29,7 +35,7 @@ export default function TabsLayout() {
       // Prevent default navigation
       e.preventDefault();
       // Redirect to login
-       // @ts-ignore
+      // @ts-ignore
       router.push("/(auth)/login");
     }
   };
@@ -60,18 +66,18 @@ export default function TabsLayout() {
         options={{
           title: "HOME",
           tabBarIcon: ({ color, focused }) => (
-             <Home size={24} color={color} fill={focused ? color : "none"} />
+            <Home size={24} color={color} fill={focused ? color : "none"} />
           ),
         }}
       />
-      
+
       {/* Search/Explore Tab - New */}
       <Tabs.Screen
-        name="explore" 
+        name="explore"
         options={{
           title: "EXPLORE",
           tabBarIcon: ({ color, focused }) => (
-             <Compass size={24} color={color} fill={focused ? color : "none"} />
+            <Compass size={24} color={color} fill={focused ? color : "none"} />
           ),
           href: null, // Placeholder if no actual route yet, or we can make a dummy one
         }}
@@ -84,23 +90,23 @@ export default function TabsLayout() {
         options={{
           title: "WISHLIST",
           tabBarIcon: ({ color, focused }) => (
-             <View>
-               <Heart size={24} color={color} fill={focused ? color : "none"} />
-                {favorites.length > 0 && (
-                  <View 
-                    className="absolute -top-1.5 -right-2 bg-rose-500 rounded-full items-center justify-center border-2 shadow-sm"
-                    style={{ 
-                      borderColor: isDark ? "#1e2029" : "#ffffff",
-                      width: 18,
-                      height: 18
-                    }}
-                  >
-                     <Text className="text-[10px] font-black text-white leading-none">
-                       {favorites.length > 9 ? '9+' : favorites.length}
-                     </Text>
-                  </View>
-                )}
-             </View>
+            <View>
+              <Heart size={24} color={color} fill={focused ? color : "none"} />
+              {favorites.length > 0 && (
+                <View
+                  className="absolute -top-1.5 -right-2 bg-rose-500 rounded-full items-center justify-center border-2 shadow-sm"
+                  style={{
+                    borderColor: isDark ? "#1e2029" : "#ffffff",
+                    width: 18,
+                    height: 18,
+                  }}
+                >
+                  <Text className="text-[10px] font-black text-white leading-none">
+                    {favorites.length > 9 ? "9+" : favorites.length}
+                  </Text>
+                </View>
+              )}
+            </View>
           ),
         }}
       />
@@ -113,23 +119,27 @@ export default function TabsLayout() {
         options={{
           title: "CART",
           tabBarIcon: ({ color, focused }) => (
-             <View>
-               <ShoppingCart size={24} color={color} fill={focused ? color : "none"} />
-                {cartItems.length > 0 && (
-                  <View 
-                    className="absolute -top-1.5 -right-2 bg-rose-500 rounded-full items-center justify-center border-2 shadow-sm"
-                    style={{ 
-                      borderColor: isDark ? "#1e2029" : "#ffffff",
-                      width: 18,
-                      height: 18
-                    }}
-                  >
-                     <Text className="text-[10px] font-black text-white leading-none">
-                       {cartItems.length > 9 ? '9+' : cartItems.length}
-                     </Text>
-                  </View>
-                )}
-             </View>
+            <View>
+              <ShoppingCart
+                size={24}
+                color={color}
+                fill={focused ? color : "none"}
+              />
+              {cartItems.length > 0 && (
+                <View
+                  className="absolute -top-1.5 -right-2 bg-rose-500 rounded-full items-center justify-center border-2 shadow-sm"
+                  style={{
+                    borderColor: isDark ? "#1e2029" : "#ffffff",
+                    width: 18,
+                    height: 18,
+                  }}
+                >
+                  <Text className="text-[10px] font-black text-white leading-none">
+                    {cartItems.length > 9 ? "9+" : cartItems.length}
+                  </Text>
+                </View>
+              )}
+            </View>
           ),
         }}
       />

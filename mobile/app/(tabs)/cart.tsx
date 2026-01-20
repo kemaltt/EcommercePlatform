@@ -353,32 +353,6 @@ export default function CartScreen() {
       </SafeAreaView>
 
       <View className="absolute bottom-0 left-0 right-0 bg-background rounded-t-[32px] p-6 pb-10 border-t border-border shadow-2xl">
-        {/* Coupon Input */}
-        <View className="mb-6">
-          <Text className="text-muted-foreground text-sm mb-2">
-            {intl.formatMessage({ id: "cart.coupon.title" })}
-          </Text>
-          <View className="flex-row gap-3">
-            <TextInput
-              className="flex-1 bg-card border border-border rounded-xl px-4 py-3 text-foreground"
-              placeholder={intl.formatMessage({
-                id: "cart.coupon.placeholder",
-              })}
-              value={couponCode || ""}
-              onChangeText={(text) => {
-                // Since couponCode in useCart is likely used for display of *applied* coupon,
-                // and we don't have a local state for input, we might need one or just use apply directly.
-                // But wait, useCart exposes couponCode which is valid *if applied*.
-                // We need a local state for input.
-              }}
-              editable={!couponCode}
-            />
-            {/* Re-implementing correctly below with local state */}
-          </View>
-        </View>{" "}
-        */
-        {/* We need local state for the input field. The couponCode from hook is the APPLIED one. */}
-        {/* Let's wrap this in a component or just use local state inside CartScreen */}
         {/* Points Selection */}
         <PointsSection />
         <CouponSection />

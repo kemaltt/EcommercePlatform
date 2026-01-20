@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Stack, useRouter, usePathname } from "expo-router";
+import { Stack, useRouter, usePathname, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeft, Check } from "lucide-react-native";
 import { useTheme } from "../../contexts/theme-context";
@@ -9,7 +9,6 @@ import { useIntl } from "react-intl";
 
 export default function CheckoutLayout() {
   const { isDark } = useTheme();
-  const router = useRouter();
   const pathname = usePathname();
   const intl = useIntl();
 

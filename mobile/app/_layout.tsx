@@ -14,6 +14,7 @@ import "../assets/global.css";
 import { AuthProvider } from "../hooks/use-auth";
 import { CartProvider } from "../hooks/use-cart";
 import { I18nProvider } from "../contexts/i18n-context";
+import { CheckoutProvider } from "../contexts/checkout-context";
 import { FavoritesProvider } from "../hooks/use-favorites";
 import { ThemeProvider, useTheme } from "../contexts/theme-context";
 import { SettingsProvider } from "../contexts/settings-context";
@@ -44,7 +45,33 @@ import {
   ThemeProvider as NavThemeProvider,
 } from "@react-navigation/native";
 
-const InnerLayout = React.memo(() => {
+export default function RootLayout() {
+  const [qc] = React.useState(() => queryClient);
+
+  return (
+    <SafeAreaProvider>
+      <I18nProvider>
+        <SettingsProvider>
+          <ThemeProvider>
+            <QueryClientProvider client={qc}>
+              <AuthProvider>
+                <CartProvider>
+                  <CheckoutProvider>
+                    <FavoritesProvider>
+                      <ThemeConsumer />
+                    </FavoritesProvider>
+                  </CheckoutProvider>
+                </CartProvider>
+              </AuthProvider>
+            </QueryClientProvider>
+          </ThemeProvider>
+        </SettingsProvider>
+      </I18nProvider>
+    </SafeAreaProvider>
+  );
+}
+
+function ThemeConsumer() {
   const { isDark } = useTheme();
   return (
     <NavThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
@@ -68,29 +95,5 @@ const InnerLayout = React.memo(() => {
         </Stack>
       </View>
     </NavThemeProvider>
-  );
-});
-
-export default function RootLayout() {
-  const [qc] = React.useState(() => queryClient);
-
-  return (
-    <SafeAreaProvider>
-      <I18nProvider>
-        <SettingsProvider>
-          <ThemeProvider>
-            <QueryClientProvider client={qc}>
-              <AuthProvider>
-                <CartProvider>
-                  <FavoritesProvider>
-                    <InnerLayout />
-                  </FavoritesProvider>
-                </CartProvider>
-              </AuthProvider>
-            </QueryClientProvider>
-          </ThemeProvider>
-        </SettingsProvider>
-      </I18nProvider>
-    </SafeAreaProvider>
   );
 }
