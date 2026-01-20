@@ -35,7 +35,7 @@ export const users = pgTable("users", {
   }),
 });
 
-export const insertUserSchema = createInsertSchema(users, {
+export const insertUserSchema = z.object({
   username: z.string().optional(),
   email: z
     .string()
@@ -49,10 +49,10 @@ export const insertUserSchema = createInsertSchema(users, {
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/,
       "validation.password.complexity",
     ),
-}).omit({
-  isAdmin: true,
-  isSuperAdmin: true,
-  status: true,
+  avatarUrl: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
+  googleId: z.string().optional().nullable(),
+  appleId: z.string().optional().nullable(),
 });
 
 // Product schema

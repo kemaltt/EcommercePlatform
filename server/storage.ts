@@ -113,6 +113,8 @@ export interface IStorage {
   // Review operations
   createReview(review: InsertReview): Promise<Review>;
   getReviewsByProduct(productId: string): Promise<Review[]>;
+  getReview(id: string): Promise<Review | undefined>;
+  getReviewsByUser(userId: string): Promise<Review[]>;
   deleteReview(id: string): Promise<boolean>;
 }
 
@@ -657,7 +659,26 @@ export class MemStorage implements IStorage {
       comment: review.comment || null,
     };
     this.reviews.set(id, newReview);
+    this.updateProductRating(newReview.productId);
     return newReview;
+  }
+
+  private updateProductRating(productId: string) {
+    const productReviews = Array.from(this.reviews.values()).filter(
+      (r) => r.productId === productId,
+    );
+    const totalRating = productReviews.reduce((sum, r) => sum + r.rating, 0);
+    const averageRating =
+      productReviews.length > 0 ? totalRating / productReviews.length : 0;
+
+    const product = this.products.get(productId);
+    if (product) {
+      this.products.set(productId, {
+        ...product,
+        rating: averageRating,
+        reviews: productReviews.length,
+      });
+    }
   }
 
   async getReviewsByProduct(productId: string): Promise<Review[]> {
@@ -666,8 +687,22 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async getReviewsByUser(userId: string): Promise<Review[]> {
+    return Array.from(this.reviews.values()).filter((r) => r.userId === userId);
+  }
+
+  async getReview(id: string): Promise<Review | undefined> {
+    return this.reviews.get(id);
+  }
+
   async deleteReview(id: string): Promise<boolean> {
-    return this.reviews.delete(id);
+    const review = this.reviews.get(id);
+    if (!review) return false;
+    const deleted = this.reviews.delete(id);
+    if (deleted) {
+      this.updateProductRating(review.productId);
+    }
+    return deleted;
   }
 }
 
@@ -1278,7 +1313,23 @@ export class DatabaseStorage implements IStorage {
 
   async createReview(review: InsertReview): Promise<Review> {
     const [newReview] = await db.insert(reviews).values(review).returning();
+    await this.updateProductRating(newReview.productId);
     return newReview;
+  }
+
+  private async updateProductRating(productId: string) {
+    const productReviews = await this.getReviewsByProduct(productId);
+    const totalRating = productReviews.reduce((sum, r) => sum + r.rating, 0);
+    const averageRating =
+      productReviews.length > 0 ? totalRating / productReviews.length : 0;
+
+    await db
+      .update(products)
+      .set({
+        rating: averageRating,
+        reviews: productReviews.length,
+      } as any)
+      .where(eq(products.id, productId));
   }
 
   async getReviewsByProduct(productId: string): Promise<Review[]> {
@@ -1288,11 +1339,30 @@ export class DatabaseStorage implements IStorage {
       .where(eq(reviews.productId, productId));
   }
 
+  async getReviewsByUser(userId: string): Promise<Review[]> {
+    return await db.select().from(reviews).where(eq(reviews.userId, userId));
+  }
+
+  async getReview(id: string): Promise<Review | undefined> {
+    const [review] = await db.select().from(reviews).where(eq(reviews.id, id));
+    return review;
+  }
+
   async deleteReview(id: string): Promise<boolean> {
+    // Get review first to know productId
+    const [review] = await db.select().from(reviews).where(eq(reviews.id, id));
+
+    if (!review) return false;
+
     const [deleted] = await db
       .delete(reviews)
       .where(eq(reviews.id, id))
       .returning();
+
+    if (deleted) {
+      await this.updateProductRating(review.productId);
+    }
+
     return !!deleted;
   }
 }

@@ -98,6 +98,18 @@ router.delete("/reviews/:id", async (req: Request, res: Response) => {
     // If stricter check needed, we need `getReview(id)` in storage.
     // Assuming for now simple deletion succcess.
 
+    // Check ownership
+    const review = await storage.getReview(req.params.id);
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    if (review.userId !== req.user!.id && !req.user!.isAdmin) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to delete this review" });
+    }
+
     const success = await storage.deleteReview(req.params.id);
     if (success) {
       res.json({ message: "Review deleted" });
