@@ -42,7 +42,8 @@ export const register = async (
         errors: validationResult.error.flatten().fieldErrors,
       });
     }
-    const { email, password, fullName, address } = validationResult.data;
+    const { email, password, fullName, address, pushToken } =
+      validationResult.data;
 
     // Check if email already exists
     const existingUserByEmail = await storage.getUserByEmail(email);
@@ -57,6 +58,9 @@ export const register = async (
       username = `${username}_${Math.floor(1000 + Math.random() * 9000)}`;
     }
 
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
     const hashedPassword = await hashPassword(password);
     // Generate 6-digit OTP
     const verificationToken = Math.floor(
@@ -74,6 +78,7 @@ export const register = async (
       emailVerificationToken: verificationToken,
       verificationTokenExpiresAt: tokenExpiry,
       isAdmin: false,
+      pushToken,
     });
 
     try {

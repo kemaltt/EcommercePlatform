@@ -34,27 +34,18 @@ export const users = pgTable("users", {
     mode: "date",
   }),
   points: integer("points").default(0).notNull(),
+  pushToken: text("push_token"),
 });
 
-export const insertUserSchema = z.object({
-  username: z.string().optional(),
-  email: z
-    .string()
-    .email("validation.email.invalid")
-    .min(1, "validation.email.required"),
-  fullName: z.string().min(1, "validation.fullName.required"),
-  password: z
-    .string()
-    .min(8, "validation.password.minLength")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&.])[A-Za-z\d@$!%*?&.]{8,}$/,
-      "validation.password.complexity",
-    ),
-  avatarUrl: z.string().optional().nullable(),
-  address: z.string().optional().nullable(),
-  googleId: z.string().optional().nullable(),
-  appleId: z.string().optional().nullable(),
+export const insertUserSchema = createInsertSchema(users).extend({
+  id: z.string().optional(),
+  createdAt: z.date().optional(),
+  isAdmin: z.boolean().optional(),
+  isSuperAdmin: z.boolean().optional(),
+  status: z.string().optional(),
+  emailVerified: z.boolean().optional(),
   points: z.number().optional(),
+  pushToken: z.string().optional().nullable(),
 });
 
 // Product schema
@@ -72,10 +63,10 @@ export const products = pgTable("products", {
   isActive: boolean("is_active").default(true).notNull(),
 });
 
-export const insertProductSchema = createInsertSchema(products).omit({
-  id: true,
-  createdAt: true,
-} as any);
+export const insertProductSchema = createInsertSchema(products).extend({
+  id: z.string().optional(),
+  createdAt: z.date().optional(),
+});
 
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = Omit<
@@ -90,9 +81,9 @@ export const favorites = pgTable("favorites", {
   productId: uuid("product_id").notNull(),
 });
 
-export const insertFavoriteSchema = createInsertSchema(favorites).omit({
-  id: true,
-} as any);
+export const insertFavoriteSchema = createInsertSchema(favorites).extend({
+  id: z.string().optional(),
+});
 
 export type Favorite = typeof favorites.$inferSelect;
 export type InsertFavorite = Omit<typeof favorites.$inferInsert, "id">;
@@ -105,9 +96,9 @@ export const cartItems = pgTable("cart_items", {
   quantity: integer("quantity").notNull().default(1),
 });
 
-export const insertCartItemSchema = createInsertSchema(cartItems).omit({
-  id: true,
-} as any);
+export const insertCartItemSchema = createInsertSchema(cartItems).extend({
+  id: z.string().optional(),
+});
 
 export type CartItem = typeof cartItems.$inferSelect;
 export type InsertCartItem = Omit<typeof cartItems.$inferInsert, "id">;
@@ -158,9 +149,9 @@ export const addresses = pgTable("addresses", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertAddressSchema = createInsertSchema(addresses).omit({
-  id: true,
-  createdAt: true,
+export const insertAddressSchema = createInsertSchema(addresses).extend({
+  id: z.string().optional(),
+  createdAt: z.date().optional(),
 });
 
 // Orders schema
@@ -201,14 +192,14 @@ export const orderItems = pgTable("order_items", {
   options: json("options"), // Size, color etc.
 });
 
-export const insertOrderSchema = createInsertSchema(orders).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+export const insertOrderSchema = createInsertSchema(orders).extend({
+  id: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 
-export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
-  id: true,
+export const insertOrderItemSchema = createInsertSchema(orderItems).extend({
+  id: z.string().optional(),
 });
 
 // Type exports
@@ -242,10 +233,10 @@ export const coupons = pgTable("coupons", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertCouponSchema = createInsertSchema(coupons).omit({
-  id: true,
-  usedCount: true,
-  createdAt: true,
+export const insertCouponSchema = createInsertSchema(coupons).extend({
+  id: z.string().optional(),
+  usedCount: z.number().optional(),
+  createdAt: z.date().optional(),
 });
 
 export type Coupon = typeof coupons.$inferSelect;
@@ -266,10 +257,10 @@ export const reviews = pgTable("reviews", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const insertReviewSchema = createInsertSchema(reviews).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
+export const insertReviewSchema = createInsertSchema(reviews).extend({
+  id: z.string().optional(),
+  createdAt: z.date().optional(),
+  updatedAt: z.date().optional(),
 });
 
 export type Review = typeof reviews.$inferSelect;
@@ -286,10 +277,12 @@ export const pointHistory = pgTable("point_history", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const insertPointHistorySchema = createInsertSchema(pointHistory).omit({
-  id: true,
-  createdAt: true,
-});
+export const insertPointHistorySchema = createInsertSchema(pointHistory).extend(
+  {
+    id: z.string().optional(),
+    createdAt: z.date().optional(),
+  },
+);
 
 export type PointHistory = typeof pointHistory.$inferSelect;
 export type InsertPointHistory = z.infer<typeof insertPointHistorySchema>;
@@ -300,3 +293,26 @@ export const session = pgTable("session", {
   sess: json("sess").notNull(),
   expire: timestamp("expire", { precision: 6 }).notNull(),
 });
+
+// Notifications schema
+export const notifications = pgTable("notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  body: text("body").notNull(),
+  data: json("data"),
+  isRead: boolean("is_read").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertNotificationSchema = createInsertSchema(
+  notifications,
+).extend({
+  id: z.string().optional(),
+  createdAt: z.date().optional(),
+});
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;

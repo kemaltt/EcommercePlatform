@@ -29,6 +29,9 @@ import {
   PointHistory,
   InsertPointHistory,
   pointHistory,
+  Notification,
+  InsertNotification,
+  notifications,
 } from "../shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -135,6 +138,12 @@ export interface IStorage {
   addPoints(userId: string, amount: number, reason: string): Promise<User>;
   redeemPoints(userId: string, amount: number, orderId: string): Promise<User>;
   getPointHistory(userId: string): Promise<PointHistory[]>;
+
+  // Notification operations
+  updatePushToken(userId: string, token: string | null): Promise<void>;
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  getUserNotifications(userId: string): Promise<Notification[]>;
+  markNotificationAsRead(id: string): Promise<Notification | undefined>;
 }
 
 // MemStorage kodunu koruyoruz (gerekirse tekrar kullanabiliriz)
@@ -149,6 +158,7 @@ export class MemStorage implements IStorage {
   private coupons: Map<string, Coupon>;
   private reviews: Map<string, Review>;
   private pointHistory: Map<string, PointHistory>;
+  private notifications: Map<string, Notification>;
   sessionStore: SessionStore;
   private currentId: number;
 
@@ -164,6 +174,7 @@ export class MemStorage implements IStorage {
     this.coupons = new Map();
     this.reviews = new Map();
     this.pointHistory = new Map();
+    this.notifications = new Map();
     this.currentId = 1;
 
     this.sessionStore = new MemoryStore({
@@ -300,6 +311,7 @@ export class MemStorage implements IStorage {
       googleId: user.googleId || null,
       appleId: user.appleId || null,
       points: 0,
+      pushToken: null,
     };
     this.users.set(id, newUser);
     return newUser;
@@ -839,6 +851,45 @@ export class MemStorage implements IStorage {
       .filter((h) => h.userId === userId)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
+
+  // Notification operations
+  async updatePushToken(userId: string, token: string | null): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      user.pushToken = token;
+    }
+  }
+
+  async createNotification(
+    notification: InsertNotification,
+  ): Promise<Notification> {
+    const id = crypto.randomUUID();
+    const newNotification: Notification = {
+      ...notification,
+      id,
+      isRead: false,
+      createdAt: new Date(),
+      data: notification.data || null,
+    };
+    this.notifications.set(id, newNotification);
+    return newNotification;
+  }
+
+  async getUserNotifications(userId: string): Promise<Notification[]> {
+    return Array.from(this.notifications.values())
+      .filter((n) => n.userId === userId)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  async markNotificationAsRead(id: string): Promise<Notification | undefined> {
+    const notification = this.notifications.get(id);
+    if (notification) {
+      const updated = { ...notification, isRead: true };
+      this.notifications.set(id, updated);
+      return updated;
+    }
+    return undefined;
+  }
 }
 
 // DatabaseStorage sınıfı - PostgreSQL veritabanını kullanır
@@ -987,6 +1038,7 @@ export class DatabaseStorage implements IStorage {
         status: "active",
         createdAt: new Date(),
         emailVerified: false,
+        pushToken: null,
       } as any)
       .returning();
     return newUser;
@@ -1630,6 +1682,40 @@ export class DatabaseStorage implements IStorage {
       .from(pointHistory)
       .where(eq(pointHistory.userId, userId))
       .orderBy(desc(pointHistory.createdAt));
+  }
+
+  async updatePushToken(userId: string, token: string | null): Promise<void> {
+    await db
+      .update(users)
+      .set({ pushToken: token })
+      .where(eq(users.id, userId));
+  }
+
+  async createNotification(
+    notification: InsertNotification,
+  ): Promise<Notification> {
+    const [newNotification] = await db
+      .insert(notifications)
+      .values(notification)
+      .returning();
+    return newNotification;
+  }
+
+  async getUserNotifications(userId: string): Promise<Notification[]> {
+    return await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt));
+  }
+
+  async markNotificationAsRead(id: string): Promise<Notification | undefined> {
+    const [updated] = await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.id, id))
+      .returning();
+    return updated;
   }
 }
 

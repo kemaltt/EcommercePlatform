@@ -8,6 +8,7 @@ import userRoutes from "./userRoutes";
 import addressRoutes from "./addressRoutes";
 import orderRoutes from "./orderRoutes";
 import reviewRoutes from "./reviewRoutes";
+import notificationRoutes from "./notificationRoutes";
 import * as authController from "../controllers/authController";
 
 const router = Router();
@@ -20,6 +21,7 @@ router.use("/admin", adminRoutes);
 router.use("/user", userRoutes);
 router.use("/addresses", addressRoutes);
 router.use("/orders", orderRoutes);
+router.use("/notifications", notificationRoutes);
 router.use("/", reviewRoutes);
 
 // Mount verify-email at root level or specific path as needed by frontend/email link
